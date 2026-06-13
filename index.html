@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>闪电佣金 — 跨境联盟佣金即时结算</title>
+    <style>
+        :root {
+            --bg: #0f1117;
+            --card: #1a1d27;
+            --border: #2a2d3a;
+            --text: #e4e6eb;
+            --text-dim: #8b8fa3;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.25);
+            --green: #22c55e;
+            --green-bg: rgba(34, 197, 94, 0.12);
+            --red: #ef4444;
+            --orange: #f59e0b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* ── 顶部导航 ── */
+        nav {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo span { color: var(--accent); }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--green-bg);
+            color: var(--green);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge::before {
+            content: '';
+            width: 6px; height: 6px;
+            background: var(--green);
+            border-radius: 50%;
+        }
+
+        /* ── 主布局 ── */
+        .main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        /* ── 数据卡片 ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 24px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .stat-value.usdc { color: var(--accent); }
+        .stat-value.settled { color: var(--green); }
+        .stat-value.affiliates { color: var(--orange); }
+
+        .stat-sub {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+
+        /* ── 两栏布局 ── */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .two-col { grid-template-columns: 1fr; }
+        }
+
+        /* ── 面板 ── */
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .panel-body {
+            padding: 20px;
+        }
+
+        /* ── 按钮 ── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 2px 12px var(--accent-glow);
+        }
+        .btn-primary:hover { filter: brightness(1.15); transform: translateY(-1px); }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.04); }
+
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 12px;
+            border-radius: 6px;
+        }
+
+        .btn-green {
+            background: var(--green-bg);
+            color: var(--green);
+            border: 1px solid rgba(34,197,94,0.2);
+        }
+
+        /* ── 输入框 ── */
+        .input {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .input:focus { border-color: var(--accent); }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+        .input-row .input { flex: 1; }
+
+        .label {
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .form-group { margin-bottom: 16px; }
+
+        /* ── 结算记录列表 ── */
+        .tx-list { list-style: none; }
+
+        .tx-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .tx-item:last-child { border-bottom: none; }
+
+        .tx-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tx-avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .tx-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tx-name { font-size: 14px; font-weight: 600; }
+        .tx-time { font-size: 12px; color: var(--text-dim); }
+
+        .tx-right { text-align: right; }
+        .tx-amount { font-size: 15px; font-weight: 700; color: var(--green); }
+        .tx-order { font-size: 12px; color: var(--text-dim); }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--green-bg);
+            color: var(--green);
+            border: 1px solid rgba(34,197,94,0.3);
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 200;
+            animation: slideUp 0.3s ease, fadeOut 0.3s ease 2.5s forwards;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        /* ── 空状态 ── */
+        .empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-dim);
+        }
+        .empty-icon { font-size: 40px; margin-bottom: 12px; }
+
+        /* ── Tab ── */
+        .tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            font-size: 13px;
+            color: var(--text-dim);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            background: none;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            font-family: inherit;
+        }
+        .tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* ── 动画脉冲 ── */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .settling { animation: pulse 0.6s ease-in-out 3; }
+
+        /* ── hero tagline ── */
+        .tagline {
+            text-align: center;
+            margin-bottom: 8px;
+            color: var(--text-dim);
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════ 导航 ═══════════ -->
+<nav>
+    <div class="logo">⚡ 闪电佣金 <span>Demo</span></div>
+    <div class="nav-actions">
+        <div class="badge">Base L2 实时结算中</div>
+        <button class="btn btn-sm btn-secondary" onclick="resetDemo()">🔄 重置演示</button>
+    </div>
+</nav>
+
+<!-- ═══════════ 主内容 ═══════════ -->
+<div class="main">
+
+    <p class="tagline">演示环境 — USDC 在 Base L2 链上结算，Gas 费 < $0.01</p>
+
+    <!-- 数据卡片 -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">💰 托管余额</div>
+            <div class="stat-value usdc" id="balance">$5,000.00</div>
+            <div class="stat-sub">USDC · Base L2 · 可随时提回</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">✅ 累计已结算</div>
+            <div class="stat-value settled" id="totalSettled">$1,280.50</div>
+            <div class="stat-sub">共 <span id="txCount">23</span> 笔 · 平均到账 3 分钟</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">👥 联盟成员</div>
+            <div class="stat-value affiliates" id="affiliateCount">8</div>
+            <div class="stat-sub">活跃率 75% · 覆盖 6 国</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">⚡ 对比传统方案</div>
+            <div class="stat-value" style="color: var(--green);">节省 87%</div>
+            <div class="stat-sub">手续费从 5.2% → 0.7% · 到账从 15天 → 3分钟</div>
+        </div>
+    </div>
+
+    <!-- 两栏 -->
+    <div class="two-col">
+        <!-- ── 左：手动结算（演示核心功能）── -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">🧪 演示：模拟一笔佣金结算</span>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="label">联盟成员</label>
+                    <select class="input" id="affiliateSelect" style="width:100%;">
+                        <option value="0xAlice888">@alice_cn (Alice · 美妆博主 · 香港)</option>
+                        <option value="0xBob999">@bob_kr (Bob · 数码评测 · 韩国)</option>
+                        <option value="0xCarol77">@carol_jp (Carol · 穿搭 · 日本)</option>
+                        <option value="0xDave44">@dave_br (Dave · 户外 · 巴西)</option>
+                        <option value="0xEve55">@eve_de (Eve · 家居 · 德国)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="label">订单金额 (USD)</label>
+                    <input class="input" type="number" id="orderAmount" value="89.90" min="1" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label class="label">佣金比例</label>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn btn-sm btn-secondary commission-preset active" data-rate="5" onclick="setRate(5, this)">5%</button>
+                        <button class="btn btn-sm btn-secondary commission-preset" data-rate="10" onclick="setRate(10, this)">10%</button>
+                        <button class="btn btn-sm btn-secondary commission-preset" data-rate="15" onclick="setRate(15, this)">15%</button>
+                    </div>
+                </div>
+
+                <div class="form-group" style="background:var(--bg);border-radius:8px;padding:12px;text-align:center;">
+                    <div style="font-size:12px;color:var(--text-dim);margin-bottom:4px;">本次佣金</div>
+                    <div style="font-size:24px;font-weight:700;color:var(--green);" id="calcCommission">$4.50</div>
+                </div>
+
+                <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="simulateSettlement()">
+                    ⚡ 模拟链上结算
+                </button>
+                <div style="text-align:center;margin-top:8px;font-size:11px;color:var(--text-dim);">
+                    智能合约自动执行 · Base L2 · Gas ~$0.003
+                </div>
+            </div>
+        </div>
+
+        <!-- ── 右：结算记录 ── -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">📋 结算记录</span>
+                <span style="font-size:12px;color:var(--text-dim);" id="recordCount">23 笔</span>
+            </div>
+            <div class="panel-body" style="padding:0;">
+                <ul class="tx-list" id="txList" style="max-height:420px;overflow-y:auto;padding:0 20px;">
+                    <!-- JS 动态填充 -->
+                </ul>
+                <div id="emptyState" class="empty" style="display:none;">
+                    <div class="empty-icon">📭</div>
+                    <p>暂无结算记录</p>
+                    <p style="font-size:12px;">在左边模拟一笔结算</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 底部：对比表 ── -->
+    <div class="panel">
+        <div class="panel-header">
+            <span class="panel-title">📊 闪电佣金 vs 传统方案</span>
+        </div>
+        <div class="panel-body">
+            <table style="width:100%;border-collapse:collapse;font-size:14px;">
+                <thead>
+                    <tr style="border-bottom:1px solid var(--border);text-align:left;">
+                        <th style="padding:10px 0;color:var(--text-dim);font-weight:500;">对比维度</th>
+                        <th style="padding:10px 0;color:var(--red);">传统跨境结算</th>
+                        <th style="padding:10px 0;color:var(--green);">闪电佣金 (USDC链上)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:10px 0;">到账时间</td>
+                        <td>15-45 天</td>
+                        <td style="font-weight:600;">~3 分钟</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:10px 0;">手续费</td>
+                        <td>3-6% (银行+汇率+中间行)</td>
+                        <td style="font-weight:600;">< 1% (Gas + 平台)</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:10px 0;">人工对账</td>
+                        <td>每月2-3个工作日</td>
+                        <td style="font-weight:600;">全自动</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:10px 0;">可追溯</td>
+                        <td>邮件+银行流水</td>
+                        <td style="font-weight:600;">链上公开可查</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px 0;">联盟成员体验</td>
+                        <td>漫长等待+不确定</td>
+                        <td style="font-weight:600;">即时到账+透明</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="toastContainer"></div>
+
+<script>
+// ═══════════════ 数据层 (localStorage) ═══════════════
+
+const STORAGE_KEY = 'lightning_commission_demo';
+
+function getDefaultData() {
+    return {
+        balance: 5000.00,
+        totalSettled: 1280.50,
+        txCount: 23,
+        commissionRate: 5,
+        transactions: [
+            { id: 1, affiliate: '@alice_cn', name: 'Alice', orderAmount: 199.00, commission: 19.90, time: '3 分钟前', avatar: 'A' },
+            { id: 2, affiliate: '@bob_kr', name: 'Bob', orderAmount: 89.90, commission: 8.99, time: '12 分钟前', avatar: 'B' },
+            { id: 3, affiliate: '@carol_jp', name: 'Carol', orderAmount: 450.00, commission: 45.00, time: '1 小时前', avatar: 'C' },
+            { id: 4, affiliate: '@dave_br', name: 'Dave', orderAmount: 67.50, commission: 6.75, time: '2 小时前', avatar: 'D' },
+            { id: 5, affiliate: '@eve_de', name: 'Eve', orderAmount: 320.00, commission: 32.00, time: '3 小时前', avatar: 'E' },
+            { id: 6, affiliate: '@alice_cn', name: 'Alice', orderAmount: 155.00, commission: 15.50, time: '昨天', avatar: 'A' },
+        ]
+    };
+}
+
+function loadData() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+    return getDefaultData();
+}
+
+function saveData(data) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+// ═══════════════ 渲染 ═══════════════
+
+let data = loadData();
+
+function renderAll() {
+    document.getElementById('balance').textContent = '$' + data.balance.toFixed(2);
+    document.getElementById('totalSettled').textContent = '$' + data.totalSettled.toFixed(2);
+    document.getElementById('txCount').textContent = data.txCount;
+    document.getElementById('recordCount').textContent = data.transactions.length + ' 笔';
+
+    // 联盟成员数 (去重)
+    const uniqueAffiliates = new Set(data.transactions.map(t => t.affiliate));
+    document.getElementById('affiliateCount').textContent = uniqueAffiliates.size;
+
+    // 结算记录
+    const txList = document.getElementById('txList');
+    const emptyState = document.getElementById('emptyState');
+
+    if (data.transactions.length === 0) {
+        txList.innerHTML = '';
+        emptyState.style.display = 'block';
+    } else {
+        emptyState.style.display = 'none';
+        txList.innerHTML = data.transactions.slice().reverse().map(t => `
+            <li class="tx-item">
+                <div class="tx-left">
+                    <div class="tx-avatar">${t.avatar}</div>
+                    <div class="tx-info">
+                        <div class="tx-name">${t.name}</div>
+                        <div class="tx-time">${t.affiliate} · ${t.time}</div>
+                    </div>
+                </div>
+                <div class="tx-right">
+                    <div class="tx-amount">+$${t.commission.toFixed(2)}</div>
+                    <div class="tx-order">订单 $${t.orderAmount.toFixed(2)}</div>
+                </div>
+            </li>
+        `).join('');
+    }
+
+    // 计算预览
+    updateCommissionPreview();
+}
+
+function updateCommissionPreview() {
+    const amount = parseFloat(document.getElementById('orderAmount').value) || 0;
+    const commission = amount * data.commissionRate / 100;
+    document.getElementById('calcCommission').textContent = '$' + commission.toFixed(2);
+}
+
+// ═══════════════ 交互 ═══════════════
+
+function setRate(rate, btn) {
+    data.commissionRate = rate;
+    saveData(data);
+    document.querySelectorAll('.commission-preset').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    updateCommissionPreview();
+}
+
+document.getElementById('orderAmount').addEventListener('input', updateCommissionPreview);
+
+function simulateSettlement() {
+    const select = document.getElementById('affiliateSelect');
+    const selectedOption = select.options[select.selectedIndex];
+    const affiliateFull = selectedOption.textContent;
+    const affiliateHandle = selectedOption.value;
+
+    // 解析名字
+    const nameMatch = affiliateFull.match(/\((\w+)/);
+    const name = nameMatch ? nameMatch[1] : 'Unknown';
+    const avatar = name[0].toUpperCase();
+
+    const orderAmount = parseFloat(document.getElementById('orderAmount').value);
+    if (!orderAmount || orderAmount <= 0) {
+        showToast('请输入有效的订单金额', 'error');
+        return;
+    }
+
+    const commission = orderAmount * data.commissionRate / 100;
+
+    // 检查余额
+    if (commission > data.balance) {
+        showToast('⚠️ 托管余额不足！请先充值 USDC', 'error');
+        return;
+    }
+
+    // 更新数据
+    data.balance -= commission;
+    data.totalSettled += commission;
+    data.txCount += 1;
+    data.transactions.push({
+        id: data.txCount,
+        affiliate: '@' + name.toLowerCase(),
+        name: name,
+        orderAmount: orderAmount,
+        commission: commission,
+        time: '刚刚',
+        avatar: avatar
+    });
+    saveData(data);
+
+    // 视觉反馈
+    const btn = document.querySelector('.btn-primary');
+    btn.textContent = '⏳ 结算中...';
+    btn.classList.add('settling');
+    btn.disabled = true;
+
+    setTimeout(() => {
+        btn.textContent = '✅ 已到账！';
+        btn.style.background = 'var(--green)';
+        btn.style.boxShadow = '0 2px 12px rgba(34,197,94,0.3)';
+
+        renderAll();
+        showToast(`✅ 已向 ${name} 结算 $${commission.toFixed(2)} · 链上确认中 (模拟)`);
+
+        setTimeout(() => {
+            btn.textContent = '⚡ 模拟链上结算';
+            btn.style.background = 'var(--accent)';
+            btn.style.boxShadow = '0 2px 12px var(--accent-glow)';
+            btn.classList.remove('settling');
+            btn.disabled = false;
+
+            // 把"刚刚"更新为具体时间
+            const lastTx = data.transactions[data.transactions.length - 1];
+            lastTx.time = '1 分钟前';
+            saveData(data);
+            renderAll();
+        }, 1500);
+    }, 800);
+}
+
+function showToast(msg, type) {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    if (type === 'error') {
+        toast.style.background = 'rgba(239,68,68,0.12)';
+        toast.style.color = 'var(--red)';
+        toast.style.border = '1px solid rgba(239,68,68,0.3)';
+    }
+    toast.textContent = msg;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+function resetDemo() {
+    if (confirm('确定要重置所有演示数据吗？')) {
+        localStorage.removeItem(STORAGE_KEY);
+        data = getDefaultData();
+        document.getElementById('orderAmount').value = 89.90;
+        document.querySelectorAll('.commission-preset').forEach(b => b.classList.remove('active'));
+        const defaultBtn = document.querySelector('[data-rate="5"]');
+        if (defaultBtn) defaultBtn.classList.add('active');
+        data.commissionRate = 5;
+        saveData(data);
+        renderAll();
+        showToast('🔄 演示数据已重置');
+    }
+}
+
+// ═══════════════ 初始化 ═══════════════
+
+// 恢复选中的佣金比例按钮
+document.querySelectorAll('.commission-preset').forEach(btn => {
+    if (parseInt(btn.dataset.rate) === data.commissionRate) {
+        btn.classList.add('active');
+    }
+});
+
+renderAll();
+</script>
+
+</body>
+</html>
