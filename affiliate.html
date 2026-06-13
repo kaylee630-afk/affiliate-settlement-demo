@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lightning Commission — Affiliate Dashboard</title>
+    <title>Lightning Commission — 联盟成员端</title>
     <style>
         :root {
             --bg: #0f1117;
@@ -12,102 +12,166 @@
             --text: #e4e6eb;
             --text-dim: #8b8fa3;
             --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.25);
             --green: #22c55e;
             --green-bg: rgba(34, 197, 94, 0.12);
             --red: #ef4444;
+            --orange: #f59e0b;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
             line-height: 1.6;
         }
 
-        /* ── 顶部 ── */
+        /* ── 导航栏 ── */
+        nav {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 56px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo span { color: var(--accent); }
+        .nav-actions { display: flex; align-items: center; gap: 12px; }
+
+        .connected-dot {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--green);
+        }
+        .connected-dot::before {
+            content: '';
+            width: 7px; height: 7px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* ── 顶部个人信息 ── */
         .header {
             background: linear-gradient(135deg, #1a1d27 0%, #1e2440 100%);
-            padding: 32px 24px 24px;
+            padding: 28px 24px 20px;
             text-align: center;
             border-bottom: 1px solid var(--border);
         }
         .avatar {
-            width: 64px; height: 64px;
+            width: 60px; height: 60px;
             border-radius: 50%;
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
             display: flex; align-items: center; justify-content: center;
-            font-size: 24px; font-weight: 700; color: #fff;
-            margin: 0 auto 12px;
+            font-size: 22px; font-weight: 700; color: #fff;
+            margin: 0 auto 10px;
         }
-        .greeting { font-size: 14px; color: var(--text-dim); }
-        .name { font-size: 20px; font-weight: 700; }
+        .name { font-size: 18px; font-weight: 700; }
+
+        /* 切换联盟成员 */
+        .switch-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .switch-row select {
+            padding: 6px 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+        }
 
         /* ── 收入卡片 ── */
         .earnings-card {
-            margin: -20px 20px 24px;
+            margin: -16px 20px 20px;
             background: var(--card);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 24px;
+            border-radius: 14px;
+            padding: 20px 24px;
             text-align: center;
             position: relative;
             z-index: 1;
         }
-        .earnings-label { font-size: 13px; color: var(--text-dim); margin-bottom: 4px; }
-        .earnings-amount { font-size: 40px; font-weight: 800; color: var(--green); letter-spacing: -2px; }
-        .earnings-sub { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+        .earnings-label { font-size: 13px; color: var(--text-dim); margin-bottom: 2px; }
+        .earnings-amount { font-size: 36px; font-weight: 800; color: var(--green); letter-spacing: -1.5px; }
+        .earnings-sub { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
 
         .quick-stats {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 20px;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-top: 16px;
         }
         .quick-stat {
             background: var(--bg);
             border-radius: 10px;
-            padding: 14px;
+            padding: 12px 10px;
         }
-        .quick-stat-val { font-size: 18px; font-weight: 700; }
+        .quick-stat-val { font-size: 16px; font-weight: 700; }
         .quick-stat-val.green { color: var(--green); }
-        .quick-stat-lbl { font-size: 11px; color: var(--text-dim); }
+        .quick-stat-lbl { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
 
         /* ── 主内容 ── */
         .main {
-            max-width: 500px;
+            max-width: 520px;
             margin: 0 auto;
             padding: 0 20px 40px;
         }
 
-        /* ── 新到账通知 ── */
-        .notification {
+        /* ── 实时到账通知 ── */
+        .live-notification {
             background: var(--green-bg);
-            border: 1px solid rgba(34, 197, 94, 0.25);
+            border: 2px solid var(--green);
             border-radius: 12px;
             padding: 16px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
             gap: 12px;
             animation: slideDown 0.4s ease;
         }
+        .live-notification.hidden { display: none; }
         @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
+            from { opacity: 0; transform: translateY(-12px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .notif-icon {
-            width: 40px; height: 40px;
+            width: 42px; height: 42px;
             background: var(--green);
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 18px;
+            font-size: 20px;
             flex-shrink: 0;
         }
         .notif-body { flex: 1; }
-        .notif-title { font-size: 14px; font-weight: 600; }
-        .notif-amount { font-size: 20px; font-weight: 800; color: var(--green); }
-        .notif-time { font-size: 11px; color: var(--text-dim); }
+        .notif-title { font-size: 14px; font-weight: 600; color: var(--green); }
+        .notif-amount { font-size: 22px; font-weight: 800; }
+        .notif-detail { font-size: 11px; color: var(--text-dim); }
 
         /* ── 面板 ── */
         .panel {
@@ -123,7 +187,6 @@
             font-weight: 600;
             display: flex; align-items: center; justify-content: space-between;
         }
-        .panel-body { padding: 0; }
 
         .tx-item {
             display: flex; align-items: center;
@@ -134,11 +197,11 @@
         .tx-item:last-child { border-bottom: none; }
         .tx-left { display: flex; align-items: center; gap: 10px; }
         .tx-icon {
-            width: 32px; height: 32px;
+            width: 34px; height: 34px;
             border-radius: 50%;
             background: rgba(59,130,246,0.12);
             display: flex; align-items: center; justify-content: center;
-            font-size: 14px;
+            font-size: 15px;
         }
         .tx-store { font-size: 13px; font-weight: 600; }
         .tx-order { font-size: 11px; color: var(--text-dim); }
@@ -158,9 +221,9 @@
             background: var(--accent);
             color: #fff;
             width: 100%;
-            box-shadow: 0 2px 12px rgba(59,130,246,0.25);
+            box-shadow: 0 2px 12px var(--accent-glow);
         }
-        .btn-primary:hover { filter: brightness(1.15); }
+        .btn-primary:hover { filter: brightness(1.15); transform: translateY(-1px); }
         .btn-secondary {
             background: transparent;
             color: var(--text);
@@ -168,11 +231,10 @@
             width: 100%;
             margin-top: 8px;
         }
-
         .btn-sm {
             padding: 6px 14px; font-size: 12px; border-radius: 6px;
             background: transparent; color: var(--text); border: 1px solid var(--border);
-            font-family: inherit; cursor: pointer;
+            font-family: inherit; cursor: pointer; text-decoration: none;
         }
 
         /* ── 提现弹窗 ── */
@@ -209,35 +271,61 @@
         @keyframes toastUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
         @keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
 
-        .hidden { display: none; }
-        .brand-link {
-            text-align: center; margin-top: 24px; font-size: 12px; color: var(--text-dim);
+        /* ── 空状态 ── */
+        .empty { text-align: center; padding: 36px 20px; color: var(--text-dim); }
+        .empty-icon { font-size: 32px; margin-bottom: 8px; }
+
+        .footer-link {
+            text-align: center; margin-top: 20px;
+            font-size: 12px; color: var(--text-dim);
         }
-        .brand-link a { color: var(--accent); text-decoration: none; }
+        .footer-link a { color: var(--accent); text-decoration: none; }
     </style>
 </head>
 <body>
 
-<!-- ═══════════ 顶部 ═══════════ -->
+<!-- ═══════════ 导航栏 ═══════════ -->
+<nav>
+    <div class="logo">⚡ Lightning Commission <span>Affiliate</span></div>
+    <div class="nav-actions">
+        <span class="connected-dot" id="syncStatus">已连接</span>
+        <a href="index.html" class="btn btn-sm">🏪 品牌方后台</a>
+    </div>
+</nav>
+
+<!-- ═══════════ 个人信息 ═══════════ -->
 <div class="header">
     <div class="avatar" id="affiliateAvatar">A</div>
-    <div class="greeting">Good morning</div>
     <div class="name" id="affiliateName">Alice</div>
+    <div class="switch-row">
+        <span style="font-size:12px;color:var(--text-dim);">切换查看：</span>
+        <select id="affiliateSwitcher" onchange="switchAffiliate()">
+            <option value="@alice_cn">Alice · 美妆博主 · 香港</option>
+            <option value="@bob_kr">Bob · 数码评测 · 韩国</option>
+            <option value="@carol_jp">Carol · 穿搭 · 日本</option>
+            <option value="@dave_br">Dave · 户外 · 巴西</option>
+            <option value="@eve_de">Eve · 家居 · 德国</option>
+        </select>
+    </div>
 </div>
 
-<!-- 总收入卡片 -->
+<!-- 收入卡片 -->
 <div class="earnings-card">
-    <div class="earnings-label">💰 Total Earned (USDC)</div>
+    <div class="earnings-label">💰 累计佣金收入 (USDC)</div>
     <div class="earnings-amount" id="totalEarned">$0.00</div>
-    <div class="earnings-sub">Settled instantly on Base L2 · Gas < $0.01</div>
+    <div class="earnings-sub">Base L2 链上即时结算 · Gas 费 < $0.01</div>
     <div class="quick-stats">
         <div class="quick-stat">
             <div class="quick-stat-val green" id="lastSettlement">--</div>
-            <div class="quick-stat-lbl">Last Settlement</div>
+            <div class="quick-stat-lbl">最近一笔</div>
+        </div>
+        <div class="quick-stat">
+            <div class="quick-stat-val" id="txCount">0</div>
+            <div class="quick-stat-lbl">结算笔数</div>
         </div>
         <div class="quick-stat">
             <div class="quick-stat-val" id="withdrawable">$0.00</div>
-            <div class="quick-stat-lbl">Available to Withdraw</div>
+            <div class="quick-stat-lbl">可提现</div>
         </div>
     </div>
 </div>
@@ -245,68 +333,66 @@
 <!-- ═══════════ 主内容 ═══════════ -->
 <div class="main">
 
-    <!-- 新到账通知 -->
-    <div class="notification hidden" id="newNotification">
+    <!-- 实时到账通知 -->
+    <div class="live-notification hidden" id="liveNotification">
         <div class="notif-icon">💸</div>
         <div class="notif-body">
-            <div class="notif-title">New Commission Received!</div>
+            <div class="notif-title">⚡ 新的佣金已到账！</div>
             <div class="notif-amount" id="notifAmount"></div>
-            <div class="notif-time" id="notifTime">Just now</div>
+            <div class="notif-detail" id="notifDetail">Base L2 链上确认 · 即时到账</div>
         </div>
     </div>
 
-    <!-- 操作按钮 -->
+    <!-- 操作 -->
     <button class="btn btn-primary" onclick="openWithdraw()">
-        💳 Withdraw to Bank / Wallet
+        💳 提现到钱包 / 银行卡
     </button>
-    <button class="btn btn-secondary" onclick="simulateIncoming()">
-        🧪 Simulate: Brand Just Paid Me
+    <button class="btn btn-secondary" onclick="simulateBrandPaidMe()">
+        🧪 模拟：品牌方刚给我结算了一笔
     </button>
 
     <!-- 历史记录 -->
-    <div class="panel" style="margin-top: 20px;">
+    <div class="panel" style="margin-top: 16px;">
         <div class="panel-header">
-            📋 Settlement History
-            <span style="font-size:12px;color:var(--text-dim);" id="historyCount">0 records</span>
+            📋 结算记录
+            <span style="font-size:12px;color:var(--text-dim);" id="historyCount">0 笔</span>
         </div>
-        <div class="panel-body">
-            <div id="txList">
-                <div style="text-align:center;padding:40px 20px;color:var(--text-dim);">
-                    <div style="font-size:32px;margin-bottom:8px;">📭</div>
-                    No settlements yet<br>
-                    <span style="font-size:12px;">When a brand settles your commission, it appears here instantly.</span>
-                </div>
+        <div id="txList">
+            <div class="empty">
+                <div class="empty-icon">📭</div>
+                暂无结算记录
+                <div style="font-size:12px;margin-top:4px;">品牌方结算后，佣金即时到账并显示在这里</div>
             </div>
         </div>
     </div>
 
-    <div class="brand-link">
-        Are you a brand? <a href="index.html">Switch to Brand Dashboard →</a>
+    <div class="footer-link">
+        你是品牌方？<a href="index.html">切换到品牌方后台 →</a>
     </div>
 </div>
 
 <!-- ═══════════ 提现弹窗 ═══════════ -->
 <div class="modal-overlay hidden" id="withdrawModal">
     <div class="modal">
-        <h3>💳 Withdraw USDC</h3>
+        <h3>💳 提现 USDC</h3>
         <div class="form-group">
-            <label>Amount (USDC)</label>
-            <input class="input" type="number" id="withdrawAmount" placeholder="0.00" min="1">
+            <label>提现金额 (USDC)</label>
+            <input class="input" type="number" id="withdrawAmountInput" placeholder="0.00" min="1">
         </div>
         <div class="form-group">
-            <label>Destination</label>
+            <label>提现方式</label>
             <select class="input" id="withdrawMethod" style="width:100%;">
-                <option value="wallet">Crypto Wallet (Instant & Free)</option>
-                <option value="bank">Bank Account (1-2 Days, $1 Fee)</option>
+                <option value="wallet">链上钱包 (即时到账 · 免费)</option>
+                <option value="bank">银行卡 (1-2工作日 · $1 手续费)</option>
             </select>
         </div>
         <div class="form-group" id="walletField">
-            <label>Wallet Address (Base / EVM)</label>
-            <input class="input" type="text" id="walletAddress" placeholder="0x...">
+            <label>钱包地址 (Base / EVM 兼容链)</label>
+            <input class="input" type="text" id="walletAddressInput" placeholder="0x...">
         </div>
         <div style="display:flex;gap:10px;">
-            <button class="btn btn-secondary" style="flex:1;" onclick="closeWithdraw()">Cancel</button>
-            <button class="btn btn-primary" style="flex:1;" onclick="doWithdraw()">Confirm</button>
+            <button class="btn btn-secondary" style="flex:1;" onclick="closeWithdraw()">取消</button>
+            <button class="btn btn-primary" style="flex:1;" onclick="doWithdraw()">确认提现</button>
         </div>
     </div>
 </div>
@@ -315,10 +401,13 @@
 
 <!-- ═══════════════ JS ═══════════════ -->
 <script>
+// ─── 共享数据层（跟品牌方后台 index.html 用同一个 localStorage key）───
 const STORAGE_KEY = 'lightning_commission_demo';
 const AFFILIATE_KEY = 'lc_current_affiliate';
 
-// 默认数据（跟 brand dashboard 共享 localStorage key）
+// BroadcastChannel 实现两个页面之间的实时联动（不用刷新！）
+const channel = new BroadcastChannel('lightning_commission');
+
 function getDefaultBrandData() {
     return {
         balance: 5000.00,
@@ -326,12 +415,12 @@ function getDefaultBrandData() {
         txCount: 23,
         commissionRate: 5,
         transactions: [
-            { id: 1, affiliate: '@alice_cn', name: 'Alice', orderAmount: 199.00, commission: 19.90, time: '3 min ago', avatar: 'A' },
-            { id: 2, affiliate: '@bob_kr', name: 'Bob', orderAmount: 89.90, commission: 8.99, time: '12 min ago', avatar: 'B' },
-            { id: 3, affiliate: '@carol_jp', name: 'Carol', orderAmount: 450.00, commission: 45.00, time: '1 hour ago', avatar: 'C' },
-            { id: 4, affiliate: '@dave_br', name: 'Dave', orderAmount: 67.50, commission: 6.75, time: '2 hours ago', avatar: 'D' },
-            { id: 5, affiliate: '@eve_de', name: 'Eve', orderAmount: 320.00, commission: 32.00, time: '3 hours ago', avatar: 'E' },
-            { id: 6, affiliate: '@alice_cn', name: 'Alice', orderAmount: 155.00, commission: 15.50, time: 'Yesterday', avatar: 'A' },
+            { id: 1, affiliate: '@alice_cn', name: 'Alice', orderAmount: 199.00, commission: 19.90, time: '3 分钟前', avatar: 'A' },
+            { id: 2, affiliate: '@bob_kr', name: 'Bob', orderAmount: 89.90, commission: 8.99, time: '12 分钟前', avatar: 'B' },
+            { id: 3, affiliate: '@carol_jp', name: 'Carol', orderAmount: 450.00, commission: 45.00, time: '1 小时前', avatar: 'C' },
+            { id: 4, affiliate: '@dave_br', name: 'Dave', orderAmount: 67.50, commission: 6.75, time: '2 小时前', avatar: 'D' },
+            { id: 5, affiliate: '@eve_de', name: 'Eve', orderAmount: 320.00, commission: 32.00, time: '3 小时前', avatar: 'E' },
+            { id: 6, affiliate: '@alice_cn', name: 'Alice', orderAmount: 155.00, commission: 15.50, time: '昨天', avatar: 'A' },
         ]
     };
 }
@@ -346,51 +435,56 @@ function loadBrandData() {
 
 function saveBrandData(data) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    // 广播给其他页面（品牌方后台 / 其他联盟成员页面）
+    channel.postMessage({ type: 'data-changed', txCount: data.txCount });
 }
 
-// 当前联盟成员（演示用：切换不同成员看不同数据）
+// ─── 当前联盟成员 ───
 function getCurrentAffiliate() {
-    return localStorage.getItem(AFFILIATE_KEY) || 'alice_cn';
+    return localStorage.getItem(AFFILIATE_KEY) || '@alice_cn';
 }
 
-// 获取当前联盟成员的所有结算记录
+function setCurrentAffiliate(handle) {
+    localStorage.setItem(AFFILIATE_KEY, handle);
+}
+
 function getMyTransactions() {
     const data = loadBrandData();
     const me = getCurrentAffiliate();
-    const handle = me.startsWith('@') ? me : '@' + me;
-    return data.transactions.filter(t => t.affiliate === handle || t.affiliate === me);
+    return data.transactions.filter(t => t.affiliate === me);
 }
 
-// ═══════════════ 渲染 ═══════════════
-
+// ─── 渲染 ───
 function render() {
     const me = getCurrentAffiliate();
-    const handle = me.startsWith('@') ? me : '@' + me;
-    const name = handle.replace('@', '').replace('_cn','').replace('_kr','').replace('_jp','').replace('_br','').replace('_de','');
-    const displayName = name.charAt(0).toUpperCase() + name.slice(1);
+    const nameMatch = { '@alice_cn':'Alice','@bob_kr':'Bob','@carol_jp':'Carol','@dave_br':'Dave','@eve_de':'Eve' };
+    const displayName = nameMatch[me] || me.replace('@','');
+    const avatarChar = displayName[0].toUpperCase();
 
-    document.getElementById('affiliateAvatar').textContent = displayName[0].toUpperCase();
+    document.getElementById('affiliateAvatar').textContent = avatarChar;
     document.getElementById('affiliateName').textContent = displayName;
+    document.getElementById('affiliateSwitcher').value = me;
 
     const myTxs = getMyTransactions();
     const total = myTxs.reduce((sum, t) => sum + t.commission, 0);
     document.getElementById('totalEarned').textContent = '$' + total.toFixed(2);
     document.getElementById('withdrawable').textContent = '$' + total.toFixed(2);
-    document.getElementById('historyCount').textContent = myTxs.length + ' records';
+    document.getElementById('txCount').textContent = myTxs.length;
+    document.getElementById('historyCount').textContent = myTxs.length + ' 笔';
 
     if (myTxs.length > 0) {
         const last = myTxs[myTxs.length - 1];
         document.getElementById('lastSettlement').textContent = '$' + last.commission.toFixed(2);
     }
 
-    // 渲染历史
+    // 渲染结算记录
     const txList = document.getElementById('txList');
     if (myTxs.length === 0) {
         txList.innerHTML = `
-            <div style="text-align:center;padding:40px 20px;color:var(--text-dim);">
-                <div style="font-size:32px;margin-bottom:8px;">📭</div>
-                No settlements yet<br>
-                <span style="font-size:12px;">When a brand settles your commission, it appears here instantly.</span>
+            <div class="empty">
+                <div class="empty-icon">📭</div>
+                暂无结算记录
+                <div style="font-size:12px;margin-top:4px;">品牌方结算后，佣金即时到账并显示在这里</div>
             </div>`;
     } else {
         txList.innerHTML = myTxs.slice().reverse().map(t => `
@@ -398,8 +492,8 @@ function render() {
                 <div class="tx-left">
                     <div class="tx-icon">🛒</div>
                     <div>
-                        <div class="tx-store">Order #${String(t.id).padStart(5,'0')}</div>
-                        <div class="tx-order">$${t.orderAmount.toFixed(2)} · Commission ${t.commission > 10 ? '10%' : t.commission > 5 ? '5%' : '?'}</div>
+                        <div class="tx-store">订单 #${String(t.id).padStart(5,'0')}</div>
+                        <div class="tx-order">订单金额 $${t.orderAmount.toFixed(2)} · 佣金比例 ${(t.commission / t.orderAmount * 100).toFixed(0)}%</div>
                     </div>
                 </div>
                 <div class="tx-right">
@@ -409,24 +503,32 @@ function render() {
             </div>
         `).join('');
     }
+
+    // 更新页面标题
+    document.querySelector('.header .name').textContent = displayName;
 }
 
-// ═══════════════ 交互 ═══════════════
+// ─── 切换联盟成员 ───
+function switchAffiliate() {
+    const sel = document.getElementById('affiliateSwitcher');
+    setCurrentAffiliate(sel.value);
+    document.getElementById('liveNotification').classList.add('hidden');
+    render();
+}
 
-function simulateIncoming() {
+// ─── 模拟品牌方给我结算 ───
+function simulateBrandPaidMe() {
     const data = loadBrandData();
     const me = getCurrentAffiliate();
-    const handle = me.startsWith('@') ? me : '@' + me;
-    const name = handle.replace('@', '').replace('_cn','').replace('_kr','').replace('_jp','').replace('_br','').replace('_de','');
-    const displayName = name.charAt(0).toUpperCase() + name.slice(1);
+    const nameMatch = { '@alice_cn':'Alice','@bob_kr':'Bob','@carol_jp':'Carol','@dave_br':'Dave','@eve_de':'Eve' };
+    const displayName = nameMatch[me] || me.replace('@','');
 
-    const orderAmount = Math.floor(Math.random() * 300) + 50;
+    const orderAmount = +(Math.random() * 250 + 40).toFixed(2);
     const rate = data.commissionRate || 5;
     const commission = +(orderAmount * rate / 100).toFixed(2);
 
-    // 检查品牌方余额
     if (commission > data.balance) {
-        showToast('⚠️ Brand balance insufficient. Switch to brand dashboard to top up.');
+        showToast('⚠️ 品牌方托管余额不足，请到品牌方后台充值 USDC');
         return;
     }
 
@@ -435,38 +537,69 @@ function simulateIncoming() {
     data.txCount += 1;
     data.transactions.push({
         id: data.txCount,
-        affiliate: handle,
+        affiliate: me,
         name: displayName,
         orderAmount: orderAmount,
         commission: commission,
-        time: 'Just now',
+        time: '刚刚',
         avatar: displayName[0].toUpperCase()
     });
     saveBrandData(data);
-
-    // 显示通知
-    const notif = document.getElementById('newNotification');
-    notif.classList.remove('hidden');
-    document.getElementById('notifAmount').textContent = '+$' + commission.toFixed(2);
-    document.getElementById('notifTime').textContent = 'Just now · On-chain · Base L2';
-
+    showSettlementNotification(commission, orderAmount);
     render();
-    showToast('💸 $' + commission.toFixed(2) + ' received! Settled on Base L2.');
+    showToast('💸 $' + commission.toFixed(2) + ' USDC 已到账！链上即时结算');
 
-    // 更新 brand dashboard 那边的 "刚刚" 为 "1 min ago"
+    // 更新"刚刚"为"1 分钟前"
     setTimeout(() => {
         const d = loadBrandData();
         const last = d.transactions[d.transactions.length - 1];
-        if (last && last.time === 'Just now') {
-            last.time = '1 min ago';
+        if (last && last.time === '刚刚') {
+            last.time = '1 分钟前';
             saveBrandData(d);
             render();
         }
     }, 3000);
 }
 
+// ─── 到账通知 ───
+function showSettlementNotification(amount, orderAmount) {
+    const notif = document.getElementById('liveNotification');
+    notif.classList.remove('hidden');
+    document.getElementById('notifAmount').textContent = '+$' + amount.toFixed(2) + ' USDC';
+    document.getElementById('notifDetail').textContent = '订单 $' + orderAmount.toFixed(2) + ' · Base L2 链上确认 · 即时到账';
+
+    // 3分钟后自动隐藏
+    setTimeout(() => {
+        notif.classList.add('hidden');
+    }, 180000);
+}
+
+// ─── 实时间监听：品牌方在其他窗口结算，这里立刻看到 ───
+channel.onmessage = (event) => {
+    if (event.data.type === 'data-changed') {
+        const data = loadBrandData();
+        const me = getCurrentAffiliate();
+        const newTx = data.transactions[data.transactions.length - 1];
+
+        // 如果最新一笔结算是给我的，弹出通知
+        if (newTx && newTx.affiliate === me) {
+            showSettlementNotification(newTx.commission, newTx.orderAmount);
+            showToast('💸 品牌方刚结算了 $' + newTx.commission.toFixed(2) + '！');
+        }
+        render();
+        // 更新同步状态
+        const status = document.getElementById('syncStatus');
+        status.textContent = '已同步';
+        setTimeout(() => { status.textContent = '已连接'; }, 2000);
+    }
+};
+
+// ─── 提现 ───
 function openWithdraw() {
     document.getElementById('withdrawModal').classList.remove('hidden');
+    const myTxs = getMyTransactions();
+    const total = myTxs.reduce((sum, t) => sum + t.commission, 0);
+    document.getElementById('withdrawAmountInput').placeholder = '最多可提 $' + total.toFixed(2);
 }
 
 function closeWithdraw() {
@@ -474,18 +607,19 @@ function closeWithdraw() {
 }
 
 function doWithdraw() {
-    const amount = parseFloat(document.getElementById('withdrawAmount').value);
+    const amount = parseFloat(document.getElementById('withdrawAmountInput').value);
     const myTxs = getMyTransactions();
     const total = myTxs.reduce((sum, t) => sum + t.commission, 0);
 
-    if (!amount || amount <= 0) { showToast('Enter a valid amount'); return; }
-    if (amount > total) { showToast('⚠️ Insufficient balance'); return; }
-    if (amount < 1) { showToast('Minimum withdrawal is $1 USDC'); return; }
+    if (!amount || amount <= 0) { showToast('请输入有效金额'); return; }
+    if (amount > total) { showToast('⚠️ 可提现余额不足'); return; }
+    if (amount < 1) { showToast('最低提现金额为 $1 USDC'); return; }
 
     closeWithdraw();
-    showToast('✅ Withdrawal of $' + amount.toFixed(2) + ' initiated. (Demo — no real funds moved)');
+    showToast('✅ $' + amount.toFixed(2) + ' 提现已发起（演示模式，不涉及真实资金）');
 }
 
+// ─── Toast ───
 function showToast(msg) {
     const container = document.getElementById('toastContainer');
     const t = document.createElement('div');
@@ -495,34 +629,22 @@ function showToast(msg) {
     setTimeout(() => t.remove(), 3000);
 }
 
-// ═══════════════ 初始化 ═══════════════
-
-// 确保默认数据存在
+// ─── 初始化 ───
 if (!localStorage.getItem(STORAGE_KEY)) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(getDefaultBrandData()));
 }
-
+// 恢复上次选择的联盟成员
+if (!localStorage.getItem(AFFILIATE_KEY)) {
+    localStorage.setItem(AFFILIATE_KEY, '@alice_cn');
+}
 render();
 
-// 检测来自 brand dashboard 的新结算（每3秒检查一次）
-let lastTxCount = loadBrandData().txCount;
-setInterval(() => {
-    const data = loadBrandData();
-    if (data.txCount > lastTxCount) {
-        const newTx = data.transactions[data.transactions.length - 1];
-        const me = getCurrentAffiliate();
-        const handle = me.startsWith('@') ? me : '@' + me;
-        if (newTx.affiliate === handle) {
-            const notif = document.getElementById('newNotification');
-            notif.classList.remove('hidden');
-            document.getElementById('notifAmount').textContent = '+$' + newTx.commission.toFixed(2);
-            document.getElementById('notifTime').textContent = 'Just now · On-chain · Base L2';
-            showToast('💸 $' + newTx.commission.toFixed(2) + ' just landed!');
-        }
-        lastTxCount = data.txCount;
-        render();
-    }
-}, 3000);
+// ─── 同步状态指示 ───
+// 如果 BroadcastChannel 不支持，降级显示
+if (!window.BroadcastChannel) {
+    document.getElementById('syncStatus').textContent = '需刷新同步';
+    document.getElementById('syncStatus').style.color = 'var(--orange)';
+}
 </script>
 
 </body>

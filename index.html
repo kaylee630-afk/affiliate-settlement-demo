@@ -357,6 +357,7 @@
 <nav>
     <div class="logo">⚡ Lightning Commission <span>Demo</span></div>
     <div class="nav-actions">
+        <span class="connected-dot" id="syncStatus" style="font-size:11px;color:#22c55e;">🟢 实时联动中</span>
         <a href="affiliate.html" class="btn btn-sm btn-secondary" style="text-decoration:none;">👤 联盟成员端</a>
         <div class="badge">Base L2 实时结算中</div>
         <button class="btn btn-sm btn-secondary" onclick="resetDemo()">🔄 重置演示</button>
@@ -511,6 +512,7 @@
 // ═══════════════ 数据层 (localStorage) ═══════════════
 
 const STORAGE_KEY = 'lightning_commission_demo';
+const channel = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('lightning_commission') : null;
 
 function getDefaultData() {
     return {
@@ -537,6 +539,10 @@ function loadData() {
 
 function saveData(data) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    // 实时通知联盟成员端页面
+    if (channel) {
+        channel.postMessage({ type: 'data-changed', txCount: data.txCount });
+    }
 }
 
 // ═══════════════ 渲染 ═══════════════
@@ -708,6 +714,19 @@ document.querySelectorAll('.commission-preset').forEach(btn => {
         btn.classList.add('active');
     }
 });
+
+// ─── 监听联盟成员端的操作 ───
+if (channel) {
+    channel.onmessage = (event) => {
+        if (event.data.type === 'data-changed') {
+            data = loadData();
+            renderAll();
+            const status = document.getElementById('syncStatus');
+            status.textContent = '🟢 已同步';
+            setTimeout(() => { status.textContent = '🟢 实时联动中'; }, 2000);
+        }
+    };
+}
 
 renderAll();
 </script>
