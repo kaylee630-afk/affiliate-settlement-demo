@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lightning Commission — Affiliate Dashboard</title>
+    <style>
+        :root {
+            --bg: #0f1117;
+            --card: #1a1d27;
+            --border: #2a2d3a;
+            --text: #e4e6eb;
+            --text-dim: #8b8fa3;
+            --accent: #3b82f6;
+            --green: #22c55e;
+            --green-bg: rgba(34, 197, 94, 0.12);
+            --red: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* ── 顶部 ── */
+        .header {
+            background: linear-gradient(135deg, #1a1d27 0%, #1e2440 100%);
+            padding: 32px 24px 24px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+        .avatar {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; font-weight: 700; color: #fff;
+            margin: 0 auto 12px;
+        }
+        .greeting { font-size: 14px; color: var(--text-dim); }
+        .name { font-size: 20px; font-weight: 700; }
+
+        /* ── 收入卡片 ── */
+        .earnings-card {
+            margin: -20px 20px 24px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .earnings-label { font-size: 13px; color: var(--text-dim); margin-bottom: 4px; }
+        .earnings-amount { font-size: 40px; font-weight: 800; color: var(--green); letter-spacing: -2px; }
+        .earnings-sub { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .quick-stat {
+            background: var(--bg);
+            border-radius: 10px;
+            padding: 14px;
+        }
+        .quick-stat-val { font-size: 18px; font-weight: 700; }
+        .quick-stat-val.green { color: var(--green); }
+        .quick-stat-lbl { font-size: 11px; color: var(--text-dim); }
+
+        /* ── 主内容 ── */
+        .main {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+        }
+
+        /* ── 新到账通知 ── */
+        .notification {
+            background: var(--green-bg);
+            border: 1px solid rgba(34, 197, 94, 0.25);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.4s ease;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .notif-icon {
+            width: 40px; height: 40px;
+            background: var(--green);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .notif-body { flex: 1; }
+        .notif-title { font-size: 14px; font-weight: 600; }
+        .notif-amount { font-size: 20px; font-weight: 800; color: var(--green); }
+        .notif-time { font-size: 11px; color: var(--text-dim); }
+
+        /* ── 面板 ── */
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+        .panel-header {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+            font-weight: 600;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .panel-body { padding: 0; }
+
+        .tx-item {
+            display: flex; align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
+        }
+        .tx-item:last-child { border-bottom: none; }
+        .tx-left { display: flex; align-items: center; gap: 10px; }
+        .tx-icon {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: rgba(59,130,246,0.12);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px;
+        }
+        .tx-store { font-size: 13px; font-weight: 600; }
+        .tx-order { font-size: 11px; color: var(--text-dim); }
+        .tx-right { text-align: right; }
+        .tx-amount { font-size: 15px; font-weight: 700; color: var(--green); }
+        .tx-date { font-size: 11px; color: var(--text-dim); }
+
+        /* ── 按钮 ── */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 12px 24px; border-radius: 10px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            border: none; font-family: inherit;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            width: 100%;
+            box-shadow: 0 2px 12px rgba(59,130,246,0.25);
+        }
+        .btn-primary:hover { filter: brightness(1.15); }
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 14px; font-size: 12px; border-radius: 6px;
+            background: transparent; color: var(--text); border: 1px solid var(--border);
+            font-family: inherit; cursor: pointer;
+        }
+
+        /* ── 提现弹窗 ── */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6); z-index: 200;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-overlay.hidden { display: none; }
+        .modal {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 16px; padding: 24px; width: 90%; max-width: 380px;
+        }
+        .modal h3 { margin-bottom: 16px; }
+        .input {
+            width: 100%; padding: 10px 14px;
+            background: var(--bg); border: 1px solid var(--border);
+            border-radius: 8px; color: var(--text); font-size: 14px;
+            font-family: inherit; outline: none;
+        }
+        .input:focus { border-color: var(--accent); }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 13px; color: var(--text-dim); margin-bottom: 6px; }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+            background: var(--green-bg); color: var(--green);
+            border: 1px solid rgba(34,197,94,0.3);
+            padding: 12px 20px; border-radius: 10px;
+            font-weight: 600; font-size: 14px; z-index: 300;
+            animation: toastUp 0.3s ease, toastOut 0.3s ease 2.5s forwards;
+        }
+        @keyframes toastUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+        @keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
+
+        .hidden { display: none; }
+        .brand-link {
+            text-align: center; margin-top: 24px; font-size: 12px; color: var(--text-dim);
+        }
+        .brand-link a { color: var(--accent); text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════ 顶部 ═══════════ -->
+<div class="header">
+    <div class="avatar" id="affiliateAvatar">A</div>
+    <div class="greeting">Good morning</div>
+    <div class="name" id="affiliateName">Alice</div>
+</div>
+
+<!-- 总收入卡片 -->
+<div class="earnings-card">
+    <div class="earnings-label">💰 Total Earned (USDC)</div>
+    <div class="earnings-amount" id="totalEarned">$0.00</div>
+    <div class="earnings-sub">Settled instantly on Base L2 · Gas < $0.01</div>
+    <div class="quick-stats">
+        <div class="quick-stat">
+            <div class="quick-stat-val green" id="lastSettlement">--</div>
+            <div class="quick-stat-lbl">Last Settlement</div>
+        </div>
+        <div class="quick-stat">
+            <div class="quick-stat-val" id="withdrawable">$0.00</div>
+            <div class="quick-stat-lbl">Available to Withdraw</div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════ 主内容 ═══════════ -->
+<div class="main">
+
+    <!-- 新到账通知 -->
+    <div class="notification hidden" id="newNotification">
+        <div class="notif-icon">💸</div>
+        <div class="notif-body">
+            <div class="notif-title">New Commission Received!</div>
+            <div class="notif-amount" id="notifAmount"></div>
+            <div class="notif-time" id="notifTime">Just now</div>
+        </div>
+    </div>
+
+    <!-- 操作按钮 -->
+    <button class="btn btn-primary" onclick="openWithdraw()">
+        💳 Withdraw to Bank / Wallet
+    </button>
+    <button class="btn btn-secondary" onclick="simulateIncoming()">
+        🧪 Simulate: Brand Just Paid Me
+    </button>
+
+    <!-- 历史记录 -->
+    <div class="panel" style="margin-top: 20px;">
+        <div class="panel-header">
+            📋 Settlement History
+            <span style="font-size:12px;color:var(--text-dim);" id="historyCount">0 records</span>
+        </div>
+        <div class="panel-body">
+            <div id="txList">
+                <div style="text-align:center;padding:40px 20px;color:var(--text-dim);">
+                    <div style="font-size:32px;margin-bottom:8px;">📭</div>
+                    No settlements yet<br>
+                    <span style="font-size:12px;">When a brand settles your commission, it appears here instantly.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="brand-link">
+        Are you a brand? <a href="index.html">Switch to Brand Dashboard →</a>
+    </div>
+</div>
+
+<!-- ═══════════ 提现弹窗 ═══════════ -->
+<div class="modal-overlay hidden" id="withdrawModal">
+    <div class="modal">
+        <h3>💳 Withdraw USDC</h3>
+        <div class="form-group">
+            <label>Amount (USDC)</label>
+            <input class="input" type="number" id="withdrawAmount" placeholder="0.00" min="1">
+        </div>
+        <div class="form-group">
+            <label>Destination</label>
+            <select class="input" id="withdrawMethod" style="width:100%;">
+                <option value="wallet">Crypto Wallet (Instant & Free)</option>
+                <option value="bank">Bank Account (1-2 Days, $1 Fee)</option>
+            </select>
+        </div>
+        <div class="form-group" id="walletField">
+            <label>Wallet Address (Base / EVM)</label>
+            <input class="input" type="text" id="walletAddress" placeholder="0x...">
+        </div>
+        <div style="display:flex;gap:10px;">
+            <button class="btn btn-secondary" style="flex:1;" onclick="closeWithdraw()">Cancel</button>
+            <button class="btn btn-primary" style="flex:1;" onclick="doWithdraw()">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<div id="toastContainer"></div>
+
+<!-- ═══════════════ JS ═══════════════ -->
+<script>
+const STORAGE_KEY = 'lightning_commission_demo';
+const AFFILIATE_KEY = 'lc_current_affiliate';
+
+// 默认数据（跟 brand dashboard 共享 localStorage key）
+function getDefaultBrandData() {
+    return {
+        balance: 5000.00,
+        totalSettled: 1280.50,
+        txCount: 23,
+        commissionRate: 5,
+        transactions: [
+            { id: 1, affiliate: '@alice_cn', name: 'Alice', orderAmount: 199.00, commission: 19.90, time: '3 min ago', avatar: 'A' },
+            { id: 2, affiliate: '@bob_kr', name: 'Bob', orderAmount: 89.90, commission: 8.99, time: '12 min ago', avatar: 'B' },
+            { id: 3, affiliate: '@carol_jp', name: 'Carol', orderAmount: 450.00, commission: 45.00, time: '1 hour ago', avatar: 'C' },
+            { id: 4, affiliate: '@dave_br', name: 'Dave', orderAmount: 67.50, commission: 6.75, time: '2 hours ago', avatar: 'D' },
+            { id: 5, affiliate: '@eve_de', name: 'Eve', orderAmount: 320.00, commission: 32.00, time: '3 hours ago', avatar: 'E' },
+            { id: 6, affiliate: '@alice_cn', name: 'Alice', orderAmount: 155.00, commission: 15.50, time: 'Yesterday', avatar: 'A' },
+        ]
+    };
+}
+
+function loadBrandData() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+    const d = getDefaultBrandData();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+    return d;
+}
+
+function saveBrandData(data) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+// 当前联盟成员（演示用：切换不同成员看不同数据）
+function getCurrentAffiliate() {
+    return localStorage.getItem(AFFILIATE_KEY) || 'alice_cn';
+}
+
+// 获取当前联盟成员的所有结算记录
+function getMyTransactions() {
+    const data = loadBrandData();
+    const me = getCurrentAffiliate();
+    const handle = me.startsWith('@') ? me : '@' + me;
+    return data.transactions.filter(t => t.affiliate === handle || t.affiliate === me);
+}
+
+// ═══════════════ 渲染 ═══════════════
+
+function render() {
+    const me = getCurrentAffiliate();
+    const handle = me.startsWith('@') ? me : '@' + me;
+    const name = handle.replace('@', '').replace('_cn','').replace('_kr','').replace('_jp','').replace('_br','').replace('_de','');
+    const displayName = name.charAt(0).toUpperCase() + name.slice(1);
+
+    document.getElementById('affiliateAvatar').textContent = displayName[0].toUpperCase();
+    document.getElementById('affiliateName').textContent = displayName;
+
+    const myTxs = getMyTransactions();
+    const total = myTxs.reduce((sum, t) => sum + t.commission, 0);
+    document.getElementById('totalEarned').textContent = '$' + total.toFixed(2);
+    document.getElementById('withdrawable').textContent = '$' + total.toFixed(2);
+    document.getElementById('historyCount').textContent = myTxs.length + ' records';
+
+    if (myTxs.length > 0) {
+        const last = myTxs[myTxs.length - 1];
+        document.getElementById('lastSettlement').textContent = '$' + last.commission.toFixed(2);
+    }
+
+    // 渲染历史
+    const txList = document.getElementById('txList');
+    if (myTxs.length === 0) {
+        txList.innerHTML = `
+            <div style="text-align:center;padding:40px 20px;color:var(--text-dim);">
+                <div style="font-size:32px;margin-bottom:8px;">📭</div>
+                No settlements yet<br>
+                <span style="font-size:12px;">When a brand settles your commission, it appears here instantly.</span>
+            </div>`;
+    } else {
+        txList.innerHTML = myTxs.slice().reverse().map(t => `
+            <div class="tx-item">
+                <div class="tx-left">
+                    <div class="tx-icon">🛒</div>
+                    <div>
+                        <div class="tx-store">Order #${String(t.id).padStart(5,'0')}</div>
+                        <div class="tx-order">$${t.orderAmount.toFixed(2)} · Commission ${t.commission > 10 ? '10%' : t.commission > 5 ? '5%' : '?'}</div>
+                    </div>
+                </div>
+                <div class="tx-right">
+                    <div class="tx-amount">+$${t.commission.toFixed(2)}</div>
+                    <div class="tx-date">${t.time}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+// ═══════════════ 交互 ═══════════════
+
+function simulateIncoming() {
+    const data = loadBrandData();
+    const me = getCurrentAffiliate();
+    const handle = me.startsWith('@') ? me : '@' + me;
+    const name = handle.replace('@', '').replace('_cn','').replace('_kr','').replace('_jp','').replace('_br','').replace('_de','');
+    const displayName = name.charAt(0).toUpperCase() + name.slice(1);
+
+    const orderAmount = Math.floor(Math.random() * 300) + 50;
+    const rate = data.commissionRate || 5;
+    const commission = +(orderAmount * rate / 100).toFixed(2);
+
+    // 检查品牌方余额
+    if (commission > data.balance) {
+        showToast('⚠️ Brand balance insufficient. Switch to brand dashboard to top up.');
+        return;
+    }
+
+    data.balance -= commission;
+    data.totalSettled += commission;
+    data.txCount += 1;
+    data.transactions.push({
+        id: data.txCount,
+        affiliate: handle,
+        name: displayName,
+        orderAmount: orderAmount,
+        commission: commission,
+        time: 'Just now',
+        avatar: displayName[0].toUpperCase()
+    });
+    saveBrandData(data);
+
+    // 显示通知
+    const notif = document.getElementById('newNotification');
+    notif.classList.remove('hidden');
+    document.getElementById('notifAmount').textContent = '+$' + commission.toFixed(2);
+    document.getElementById('notifTime').textContent = 'Just now · On-chain · Base L2';
+
+    render();
+    showToast('💸 $' + commission.toFixed(2) + ' received! Settled on Base L2.');
+
+    // 更新 brand dashboard 那边的 "刚刚" 为 "1 min ago"
+    setTimeout(() => {
+        const d = loadBrandData();
+        const last = d.transactions[d.transactions.length - 1];
+        if (last && last.time === 'Just now') {
+            last.time = '1 min ago';
+            saveBrandData(d);
+            render();
+        }
+    }, 3000);
+}
+
+function openWithdraw() {
+    document.getElementById('withdrawModal').classList.remove('hidden');
+}
+
+function closeWithdraw() {
+    document.getElementById('withdrawModal').classList.add('hidden');
+}
+
+function doWithdraw() {
+    const amount = parseFloat(document.getElementById('withdrawAmount').value);
+    const myTxs = getMyTransactions();
+    const total = myTxs.reduce((sum, t) => sum + t.commission, 0);
+
+    if (!amount || amount <= 0) { showToast('Enter a valid amount'); return; }
+    if (amount > total) { showToast('⚠️ Insufficient balance'); return; }
+    if (amount < 1) { showToast('Minimum withdrawal is $1 USDC'); return; }
+
+    closeWithdraw();
+    showToast('✅ Withdrawal of $' + amount.toFixed(2) + ' initiated. (Demo — no real funds moved)');
+}
+
+function showToast(msg) {
+    const container = document.getElementById('toastContainer');
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    container.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+}
+
+// ═══════════════ 初始化 ═══════════════
+
+// 确保默认数据存在
+if (!localStorage.getItem(STORAGE_KEY)) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(getDefaultBrandData()));
+}
+
+render();
+
+// 检测来自 brand dashboard 的新结算（每3秒检查一次）
+let lastTxCount = loadBrandData().txCount;
+setInterval(() => {
+    const data = loadBrandData();
+    if (data.txCount > lastTxCount) {
+        const newTx = data.transactions[data.transactions.length - 1];
+        const me = getCurrentAffiliate();
+        const handle = me.startsWith('@') ? me : '@' + me;
+        if (newTx.affiliate === handle) {
+            const notif = document.getElementById('newNotification');
+            notif.classList.remove('hidden');
+            document.getElementById('notifAmount').textContent = '+$' + newTx.commission.toFixed(2);
+            document.getElementById('notifTime').textContent = 'Just now · On-chain · Base L2';
+            showToast('💸 $' + newTx.commission.toFixed(2) + ' just landed!');
+        }
+        lastTxCount = data.txCount;
+        render();
+    }
+}, 3000);
+</script>
+
+</body>
+</html>
