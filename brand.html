@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PayFlash · Brand</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+<style>
+:root { --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "PingFang SC", sans-serif; }
+[data-theme="light"] {
+    --bg:#f5f5f7; --bg2:#fff; --surface:#ffffff;
+    --border:rgba(0,0,0,0.08); --text:#1d1d1f; --text2:#6e6e73;
+    --accent:#0071e3; --green:#248a3d; --red:#d93025;
+    --nav-bg:rgba(245,245,247,0.85); --shadow:0 1px 3px rgba(0,0,0,0.06);
+    --grid-opacity:0.04; --orb-opacity:0.05;
+}
+[data-theme="dark"] {
+    --bg:#080810; --bg2:#0d0d18; --surface:rgba(255,255,255,0.03);
+    --border:rgba(255,255,255,0.06); --text:#f5f5f7; --text2:#8b8fa3;
+    --accent:#6366f1; --green:#22c55e; --red:#ef4444;
+    --nav-bg:rgba(8,8,16,0.75); --shadow:none;
+    --grid-opacity:0.012; --orb-opacity:0.07;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5;-webkit-font-smoothing:antialiased;transition:background .4s,color .4s;}
+
+.bg-grid{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;pointer-events:none;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 80% at 50% 0%,black 40%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse 80% 80% at 50% 0%,black 40%,transparent 70%);opacity:var(--grid-opacity);transition:opacity .4s;}
+.bg-dots{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;pointer-events:none;background-image:radial-gradient(var(--border) 1px,transparent 1px);background-size:24px 24px;mask-image:radial-gradient(ellipse 60% 60% at 50% 50%,black 30%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse 60% 60% at 50% 50%,black 30%,transparent 70%);opacity:var(--grid-opacity);}
+.orb{position:fixed;border-radius:50%;filter:blur(140px);pointer-events:none;z-index:0;opacity:var(--orb-opacity);will-change:transform;transition:opacity .4s;}
+.orb-1{width:700px;height:700px;background:radial-gradient(circle,#6366f1,transparent);top:-300px;left:-150px;}
+.orb-2{width:600px;height:600px;background:radial-gradient(circle,#3b82f6,transparent);bottom:-250px;right:-100px;}
+.orb-3{width:500px;height:500px;background:radial-gradient(circle,#a855f7,transparent);top:60%;left:60%;}
+
+nav{position:sticky;top:0;z-index:100;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:50px;transition:background .4s;}
+.nav-logo{font-size:17px;font-weight:700;letter-spacing:-.3px;display:flex;align-items:center;gap:7px;text-decoration:none;color:var(--text);}
+.nav-links{display:flex;align-items:center;gap:6px;}
+.nav-links a,.nav-links button{color:var(--text2);text-decoration:none;font-size:12px;padding:5px 10px;border-radius:6px;transition:all .2s;background:none;border:none;cursor:pointer;font-family:var(--font);}
+.nav-links a:hover,.nav-links button:hover{color:var(--text);background:var(--surface);}
+.nav-links a.active{color:var(--accent);}
+.theme-toggle{width:38px;height:22px;border-radius:11px;background:var(--text2);position:relative;cursor:pointer;transition:all .3s;border:none;padding:0;opacity:0.5;}
+.theme-toggle:hover{opacity:0.8;}
+.theme-toggle::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 1px 3px rgba(0,0,0,.2);}
+[data-theme="light"] .theme-toggle::after{transform:translateX(16px);}
+
+.main{max-width:1200px;margin:0 auto;padding:60px 40px 80px;position:relative;z-index:1;}
+
+/* ═══════ HERO ═══════ */
+.hero-strip{text-align:center;margin-bottom:64px;position:relative;}
+.hero-strip::after{content:'';position:absolute;bottom:-32px;left:50%;transform:translateX(-50%);width:200px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:20px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.15);color:var(--green);font-size:12px;font-weight:600;margin-bottom:20px;}
+.hero-vs{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;margin-bottom:8px;}
+.hero-vs .old{font-size:24px;font-weight:500;color:var(--text2);text-decoration:line-through;text-decoration-color:var(--text2);}
+.hero-vs .arrow{font-size:22px;color:var(--text2);font-weight:300;}
+.hero-vs .new{font-size:clamp(48px,8vw,72px);font-weight:900;letter-spacing:-2px;background:linear-gradient(135deg,var(--green),#4ade80,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 30px rgba(34,197,94,.2));}
+.hero-sub{font-size:15px;color:var(--text2);font-weight:500;}
+.stats-row{display:flex;justify-content:center;gap:16px;margin-bottom:72px;flex-wrap:wrap;}
+.stat-mini{text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 18px;min-width:90px;transition:all .3s;font-size:11px;color:var(--text2);position:relative;overflow:hidden;}
+.stat-mini::after{content:'';position:absolute;bottom:0;left:30%;right:30%;height:1px;background:linear-gradient(90deg,transparent,rgba(99,102,241,.3),transparent);opacity:0;transition:opacity .3s;}
+.stat-mini:hover::after{opacity:1;}
+.stat-mini strong{display:block;font-size:18px;font-weight:700;color:var(--text);margin-bottom:1px;}
+.wallet-mini{border:1px dashed var(--border);transition:all .3s;}
+.wallet-mini:hover{border-color:var(--accent);border-style:solid;}
+.wallet-mini.connected{border-color:var(--green);border-style:solid;background:rgba(34,197,94,.04);}
+
+/* ═══════ STEP CARDS ═══════ */
+.step-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:72px;}
+@media(max-width:768px){.step-cards{grid-template-columns:1fr 1fr;}}
+.step-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:visible;transition:all .3s;}
+.step-card:nth-child(1){z-index:50;}
+.step-card:nth-child(2){z-index:40;}
+.step-card:nth-child(3){z-index:30;}
+.step-card:nth-child(4){z-index:20;}
+.step-card.active{border-color:var(--accent);box-shadow:0 0 32px rgba(99,102,241,.1);}
+.step-card.done{border-color:var(--green);}
+.step-card.disabled{opacity:0.4;pointer-events:none;}
+.step-card-head{display:flex;align-items:flex-start;gap:8px;padding:14px 16px;border-bottom:1px solid var(--border);}
+.step-card.active .step-card-head{color:var(--text);}
+.step-card.done .step-card-head{color:var(--text);}
+.sc-num{width:22px;height:22px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text2);flex-shrink:0;margin-top:1px;}
+.step-card.active .sc-num{background:var(--accent);color:#fff;}
+.step-card.done .sc-num{background:var(--green);color:#fff;}
+.step-card.done .sc-num::after{content:' ✓';font-size:9px;}
+.sc-info{flex:1;}
+.sc-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);}
+.step-card.active .sc-label,.step-card.done .sc-label{color:var(--text);}
+.sc-desc{font-size:10px;color:var(--text2);margin-top:2px;line-height:1.4;}
+.step-card-body{padding:16px;}
+
+/* ═══════ ELEMENTS ═══════ */
+.custom-select{position:relative;z-index:10;user-select:none;}
+.custom-select.open{z-index:60;}
+.custom-select-trigger{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;cursor:pointer;transition:background .2s;background:var(--bg);border:1px solid var(--border);}
+.custom-select-trigger:hover{background:var(--surface);}
+.cs-avatar{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;}
+.cs-avatar.a{background:linear-gradient(135deg,#6366f1,#3b82f6);}.cs-avatar.b{background:linear-gradient(135deg,#8b5cf6,#6366f1);}.cs-avatar.c{background:linear-gradient(135deg,#a855f7,#6366f1);}.cs-avatar.d{background:linear-gradient(135deg,#22c55e,#16a34a);}.cs-avatar.e{background:linear-gradient(135deg,#f59e0b,#ea580c);}
+.cs-name{font-size:13px;font-weight:500;}
+.cs-meta{font-size:10px;color:var(--text2);}
+.cs-arrow{font-size:13px;color:var(--text2);transition:transform .3s;margin-left:auto;}
+.custom-select.open .cs-arrow{transform:rotate(180deg);}
+.custom-select-dropdown{position:absolute;top:100%;left:0;right:0;z-index:50;background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden;max-height:0;transition:max-height .3s ease;margin-top:4px;box-shadow:0 4px 16px rgba(0,0,0,.15);}
+.custom-select.open .custom-select-dropdown{max-height:280px;}
+.cs-option{display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer;transition:background .15s;font-size:13px;}
+.cs-option:hover{background:var(--surface);}
+
+.input{width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:16px;font-weight:600;font-family:"SF Mono","JetBrains Mono","Fira Code",monospace;font-variant-numeric:tabular-nums;outline:none;transition:all .3s;letter-spacing:.5px;}
+.input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,102,241,.08),0 0 20px rgba(99,102,241,.04);}
+.input::placeholder{color:var(--text2);font-weight:400;font-family:var(--font);}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 22px;border-radius:22px;font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:var(--font);transition:all .25s;}
+.btn-primary{background:var(--accent);color:#fff;width:100%;}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border);font-size:12px;padding:6px 14px;border-radius:14px;}
+.btn-ghost:hover{border-color:var(--text2);color:var(--text);}
+.commission-preset{transition:all .2s;}
+.commission-preset.active{background:var(--accent)!important;color:#fff!important;border-color:var(--accent)!important;}
+
+.result-box{background:var(--bg);border-radius:16px;padding:22px;text-align:center;margin-bottom:14px;position:relative;overflow:hidden;border:1px solid var(--border);}
+.result-box::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:40%;height:1px;background:linear-gradient(90deg,transparent,rgba(34,197,94,.3),transparent);}
+.result-box .big{font-size:36px;font-weight:900;letter-spacing:-2px;line-height:1;color:var(--green);}
+.result-box .sub{font-size:11px;color:var(--text2);margin-top:4px;text-transform:uppercase;letter-spacing:1px;}
+
+/* ═══════ HISTORY ═══════ */
+.history-section{max-width:720px;margin:0 auto 72px;}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.section-title{font-size:20px;font-weight:700;letter-spacing:-.3px;}
+.timeline{position:relative;padding-left:16px;}
+.timeline::before{content:'';position:absolute;left:5px;top:8px;bottom:8px;width:1px;background:var(--border);}
+.tx-item{display:flex;align-items:flex-start;gap:14px;padding:14px 16px;position:relative;border-radius:10px;transition:background .15s;}
+.tx-item:hover{background:var(--surface);}
+.tx-item::before{content:'';position:absolute;left:-13px;top:18px;width:8px;height:8px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);}
+.tx-item:first-child::before{background:var(--green);box-shadow:0 0 0 3px rgba(34,197,94,.2);}
+.tx-avatar{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#3b82f6);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#fff;flex-shrink:0;}
+.tx-body{flex:1;min-width:0;}
+.tx-head{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.tx-name{font-size:13px;font-weight:600;}
+.tx-amount{font-size:15px;font-weight:700;color:var(--green);flex-shrink:0;}
+.tx-foot{font-size:11px;color:var(--text2);margin-top:2px;display:flex;gap:8px;align-items:center;}
+.tx-tag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:10px;font-weight:600;background:rgba(34,197,94,.1);color:var(--green);}
+
+/* ═══════ COMPARE ═══════ */
+.compare-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:72px;}
+@media(max-width:768px){.compare-grid{grid-template-columns:1fr;}}
+.compare-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 20px;text-align:center;}
+.compare-card .c-icon{font-size:28px;margin-bottom:8px;}
+.compare-card .c-title{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:8px;}
+.compare-card .c-old{font-size:15px;color:var(--red);text-decoration:line-through;text-decoration-color:var(--text2);}
+.compare-card .c-new{font-size:20px;font-weight:700;color:var(--green);}
+.compare-card .c-arrow{color:var(--text2);margin:0 4px;}
+
+.toast{position:fixed;bottom:24px;right:24px;z-index:200;background:var(--bg2);color:var(--green);border:1px solid var(--border);box-shadow:0 2px 12px rgba(0,0,0,.1);padding:12px 20px;border-radius:12px;font-weight:500;font-size:13px;animation:su .3s ease,fo .3s ease 2.5s forwards;}
+@keyframes su{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fo{from{opacity:1}to{opacity:0}}
+
+.footer{text-align:center;padding:16px 0;color:var(--text2);font-size:12px;position:relative;z-index:1;}
+.footer a{color:var(--text2);text-decoration:none;}
+.footer a:hover{color:var(--text);}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div><div class="bg-dots"></div><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
+
+<nav>
+    <a href="/" class="nav-logo">⚡ PayFlash</a>
+    <div class="nav-links">
+        <a href="/brand" class="active">Brand</a>
+        <a href="/affiliate">Affiliate</a>
+        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme"></button>
+        <a href="/">← Home</a>
+    </div>
+</nav>
+
+<div class="main">
+    <div class="hero-strip">
+        <div class="hero-badge">⚡ Save 87% vs PayPal</div>
+        <div class="hero-vs"><span class="old">30 days</span><span class="arrow">→</span><span class="new">~3 min</span></div>
+        <div class="hero-sub">Cross-border affiliate settlement on Base L2</div>
+        <div style="text-align:center;margin-bottom:20px;font-size:14px;color:var(--text2);font-style:italic;letter-spacing:.2px;">
+            "We don't hold your money. We tell you who to pay and how much. You pay them directly. We verify it on-chain."
+        </div>
+        <div class="stats-row">
+            <div class="stat-mini"><strong style="color:var(--accent);" id="escrowVal">$5,000</strong>Escrow</div>
+            <div class="stat-mini wallet-mini" id="walletBtn" onclick="toggleWallet()" style="cursor:pointer;"><strong>🔌</strong>Connect Wallet</div>
+            <div class="stat-mini"><strong style="color:var(--green);">$1,281</strong>Settled</div>
+            <div class="stat-mini"><strong>8</strong>Affiliates</div>
+        </div>
+    </div>
+
+    <!-- ═══════ 4 STEP CARDS ═══════ -->
+    <div class="step-cards" id="stepBar">
+        <div class="step-card done" id="step1">
+            <div class="step-card-head"><span class="sc-num">1</span><div class="sc-info"><span class="sc-label">Pick affiliate</span><div class="sc-desc">Select who gets paid for this order</div></div></div>
+            <div class="step-card-body">
+                <div class="custom-select" id="affiliateSelect">
+                    <div class="custom-select-trigger" onclick="this.parentElement.classList.toggle('open')">
+                        <span class="cs-avatar a">A</span><span class="cs-name">Alice</span><span class="cs-meta">Beauty · HK</span><span class="cs-arrow">▾</span>
+                    </div>
+                    <div class="custom-select-dropdown">
+                        <div class="cs-option" data-value="@alice_cn" data-name="Alice" data-avatar="A" data-class="a" onclick="selA(this)"><span class="cs-avatar a">A</span> Alice · HK</div>
+                        <div class="cs-option" data-value="@bob_kr" data-name="Bob" data-avatar="B" data-class="b" onclick="selA(this)"><span class="cs-avatar b">B</span> Bob · KR</div>
+                        <div class="cs-option" data-value="@carol_jp" data-name="Carol" data-avatar="C" data-class="c" onclick="selA(this)"><span class="cs-avatar c">C</span> Carol · JP</div>
+                        <div class="cs-option" data-value="@dave_br" data-name="Dave" data-avatar="D" data-class="d" onclick="selA(this)"><span class="cs-avatar d">D</span> Dave · BR</div>
+                        <div class="cs-option" data-value="@eve_de" data-name="Eve" data-avatar="E" data-class="e" onclick="selA(this)"><span class="cs-avatar e">E</span> Eve · DE</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-card" id="step2">
+            <div class="step-card-head"><span class="sc-num">2</span><div class="sc-info"><span class="sc-label">Enter order</span><div class="sc-desc">How much did the customer spend?</div></div></div>
+            <div class="step-card-body">
+                <input class="input" type="number" id="orderAmount" value="89.90" min="1" step="0.01" placeholder="Order amount (USD)">
+            </div>
+        </div>
+
+        <div class="step-card" id="step3">
+            <div class="step-card-head"><span class="sc-num">3</span><div class="sc-info"><span class="sc-label">Choose rate</span><div class="sc-desc">What percentage of the sale goes to the affiliate?</div></div></div>
+            <div class="step-card-body">
+                <div style="display:flex;gap:8px;">
+                    <button class="btn btn-ghost commission-preset" data-rate="5" onclick="setRate(5,this)">5%</button>
+                    <button class="btn btn-ghost commission-preset" data-rate="10" onclick="setRate(10,this)">10%</button>
+                    <button class="btn btn-ghost commission-preset" data-rate="15" onclick="setRate(15,this)">15%</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-card disabled" id="step4">
+            <div class="step-card-head"><span class="sc-num">4</span><div class="sc-info"><span class="sc-label">Settle</span><div class="sc-desc">Confirm and send USDC on Base L2</div></div></div>
+            <div class="step-card-body">
+                <div class="result-box">
+                    <div class="big" id="calcCommission">$4.50</div>
+                    <div class="sub">USDC · instant on Base L2 · Gas ~$0.003</div>
+                </div>
+                <button class="btn btn-primary" onclick="sim()">⚡ Settle Now</button>
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align:center;margin-bottom:72px;font-size:12px;color:var(--text2);">
+        Open <a href="/affiliate" target="_blank" style="color:var(--accent);">Affiliate Dashboard</a> in another tab — see the money land in real time
+    </div>
+
+    <!-- ═══════ HISTORY ═══════ -->
+    <div class="history-section">
+        <div class="section-head"><span class="section-title">Settlements</span><span style="font-size:12px;color:var(--text2);" id="recordCount">23</span></div>
+        <div id="txList"></div>
+        <div id="emptyState" style="display:none;text-align:center;padding:40px;color:var(--text2);">No settlements yet</div>
+    </div>
+
+    <!-- ═══════ COMPARE ═══════ -->
+    <div class="section-head" style="margin-bottom:16px;"><span class="section-title">Why PayFlash</span></div>
+    <div class="compare-grid">
+        <div class="compare-card"><div class="c-icon">⏱️</div><div class="c-title">Settlement Time</div><span class="c-old">15-45 days</span><span class="c-arrow">→</span><span class="c-new">~3 min</span></div>
+        <div class="compare-card"><div class="c-icon">💸</div><div class="c-title">Fees</div><span class="c-old">3–6%</span><span class="c-arrow">→</span><span class="c-new">< 1%</span></div>
+        <div class="compare-card"><div class="c-icon">🔗</div><div class="c-title">Record Keeping</div><span class="c-old">Email + bank</span><span class="c-arrow">→</span><span class="c-new">On-chain</span></div>
+    </div>
+
+    <div class="footer"><a href="https://github.com/kaylee630-afk/affiliate-settlement-demo" target="_blank">GitHub</a> · <a href="/">PayFlash</a></div>
+</div>
+<div id="toastContainer"></div>
+
+<script>
+const html=document.documentElement;
+const saved=localStorage.getItem('payflash-theme');
+if(saved)html.setAttribute('data-theme',saved);
+else if(window.matchMedia('(prefers-color-scheme:light)').matches)html.setAttribute('data-theme','light');
+function toggleTheme(){const n=html.getAttribute('data-theme')==='dark'?'light':'dark';html.setAttribute('data-theme',n);localStorage.setItem('payflash-theme',n);}
+
+// ═══════ WALLET (minimal — read-only display, doesn't touch settlement) ═══════
+let w={a:null,b:null};
+var _c=false;
+async function toggleWallet(){
+    var btn=document.getElementById('walletBtn');
+    if(w.a){w={a:null,b:null};btn.innerHTML='<strong>🔌</strong>Connect Wallet';btn.classList.remove('connected');_c=false;rA();return;}
+    if(!window.ethereum){alert('MetaMask not detected');return;}
+    if(_c)return;_c=true;btn.innerHTML='<strong>...</strong>Connecting';
+    try{
+        var accounts=await window.ethereum.request({method:'eth_requestAccounts'});
+        w.a=accounts[0];
+        try{await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:'0x2105'}]});}
+        catch(e){
+            if(e.code===4902){
+                await window.ethereum.request({method:'wallet_addEthereumChain',params:[{
+                    chainId:'0x2105',chainName:'Base',
+                    rpcUrls:['https://mainnet.base.org'],
+                    nativeCurrency:{name:'ETH',symbol:'ETH',decimals:18},
+                    blockExplorerUrls:['https://basescan.org']
+                }]});
+            }
+        }
+        var balHex=await window.ethereum.request({method:'eth_getBalance',params:[w.a,'latest']});
+        w.b=parseInt(balHex,16)/1e18;
+        btn.innerHTML='<strong style="color:var(--green);">🟢</strong>'+w.a.slice(0,5)+'..'+w.a.slice(-3);
+        btn.classList.add('connected');_c=false;rA();
+        window.ethereum.on('accountsChanged',function(a){if(!a.length){w={a:null,b:null};btn.innerHTML='<strong>🔌</strong>Connect Wallet';btn.classList.remove('connected');rA();}});
+    }catch(e){btn.innerHTML='<strong>🔌</strong>Connect Wallet';_c=false;alert('Failed: '+(e.message||'User rejected'));}
+}
+
+const SK='lightning_commission_demo';
+const ch=(typeof BroadcastChannel!=='undefined')?new BroadcastChannel('lightning_commission'):null;
+const DEF={balance:5000,totalSettled:1280.5,txCount:23,commissionRate:5,transactions:[{id:1,affiliate:'@alice_cn',name:'Alice',orderAmount:199,commission:19.9,time:'3 min ago',avatar:'A'},{id:2,affiliate:'@bob_kr',name:'Bob',orderAmount:89.9,commission:8.99,time:'12 min ago',avatar:'B'},{id:3,affiliate:'@carol_jp',name:'Carol',orderAmount:450,commission:45,time:'1 hour ago',avatar:'C'},{id:4,affiliate:'@dave_br',name:'Dave',orderAmount:67.5,commission:6.75,time:'2 hours ago',avatar:'D'},{id:5,affiliate:'@eve_de',name:'Eve',orderAmount:320,commission:32,time:'3 hours ago',avatar:'E'},{id:6,affiliate:'@alice_cn',name:'Alice',orderAmount:155,commission:15.5,time:'Yesterday',avatar:'A'}]};
+function ld(){const r=localStorage.getItem(SK);return r?JSON.parse(r):DEF;}
+function sd(d){localStorage.setItem(SK,JSON.stringify(d));if(ch)ch.postMessage({type:'dc',txCount:d.txCount});}
+let data=ld(),_ltc=data.txCount;
+
+function rA(){
+    const ev=document.getElementById('escrowVal');
+    if(w.a&&w.b!==null){ev.textContent=w.b.toFixed(3)+' ETH';ev.style.color='var(--green)';}
+    else{ev.textContent='$'+data.balance.toFixed(0);ev.style.color='var(--accent)';}
+    document.getElementById('recordCount').textContent=data.transactions.length;
+    const tl=document.getElementById('txList'),es=document.getElementById('emptyState');
+    if(data.transactions.length===0){tl.innerHTML='';es.style.display='block';}
+    else{es.style.display='none';
+        const txs=data.transactions.slice().reverse();
+        const groups=[{label:'Recent',items:[]},{label:'Earlier',items:[]}];
+        txs.forEach(t=>{groups[t.time.includes('min')||t.time==='Just now'||t.time==='1 min ago'||t.time==='Now'||t.time==='1m'?0:1].items.push(t);});
+        tl.innerHTML='<div class="timeline">'+groups.filter(g=>g.items.length).map(g=>
+            '<div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;padding:6px 0 2px 8px;">'+g.label+'</div>'+
+            g.items.map(t=>`<div class="tx-item"><div class="tx-avatar">${t.avatar}</div><div class="tx-body"><div class="tx-head"><span class="tx-name">${t.name}</span><span class="tx-amount">+$${t.commission.toFixed(2)}</span></div><div class="tx-foot"><span class="tx-tag">USDC</span> · ${t.time} · $${t.orderAmount.toFixed(2)}</div></div></div>`).join('')
+        ).join('')+'</div>';
+    }
+    uc();
+}
+function uc(){const a=parseFloat(document.getElementById('orderAmount').value)||0;document.getElementById('calcCommission').textContent='$'+(a*data.commissionRate/100).toFixed(2);}
+
+let sA={value:'@alice_cn',name:'Alice',avatar:'A',cls:'a'},stepsDone={1:true,2:false,3:false,4:false};
+function selA(el){sA={value:el.dataset.value,name:el.dataset.name,avatar:el.dataset.avatar,cls:el.dataset.class};const cs=el.closest('.custom-select'),t=cs.querySelector('.custom-select-trigger');const av=t.querySelector('.cs-avatar');av.textContent=el.dataset.avatar;av.className='cs-avatar '+el.dataset.class;t.querySelector('.cs-name').textContent=el.dataset.name;t.querySelector('.cs-meta').textContent=el.querySelector('.cs-meta').textContent;cs.classList.remove('open');updateSteps();}
+document.addEventListener('click',e=>{if(!e.target.closest('.custom-select'))document.querySelectorAll('.custom-select.open').forEach(el=>el.classList.remove('open'));});
+document.getElementById('orderAmount').addEventListener('input',()=>{uc();updateSteps();});
+
+function updateSteps(){
+    stepsDone[2]=!!(parseFloat(document.getElementById('orderAmount').value)>0);
+    const allDone=stepsDone[1]&&stepsDone[2]&&stepsDone[3];
+    ['step1','step2','step3','step4'].forEach((id,i)=>{
+        const el=document.getElementById(id);el.classList.remove('active','done','disabled');
+        if(stepsDone[i+1])el.classList.add('done');
+    });
+    if(!stepsDone[2])document.getElementById('step2').classList.add('active');
+    else if(!stepsDone[3])document.getElementById('step3').classList.add('active');
+    else if(allDone)document.getElementById('step4').classList.add('active');
+    else document.getElementById('step4').classList.add('disabled');
+}
+
+function setRate(r,btn){data.commissionRate=r;localStorage.setItem(SK,JSON.stringify(data));document.querySelectorAll('.commission-preset').forEach(el=>el.classList.remove('active'));btn.classList.add('active');uc();stepsDone[3]=true;updateSteps();}
+document.querySelectorAll('.commission-preset').forEach(el=>el.classList.remove('active'));
+document.querySelectorAll('.commission-preset').forEach(el=>{if(parseInt(el.dataset.rate)===data.commissionRate)el.classList.add('active');});
+
+function sim(){
+    const ah=sA.value,dn=sA.name,av=sA.avatar,oa=parseFloat(document.getElementById('orderAmount').value);
+    if(!oa||oa<=0){st('Invalid amount','e');return;}
+    const c=oa*data.commissionRate/100;if(c>data.balance){st('Insufficient balance','e');return;}
+    data.balance-=c;data.totalSettled+=c;data.txCount+=1;
+    data.transactions.push({id:data.txCount,affiliate:ah,name:dn,orderAmount:oa,commission:c,time:'Just now',avatar:av});
+    sd(data);stepsDone[4]=true;updateSteps();
+    const btn=document.querySelector('.btn-primary'),o=btn.textContent;
+    btn.textContent='Processing...';btn.disabled=true;
+    setTimeout(()=>{btn.textContent='Done';btn.style.background='var(--green)';rA();st('Sent '+dn+' $'+c.toFixed(2)+' (simulated)');
+        setTimeout(()=>{btn.textContent=o;btn.style.background='';btn.disabled=false;const lt=data.transactions[data.transactions.length-1];lt.time='1 min ago';sd(data);rA();},1500);
+    },800);
+}
+function st(m,t){const d=document.createElement('div');d.className='toast';if(t==='e')d.style.color='var(--red)';d.textContent=m;document.getElementById('toastContainer').appendChild(d);setTimeout(()=>d.remove(),3000);}
+
+function he(){data=ld();_ltc=data.txCount;rA();}
+if(ch)ch.onmessage=(e)=>{if(e.data.type==='dc')he();};
+window.addEventListener('storage',(e)=>{if(e.key===SK)he();});
+setInterval(()=>{const c=ld();if(c.txCount>_ltc){_ltc=c.txCount;he();}},2000);
+updateSteps();rA();
+</script>
+</body>
+</html>

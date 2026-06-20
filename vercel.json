@@ -1,12 +1,6 @@
 {
-  "redirects": [
-    { "source": "/landing.html", "destination": "/", "permanent": true },
-    { "source": "/index.html", "destination": "/brand", "permanent": true },
-    { "source": "/affiliate.html", "destination": "/affiliate", "permanent": true }
-  ],
   "rewrites": [
-    { "source": "/", "destination": "/landing.html" },
-    { "source": "/brand", "destination": "/index.html" },
+    { "source": "/brand", "destination": "/brand.html" },
     { "source": "/affiliate", "destination": "/affiliate.html" }
   ]
 }
