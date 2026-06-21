@@ -261,9 +261,9 @@ nav{position:sticky;top:0;z-index:100;background:var(--nav-bg);backdrop-filter:b
 
 <script>
 const html=document.documentElement;
-const saved=localStorage.getItem('payflash-theme');
-if(saved)html.setAttribute('data-theme',saved);
-else if(window.matchMedia('(prefers-color-scheme:light)').matches)html.setAttribute('data-theme','light');
+function applyTheme(){const s=localStorage.getItem('payflash-theme');html.setAttribute('data-theme',s||(window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark'));}
+applyTheme();
+window.matchMedia('(prefers-color-scheme:light)').addEventListener('change',()=>{if(!localStorage.getItem('payflash-theme'))applyTheme();});
 function toggleTheme(){const n=html.getAttribute('data-theme')==='dark'?'light':'dark';html.setAttribute('data-theme',n);localStorage.setItem('payflash-theme',n);}
 
 // ═══════ WALLET (minimal — read-only display, doesn't touch settlement) ═══════
