@@ -180,7 +180,7 @@ nav{position:sticky;top:0;z-index:100;background:var(--nav-bg);backdrop-filter:b
         </div>
         <div class="stats-row">
             <div class="stat-mini"><strong style="color:var(--accent);" id="escrowVal">$5,000</strong>Escrow</div>
-            <div class="stat-mini wallet-mini" id="walletBtn" onclick="toggleWallet()" style="cursor:pointer;"><strong>🔌</strong>Connect Wallet</div>
+            <div class="stat-mini wallet-mini" id="walletBtn" onclick="toggleWallet()" style="cursor:pointer;"><strong>🔌</strong>Wallet</div>
             <div class="stat-mini"><strong style="color:var(--green);">$1,281</strong>Settled</div>
             <div class="stat-mini"><strong>8</strong>Affiliates</div>
         </div>
@@ -271,7 +271,7 @@ let w={a:null,b:null};
 var _c=false;
 async function toggleWallet(){
     var btn=document.getElementById('walletBtn');
-    if(w.a){w={a:null,b:null};btn.innerHTML='<strong>🔌</strong>Connect Wallet';btn.classList.remove('connected');_c=false;rA();return;}
+    if(w.a){w={a:null,b:null};btn.innerHTML='<strong>🔌</strong>Wallet';btn.classList.remove('connected');_c=false;rA();return;}
     if(!window.ethereum){alert('MetaMask not detected');return;}
     if(_c)return;_c=true;btn.innerHTML='<strong>...</strong>Connecting';
     try{
@@ -292,8 +292,8 @@ async function toggleWallet(){
         w.b=parseInt(balHex,16)/1e18;
         btn.innerHTML='<strong style="color:var(--green);">🟢</strong>'+w.a.slice(0,5)+'..'+w.a.slice(-3);
         btn.classList.add('connected');_c=false;rA();
-        window.ethereum.on('accountsChanged',function(a){if(!a.length){w={a:null,b:null};btn.innerHTML='<strong>🔌</strong>Connect Wallet';btn.classList.remove('connected');rA();}});
-    }catch(e){btn.innerHTML='<strong>🔌</strong>Connect Wallet';_c=false;alert('Failed: '+(e.message||'User rejected'));}
+        window.ethereum.on('accountsChanged',function(a){if(!a.length){w={a:null,b:null};btn.innerHTML='<strong>🔌</strong>Wallet';btn.classList.remove('connected');rA();}});
+    }catch(e){btn.innerHTML='<strong>🔌</strong>Wallet';_c=false;alert('Failed: '+(e.message||'User rejected'));}
 }
 
 const SK='lightning_commission_demo';
