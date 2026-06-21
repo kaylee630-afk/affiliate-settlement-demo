@@ -51,7 +51,7 @@ nav{position:sticky;top:0;z-index:100;background:var(--nav-bg);backdrop-filter:b
 .hero-vs{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;margin-bottom:8px;}
 .hero-vs .old{font-size:24px;font-weight:500;color:var(--text2);text-decoration:line-through;text-decoration-color:var(--text2);}
 .hero-vs .arrow{font-size:22px;color:var(--text2);font-weight:300;}
-.hero-vs .new{font-size:clamp(48px,8vw,72px);font-weight:900;letter-spacing:-2px;background:linear-gradient(135deg,var(--green),#4ade80,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 30px rgba(34,197,94,.2));}
+.hero-vs .new{font-size:clamp(48px,8vw,72px);font-weight:900;letter-spacing:-2px;background:linear-gradient(135deg,var(--accent),#818cf8,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 24px rgba(99,102,241,.2));}
 .hero-sub{font-size:15px;color:var(--text2);font-weight:500;}
 .stats-row{display:flex;justify-content:center;gap:16px;margin-bottom:72px;flex-wrap:wrap;}
 .stat-mini{text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 18px;min-width:90px;transition:all .3s;font-size:11px;color:var(--text2);position:relative;overflow:hidden;}
@@ -141,7 +141,8 @@ nav{position:sticky;top:0;z-index:100;background:var(--nav-bg);backdrop-filter:b
 .compare-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:72px;}
 @media(max-width:768px){.compare-grid{grid-template-columns:1fr;}}
 .compare-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 20px;text-align:center;}
-.compare-card .c-icon{font-size:28px;margin-bottom:8px;}
+.compare-card .c-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(59,130,246,.08));border:1px solid rgba(99,102,241,.15);}
+.compare-card .c-icon svg{width:18px;height:18px;stroke:var(--accent);fill:none;stroke-width:1.5;}
 .compare-card .c-title{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:8px;}
 .compare-card .c-old{font-size:15px;color:var(--red);text-decoration:line-through;text-decoration-color:var(--text2);}
 .compare-card .c-new{font-size:20px;font-weight:700;color:var(--green);}
@@ -249,9 +250,9 @@ nav{position:sticky;top:0;z-index:100;background:var(--nav-bg);backdrop-filter:b
     <!-- ═══════ COMPARE ═══════ -->
     <div class="section-head" style="margin-bottom:16px;"><span class="section-title">Why PayFlash</span></div>
     <div class="compare-grid">
-        <div class="compare-card"><div class="c-icon">⏱️</div><div class="c-title">Settlement Time</div><span class="c-old">15-45 days</span><span class="c-arrow">→</span><span class="c-new">~3 min</span></div>
-        <div class="compare-card"><div class="c-icon">💸</div><div class="c-title">Fees</div><span class="c-old">3–6%</span><span class="c-arrow">→</span><span class="c-new">< 1%</span></div>
-        <div class="compare-card"><div class="c-icon">🔗</div><div class="c-title">Record Keeping</div><span class="c-old">Email + bank</span><span class="c-arrow">→</span><span class="c-new">On-chain</span></div>
+        <div class="compare-card"><div class="c-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="c-title">Settlement Time</div><span class="c-old">15-45 days</span><span class="c-arrow">→</span><span class="c-new">~3 min</span></div>
+        <div class="compare-card"><div class="c-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><path d="M12 18V6"/></svg></div><div class="c-title">Fees</div><span class="c-old">3–6%</span><span class="c-arrow">→</span><span class="c-new">< 1%</span></div>
+        <div class="compare-card"><div class="c-icon"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="9" y1="16" x2="9" y2="19"/><line x1="15" y1="16" x2="15" y2="19"/></svg></div><div class="c-title">Record Keeping</div><span class="c-old">Email + bank</span><span class="c-arrow">→</span><span class="c-new">On-chain</span></div>
     </div>
 
     <div class="footer"><a href="https://github.com/kaylee630-afk/affiliate-settlement-demo" target="_blank">GitHub</a> · <a href="/">PayFlash</a></div>
