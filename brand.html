@@ -301,7 +301,7 @@ const ch=(typeof BroadcastChannel!=='undefined')?new BroadcastChannel('lightning
 const DEF={balance:5000,totalSettled:1280.5,txCount:23,commissionRate:5,transactions:[{id:1,affiliate:'@alice_cn',name:'Alice',orderAmount:199,commission:19.9,time:'3 min ago',avatar:'A'},{id:2,affiliate:'@bob_kr',name:'Bob',orderAmount:89.9,commission:8.99,time:'12 min ago',avatar:'B'},{id:3,affiliate:'@carol_jp',name:'Carol',orderAmount:450,commission:45,time:'1 hour ago',avatar:'C'},{id:4,affiliate:'@dave_br',name:'Dave',orderAmount:67.5,commission:6.75,time:'2 hours ago',avatar:'D'},{id:5,affiliate:'@eve_de',name:'Eve',orderAmount:320,commission:32,time:'3 hours ago',avatar:'E'},{id:6,affiliate:'@alice_cn',name:'Alice',orderAmount:155,commission:15.5,time:'Yesterday',avatar:'A'}]};
 function ld(){const r=localStorage.getItem(SK);return r?JSON.parse(r):DEF;}
 function sd(d){localStorage.setItem(SK,JSON.stringify(d));if(ch)ch.postMessage({type:'dc',txCount:d.txCount});}
-let data=ld(),_ltc=data.txCount;
+let data=ld(),_ltc=data.txCount;data.commissionRate=5;
 
 function rA(){
     const ev=document.getElementById('escrowVal');
