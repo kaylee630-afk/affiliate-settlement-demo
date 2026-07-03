@@ -1,0 +1,14 @@
+{
+  "name": "PayFlash",
+  "short_name": "PayFlash",
+  "description": "Cross-border affiliate settlement on Base L2",
+  "start_url": "/brand",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0071e3",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/favicon-32.png", "sizes": "32x32", "type": "image/png" },
+    { "src": "/favicon.png", "sizes": "64x64", "type": "image/png" }
+  ]
+}
