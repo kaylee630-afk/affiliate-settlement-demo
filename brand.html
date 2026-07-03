@@ -32,10 +32,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .orb-2{width:600px;height:600px;background:radial-gradient(circle,#3b82f6,transparent);bottom:-250px;right:-100px;}
 .orb-3{width:500px;height:500px;background:radial-gradient(circle,#a855f7,transparent);top:60%;left:60%;}
 
-nav{position:sticky;top:0;z-index:100;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:50px;transition:background .4s;}
-.nav-logo{font-size:17px;font-weight:700;letter-spacing:-.3px;display:flex;align-items:center;gap:7px;text-decoration:none;color:var(--text);}
-.nav-links{display:flex;align-items:center;gap:6px;}
-.nav-links a,.nav-links button{color:var(--text2);text-decoration:none;font-size:12px;padding:5px 10px;border-radius:6px;transition:all .2s;background:none;border:none;cursor:pointer;font-family:var(--font);}
+nav{position:sticky;top:0;z-index:100;background:var(--nav-bg);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:54px;transition:background .4s;}
+.nav-logo{font-size:20px;font-weight:800;letter-spacing:-.5px;display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text);}
+.nav-links{display:flex;align-items:center;gap:8px;}
+.nav-links a,.nav-links button{color:var(--text2);text-decoration:none;font-size:13px;padding:5px 10px;border-radius:6px;transition:all .2s;background:none;border:none;cursor:pointer;font-family:var(--font);}
 .nav-links a:hover,.nav-links button:hover{color:var(--text);background:var(--surface);}
 .nav-links a.active{color:var(--accent);}
 .theme-toggle{width:38px;height:22px;border-radius:11px;background:#888;position:relative;cursor:pointer;transition:all .3s;border:none;padding:0;margin-right:8px;opacity:0.5;}
@@ -269,51 +269,17 @@ nav{position:sticky;top:0;z-index:100;background:var(--nav-bg);backdrop-filter:b
 <script>
 
 // ═══════ LANGUAGE ═══════
-const T = {
-en:{hero_badge:'⚡ Save 87% vs PayPal',hero_sub:'Cross-border affiliate settlement on Base L2',tagline:'"We don't hold your money. We tell you who to pay and how much. You pay them directly. We verify it on-chain."',
-wallet:'Wallet',escrow:'Escrow',settled:'Settled',affiliates:'Affiliates',
-step1:'Pick affiliate',step1d:'Select who gets paid for this order',
-step2:'Enter order',step2d:'How much did the customer spend?',
-step3:'Choose rate',step3d:'What percentage goes to the affiliate?',
-step4:'Settle',step4d:'Confirm and send USDC on Base L2',
-order_label:'Order Amount (USD)',rate_label:'Commission Rate',
-settle_btn:'⚡ Settle Now',hint:'Open <a href="/affiliate" target="_blank">Affiliate Dashboard</a> in another tab — see the money land in real time',
-history:'Settlements',compare:'Why PayFlash',
-c1t:'Settlement Time',c2t:'Fees',c3t:'Record Keeping',
-c1o:'15-45 days',c1n:'~3 min',c2o:'3–6%',c2n:'< 1%',c3o:'Email + bank',c3n:'On-chain',
-footer:'<a href="https://github.com/kaylee630-afk/affiliate-settlement-demo" target="_blank">GitHub</a> · <a href="/">PayFlash</a>'
-},
-zh:{hero_badge:'⚡ 比PayPal省87%',hero_sub:'基于Base L2的跨境联盟佣金结算',tagline:'"我们不持有您的资金。我们告诉您该付给谁、付多少。您直接支付。我们链上验证。"',
-wallet:'钱包',escrow:'托管',settled:'已结算',affiliates:'联盟成员',
-step1:'选择成员',step1d:'选择本单佣金接收人',
-step2:'输入订单',step2d:'客户花了多少钱？',
-step3:'选择费率',step3d:'销售额的百分之几归联盟成员？',
-step4:'结算',step4d:'确认并在Base L2上发送USDC',
-order_label:'订单金额 (USD)',rate_label:'佣金比例',
-settle_btn:'⚡ 立即结算',hint:'在另一个标签页打开 <a href="/affiliate" target="_blank">联盟成员端</a> — 实时查看资金到账',
-history:'结算记录',compare:'为什么选PayFlash',
-c1t:'结算时间',c2t:'手续费',c3t:'记录存证',
-c1o:'15-45 天',c1n:'~3 分钟',c2o:'3–6%',c2n:'< 1%',c3o:'邮件+银行',c3n:'链上存证',
-footer:'<a href="https://github.com/kaylee630-afk/affiliate-settlement-demo" target="_blank">GitHub</a> · <a href="/">PayFlash</a>'
-}};
-let L = localStorage.getItem('payflash-lang') || 'en';
+const T={en:{hero_badge:'⚡ Save 87% vs PayPal',hero_sub:'Cross-border affiliate settlement on Base L2',wallet:'Wallet',escrow:'Escrow',settled:'Settled',affiliates:'Affiliates',step1:'Pick affiliate',step1d:'Select who gets paid for this order',step2:'Enter order',step2d:'How much did the customer spend?',step3:'Choose rate',step3d:'What percentage goes to the affiliate?',step4:'Settle',step4d:'Confirm and send USDC on Base L2',settle_btn:'⚡ Settle Now',history:'Settlements',compare:'Why PayFlash',c1t:'Settlement Time',c2t:'Fees',c3t:'Record Keeping',c1o:'15-45 days',c1n:'~3 min',c2o:'3–6%',c2n:'< 1%',c3o:'Email + bank',c3n:'On-chain'},zh:{hero_badge:'⚡ 比PayPal省87%',hero_sub:'基于Base L2的跨境联盟佣金结算',wallet:'钱包',escrow:'托管',settled:'已结算',affiliates:'联盟成员',step1:'选择成员',step1d:'选择本单佣金接收人',step2:'输入订单',step2d:'客户花了多少钱？',step3:'选择费率',step3d:'销售额的百分之几归联盟成员？',step4:'结算',step4d:'确认并在Base L2上发送USDC',settle_btn:'⚡ 立即结算',history:'结算记录',compare:'为什么选PayFlash',c1t:'结算时间',c2t:'手续费',c3t:'记录存证',c1o:'15-45 天',c1n:'~3 分钟',c2o:'3–6%',c2n:'< 1%',c3o:'邮件+银行',c3n:'链上存证'}};
+let L=localStorage.getItem('payflash-lang')||'en';
 function setLang(l){L=l;localStorage.setItem('payflash-lang',l);applyLang();}
-function t(key){return T[L][key] || key;}
-function applyLang(){
-['langEN','langZH'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',false);});
-const activeBtn=L==='en'?'langEN':'langZH';
-const ab=document.getElementById(activeBtn);if(ab)ab.classList.add('active');
-document.documentElement.lang=L;
-// Update all elements with data-i18n
-document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;if(T[L][k])el.innerHTML=T[L][k];});
-}
+function applyLang(){document.getElementById('langEN').classList.toggle('active',L==='en');document.getElementById('langZH').classList.toggle('active',L==='zh');document.querySelectorAll('[data-i18n]').forEach(function(el){var k=el.dataset.i18n;if(T[L]&&T[L][k])el.textContent=T[L][k];});}
 applyLang();
 
-const html=document.documentElement;
-function applyTheme(){const s=localStorage.getItem('payflash-theme');html.setAttribute('data-theme',s||(window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark'));}
+const htmldoc=document.documentElement;
+function applyTheme(){var s=localStorage.getItem('payflash-theme');htmldoc.setAttribute('data-theme',s||(window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark'));}
 applyTheme();
-window.matchMedia('(prefers-color-scheme:light)').addEventListener('change',()=>{if(!localStorage.getItem('payflash-theme'))applyTheme();});
-function toggleTheme(){const n=html.getAttribute('data-theme')==='dark'?'light':'dark';html.setAttribute('data-theme',n);localStorage.setItem('payflash-theme',n);}
+window.matchMedia('(prefers-color-scheme:light)').addEventListener('change',function(){if(!localStorage.getItem('payflash-theme'))applyTheme();});
+function toggleTheme(){var n=htmldoc.getAttribute('data-theme')==='dark'?'light':'dark';htmldoc.setAttribute('data-theme',n);localStorage.setItem('payflash-theme',n);}
 
 // ═══════ WALLET (minimal — read-only display, doesn't touch settlement) ═══════
 let w={a:null,b:null};
