@@ -156,6 +156,11 @@ nav{position:sticky;top:0;z-index:100;background:var(--nav-bg);backdrop-filter:b
 .footer{text-align:center;padding:16px 0;color:var(--text2);font-size:12px;position:relative;z-index:1;}
 .footer a{color:var(--text2);text-decoration:none;}
 .footer a:hover{color:var(--text);}
+
+.lang-toggle{background:none;border:1px solid var(--border);border-radius:12px;padding:3px 8px;color:var(--text2);cursor:pointer;font-size:10px;font-weight:600;font-family:var(--font);transition:all .2s;}
+.lang-toggle:hover{color:var(--text);border-color:var(--text2);}
+.lang-toggle.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+
 </style>
 </head>
 <body>
@@ -166,6 +171,7 @@ nav{position:sticky;top:0;z-index:100;background:var(--nav-bg);backdrop-filter:b
     <div class="nav-links">
         <a href="/brand" class="active">Brand</a>
         <a href="/affiliate">Affiliate</a>
+        <button class="lang-toggle active" id="langEN" onclick="setLang('en')">EN</button><button class="lang-toggle" id="langZH" onclick="setLang('zh')">中</button>
         <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme"></button>
         <a href="/">← Home</a>
     </div>
@@ -173,24 +179,24 @@ nav{position:sticky;top:0;z-index:100;background:var(--nav-bg);backdrop-filter:b
 
 <div class="main">
     <div class="hero-strip">
-        <div class="hero-badge">⚡ Save 87% vs PayPal</div>
+        <div class="hero-badge" data-i18n="hero_badge">⚡ Save 87% vs PayPal</div>
         <div class="hero-vs"><span class="old">30 days</span><span class="arrow">→</span><span class="new">~3 min</span></div>
-        <div class="hero-sub">Cross-border affiliate settlement on Base L2</div>
+        <div class="hero-sub" data-i18n="hero_sub">Cross-border affiliate settlement on Base L2</div>
         <div style="text-align:center;margin-bottom:20px;font-size:14px;color:var(--text2);font-style:italic;letter-spacing:.2px;">
             "We don't hold your money. We tell you who to pay and how much. You pay them directly. We verify it on-chain."
         </div>
         <div class="stats-row">
-            <div class="stat-mini"><strong style="color:var(--accent);" id="escrowVal">$5,000</strong>Escrow</div>
-            <div class="stat-mini wallet-mini" id="walletBtn" onclick="toggleWallet()" style="cursor:pointer;"><strong>🔌</strong>Wallet</div>
-            <div class="stat-mini"><strong style="color:var(--green);">$1,281</strong>Settled</div>
-            <div class="stat-mini"><strong>8</strong>Affiliates</div>
+            <div class="stat-mini"><strong style="color:var(--accent);" id="escrowVal">$5,000</strong><span data-i18n="escrow">Escrow</span></div>
+            <div class="stat-mini wallet-mini" id="walletBtn" onclick="toggleWallet()" style="cursor:pointer;"><strong>🔌</strong><span data-i18n="wallet">Wallet</span></div>
+            <div class="stat-mini"><strong style="color:var(--green);">$1,281</strong><span data-i18n="settled">Settled</span></div>
+            <div class="stat-mini"><strong>8</strong><span data-i18n="affiliates">Affiliates</span></div>
         </div>
     </div>
 
     <!-- ═══════ 4 STEP CARDS ═══════ -->
     <div class="step-cards" id="stepBar">
         <div class="step-card done" id="step1">
-            <div class="step-card-head"><span class="sc-num">1</span><div class="sc-info"><span class="sc-label">Pick affiliate</span><div class="sc-desc">Select who gets paid for this order</div></div></div>
+            <div class="step-card-head"><span class="sc-num">1</span><div class="sc-info"><span class="sc-label" data-i18n="step1">Pick affiliate</span><div class="sc-desc" data-i18n="step1d">Select who gets paid for this order</div></div></div>
             <div class="step-card-body">
                 <div class="custom-select" id="affiliateSelect">
                     <div class="custom-select-trigger" onclick="this.parentElement.classList.toggle('open')">
@@ -208,14 +214,14 @@ nav{position:sticky;top:0;z-index:100;background:var(--nav-bg);backdrop-filter:b
         </div>
 
         <div class="step-card" id="step2">
-            <div class="step-card-head"><span class="sc-num">2</span><div class="sc-info"><span class="sc-label">Enter order</span><div class="sc-desc">How much did the customer spend?</div></div></div>
+            <div class="step-card-head"><span class="sc-num">2</span><div class="sc-info"><span class="sc-label" data-i18n="step2">Enter order</span><div class="sc-desc" data-i18n="step2d">How much did the customer spend?</div></div></div>
             <div class="step-card-body">
-                <input class="input" type="number" id="orderAmount" value="89.90" min="1" step="0.01" placeholder="Order amount (USD)">
+                <input class="input" type="number" id="orderAmount" value="89.90" min="1" step="0.01" data-i18n="order_label" placeholder="Order amount (USD)">
             </div>
         </div>
 
         <div class="step-card" id="step3">
-            <div class="step-card-head"><span class="sc-num">3</span><div class="sc-info"><span class="sc-label">Choose rate</span><div class="sc-desc">What percentage of the sale goes to the affiliate?</div></div></div>
+            <div class="step-card-head"><span class="sc-num">3</span><div class="sc-info"><span class="sc-label" data-i18n="step3">Choose rate</span><div class="sc-desc">What percentage of the sale goes to the affiliate?</div></div></div>
             <div class="step-card-body">
                 <div style="display:flex;gap:8px;">
                     <button class="btn btn-ghost commission-preset" data-rate="5" onclick="setRate(5,this)">5%</button>
@@ -226,13 +232,13 @@ nav{position:sticky;top:0;z-index:100;background:var(--nav-bg);backdrop-filter:b
         </div>
 
         <div class="step-card disabled" id="step4">
-            <div class="step-card-head"><span class="sc-num">4</span><div class="sc-info"><span class="sc-label">Settle</span><div class="sc-desc">Confirm and send USDC on Base L2</div></div></div>
+            <div class="step-card-head"><span class="sc-num">4</span><div class="sc-info"><span class="sc-label" data-i18n="step4">Settle</span><div class="sc-desc" data-i18n="step4d">Confirm and send USDC on Base L2</div></div></div>
             <div class="step-card-body">
                 <div class="result-box">
                     <div class="big" id="calcCommission">$4.50</div>
                     <div class="sub">USDC · instant on Base L2 · Gas ~$0.003</div>
                 </div>
-                <button class="btn btn-primary" onclick="sim()">⚡ Settle Now</button>
+                <button class="btn btn-primary" onclick="sim()">⚡ <span data-i18n="settle_btn">Settle Now</span></button>
             </div>
         </div>
     </div>
@@ -243,13 +249,13 @@ nav{position:sticky;top:0;z-index:100;background:var(--nav-bg);backdrop-filter:b
 
     <!-- ═══════ HISTORY ═══════ -->
     <div class="history-section">
-        <div class="section-head"><span class="section-title">Settlements</span><span style="font-size:12px;color:var(--text2);" id="recordCount">23</span></div>
+        <div class="section-head"><span class="section-title" data-i18n="history">Settlements</span><span style="font-size:12px;color:var(--text2);" id="recordCount">23</span></div>
         <div id="txList"></div>
         <div id="emptyState" style="display:none;text-align:center;padding:40px;color:var(--text2);">No settlements yet</div>
     </div>
 
     <!-- ═══════ COMPARE ═══════ -->
-    <div class="section-head" style="margin-bottom:16px;"><span class="section-title">Why PayFlash</span></div>
+    <div class="section-head" style="margin-bottom:16px;"><span class="section-title" data-i18n="compare">Why PayFlash</span></div>
     <div class="compare-grid">
         <div class="compare-card"><div class="c-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="c-title">Settlement Time</div><span class="c-old">15-45 days</span><span class="c-arrow">→</span><span class="c-new">~3 min</span></div>
         <div class="compare-card"><div class="c-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><path d="M12 18V6"/></svg></div><div class="c-title">Fees</div><span class="c-old">3–6%</span><span class="c-arrow">→</span><span class="c-new">< 1%</span></div>
@@ -261,6 +267,48 @@ nav{position:sticky;top:0;z-index:100;background:var(--nav-bg);backdrop-filter:b
 <div id="toastContainer"></div>
 
 <script>
+
+// ═══════ LANGUAGE ═══════
+const T = {
+en:{hero_badge:'⚡ Save 87% vs PayPal',hero_sub:'Cross-border affiliate settlement on Base L2',tagline:'"We don't hold your money. We tell you who to pay and how much. You pay them directly. We verify it on-chain."',
+wallet:'Wallet',escrow:'Escrow',settled:'Settled',affiliates:'Affiliates',
+step1:'Pick affiliate',step1d:'Select who gets paid for this order',
+step2:'Enter order',step2d:'How much did the customer spend?',
+step3:'Choose rate',step3d:'What percentage goes to the affiliate?',
+step4:'Settle',step4d:'Confirm and send USDC on Base L2',
+order_label:'Order Amount (USD)',rate_label:'Commission Rate',
+settle_btn:'⚡ Settle Now',hint:'Open <a href="/affiliate" target="_blank">Affiliate Dashboard</a> in another tab — see the money land in real time',
+history:'Settlements',compare:'Why PayFlash',
+c1t:'Settlement Time',c2t:'Fees',c3t:'Record Keeping',
+c1o:'15-45 days',c1n:'~3 min',c2o:'3–6%',c2n:'< 1%',c3o:'Email + bank',c3n:'On-chain',
+footer:'<a href="https://github.com/kaylee630-afk/affiliate-settlement-demo" target="_blank">GitHub</a> · <a href="/">PayFlash</a>'
+},
+zh:{hero_badge:'⚡ 比PayPal省87%',hero_sub:'基于Base L2的跨境联盟佣金结算',tagline:'"我们不持有您的资金。我们告诉您该付给谁、付多少。您直接支付。我们链上验证。"',
+wallet:'钱包',escrow:'托管',settled:'已结算',affiliates:'联盟成员',
+step1:'选择成员',step1d:'选择本单佣金接收人',
+step2:'输入订单',step2d:'客户花了多少钱？',
+step3:'选择费率',step3d:'销售额的百分之几归联盟成员？',
+step4:'结算',step4d:'确认并在Base L2上发送USDC',
+order_label:'订单金额 (USD)',rate_label:'佣金比例',
+settle_btn:'⚡ 立即结算',hint:'在另一个标签页打开 <a href="/affiliate" target="_blank">联盟成员端</a> — 实时查看资金到账',
+history:'结算记录',compare:'为什么选PayFlash',
+c1t:'结算时间',c2t:'手续费',c3t:'记录存证',
+c1o:'15-45 天',c1n:'~3 分钟',c2o:'3–6%',c2n:'< 1%',c3o:'邮件+银行',c3n:'链上存证',
+footer:'<a href="https://github.com/kaylee630-afk/affiliate-settlement-demo" target="_blank">GitHub</a> · <a href="/">PayFlash</a>'
+}};
+let L = localStorage.getItem('payflash-lang') || 'en';
+function setLang(l){L=l;localStorage.setItem('payflash-lang',l);applyLang();}
+function t(key){return T[L][key] || key;}
+function applyLang(){
+['langEN','langZH'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',false);});
+const activeBtn=L==='en'?'langEN':'langZH';
+const ab=document.getElementById(activeBtn);if(ab)ab.classList.add('active');
+document.documentElement.lang=L;
+// Update all elements with data-i18n
+document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;if(T[L][k])el.innerHTML=T[L][k];});
+}
+applyLang();
+
 const html=document.documentElement;
 function applyTheme(){const s=localStorage.getItem('payflash-theme');html.setAttribute('data-theme',s||(window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark'));}
 applyTheme();
@@ -272,7 +320,7 @@ let w={a:null,b:null};
 var _c=false;
 async function toggleWallet(){
     var btn=document.getElementById('walletBtn');
-    if(w.a){w={a:null,b:null};btn.innerHTML='<strong>🔌</strong>Wallet';btn.classList.remove('connected');_c=false;rA();return;}
+    if(w.a){w={a:null,b:null};btn.innerHTML='<strong>🔌</strong><span data-i18n="wallet">Wallet</span>';btn.classList.remove('connected');_c=false;rA();return;}
     if(!window.ethereum){alert('MetaMask not detected');return;}
     if(_c)return;_c=true;btn.innerHTML='<strong>...</strong>Connecting';
     try{
@@ -293,8 +341,8 @@ async function toggleWallet(){
         w.b=parseInt(balHex,16)/1e18;
         btn.innerHTML='<strong style="color:var(--green);">🟢</strong>'+w.a.slice(0,5)+'..'+w.a.slice(-3);
         btn.classList.add('connected');_c=false;rA();
-        window.ethereum.on('accountsChanged',function(a){if(!a.length){w={a:null,b:null};btn.innerHTML='<strong>🔌</strong>Wallet';btn.classList.remove('connected');rA();}});
-    }catch(e){btn.innerHTML='<strong>🔌</strong>Wallet';_c=false;alert('Failed: '+(e.message||'User rejected'));}
+        window.ethereum.on('accountsChanged',function(a){if(!a.length){w={a:null,b:null};btn.innerHTML='<strong>🔌</strong><span data-i18n="wallet">Wallet</span>';btn.classList.remove('connected');rA();}});
+    }catch(e){btn.innerHTML='<strong>🔌</strong><span data-i18n="wallet">Wallet</span>';_c=false;alert('Failed: '+(e.message||'User rejected'));}
 }
 
 const SK='lightning_commission_demo';
