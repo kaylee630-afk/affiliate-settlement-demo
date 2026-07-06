@@ -2,574 +2,205 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-
-<link rel="manifest" href="/manifest.json">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PayFlash — Cross-Border Affiliate Settlement on Base L2</title>
+<link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="PayFlash">
 <link rel="apple-touch-icon" href="/favicon.png">
-<meta name="theme-color" content="#0071e3">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PayFlash — Instant Cross-Border Settlement on Base L2</title>
-<link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="manifest" href="/manifest.json">
 <style>
-:root {}
-[data-theme="light"] {
-    --bg: #f5f5f7; --surface: #ffffff;
-    --border: rgba(0,0,0,0.08); --border-glow: rgba(0,113,227,0.2);
-    --text: #1d1d1f; --text2: #6e6e73;
-    --accent: #0071e3; --accent2: #0071e3;
-    --green: #248a3d; --red: #d93025;
-    --nav-bg: rgba(245,245,247,0.85);
+:root {
+    --bg:#080810; --surface:rgba(255,255,255,0.03);
+    --border:rgba(255,255,255,0.06); --text:#f5f5f7; --text2:#8b8fa3;
+    --accent:#6366f1; --green:#22c55e; --red:#ef4444;
+    --nav-bg:rgba(8,8,16,0.85);
 }
-.bg-grid, .bg-dots { transition: opacity 0.4s; }
-[data-theme="light"] .bg-grid,
-[data-theme="light"] .bg-dots { opacity: 0; }
-[data-theme="dark"] {
-    --bg: #080810; --surface: rgba(255,255,255,0.02);
-    --border: rgba(255,255,255,0.06); --border-glow: rgba(99,102,241,0.3);
-    --text: #f5f5f7; --text2: #8b8fa3;
-    --accent: #6366f1; --accent2: #3b82f6;
-    --green: #22c55e; --red: #ef4444;
-    --nav-bg: rgba(8,8,16,0.75);
-}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+.bg-grid{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;pointer-events:none;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:0.5}
+.orb{position:fixed;border-radius:50%;filter:blur(140px);pointer-events:none;z-index:0;opacity:0.08}
+.orb-1{width:600px;height:600px;background:radial-gradient(circle,#6366f1,transparent);top:-200px;right:-100px}
+.orb-2{width:500px;height:500px;background:radial-gradient(circle,#3b82f6,transparent);bottom:-150px;left:-80px}
 
-* { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior: smooth; }
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;transition:all .4s}
+nav.scrolled{background:var(--nav-bg);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
+.nav-logo{font-size:20px;font-weight:800;letter-spacing:-.3px;display:flex;align-items:center;gap:8px;color:var(--text);text-decoration:none}
+.nav-logo img{width:28px;height:28px;border-radius:7px}
+.nav-cta{padding:8px 20px;border-radius:20px;background:linear-gradient(135deg,#6366f1,#3b82f6);color:#fff;font-size:13px;font-weight:600;text-decoration:none;transition:all .3s}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(99,102,241,.4)}
 
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "PingFang SC", sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.6;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-}
+section{position:relative;z-index:1;padding:100px 32px}
+.container{max-width:1000px;margin:0 auto}
 
-/* ═══════ BACKGROUND LAYERS ═══════ */
-.bg-grid {
-    position: fixed; top:0; left:0; right:0; bottom:0; z-index: 0; pointer-events: none;
-    background-image:
-        linear-gradient(var(--border) 1px, transparent 1px),
-        linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 60px 60px;
-    mask-image: radial-gradient(ellipse 80% 80% at 50% 0%, black 40%, transparent 70%);
-    -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 0%, black 40%, transparent 70%);
-}
+.hero{padding-top:180px;padding-bottom:100px;text-align:center}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);color:#a5b4fc;font-size:12px;font-weight:600;margin-bottom:32px}
+.hero-badge .dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-size:clamp(42px,8vw,64px);font-weight:800;letter-spacing:-2px;line-height:1.05;margin-bottom:24px}
+.hero h1 .grad{background:linear-gradient(135deg,#6366f1,#3b82f6,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:18px;color:var(--text2);max-width:560px;margin:0 auto 40px}
+.hero-buttons{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 30px;border-radius:28px;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;transition:all .3s;font-family:inherit;border:none}
+.btn-primary{background:linear-gradient(135deg,#6366f1,#3b82f6);color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(99,102,241,.4)}
+.btn-outline{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,.15)}
+.btn-outline:hover{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.25)}
 
-.bg-dots {
-    position: fixed; top:0; left:0; right:0; bottom:0; z-index: 0; pointer-events: none;
-    background-image: radial-gradient(var(--border) 1px, transparent 1px);
-    background-size: 24px 24px;
-    mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, black 30%, transparent 70%);
-    -webkit-mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, black 30%, transparent 70%);
-}
+.trust-strip{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;margin-top:64px;padding-top:40px;border-top:1px solid var(--border)}
+.trust-item{text-align:center}
+.trust-item .val{font-size:24px;font-weight:700;margin-bottom:2px}
+.trust-item .lbl{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px}
+.trust-item .val.green{color:var(--green)}.trust-item .val.red{color:var(--red)}
 
-.orb { position:fixed; border-radius:50%; filter:blur(140px); pointer-events:none; z-index:0; opacity:0.12; will-change:transform; }
-.orb-1 { width:700px; height:700px; background:radial-gradient(circle, #6366f1, transparent); top:-300px; left:-150px; }
-.orb-2 { width:600px; height:600px; background:radial-gradient(circle, #3b82f6, transparent); bottom:-250px; right:-100px; }
-.orb-3 { width:500px; height:500px; background:radial-gradient(circle, #a855f7, transparent); top:60%; left:60%; }
+.features{padding:80px 32px}
+.section-label{text-align:center;font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:2px;margin-bottom:16px}
+.section-title{text-align:center;font-size:clamp(28px,5vw,40px);font-weight:800;letter-spacing:-1px;margin-bottom:12px}
+.section-sub{text-align:center;color:var(--text2);font-size:16px;margin-bottom:56px}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.feature-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;transition:all .3s;position:relative;overflow:hidden}
+.feature-card:hover{border-color:rgba(99,102,241,.2);transform:translateY(-2px)}
+.feature-card::before{content:'';position:absolute;top:0;left:20px;right:20px;height:1px;background:linear-gradient(90deg,transparent,rgba(99,102,241,.3),transparent);opacity:0;transition:opacity .3s}
+.feature-card:hover::before{opacity:1}
+.feature-icon{width:44px;height:44px;border-radius:12px;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+.feature-card svg{width:20px;height:20px;stroke:var(--accent);fill:none;stroke-width:1.5}
+.feature-card h3{font-size:16px;font-weight:700;margin-bottom:8px}
+.feature-card p{font-size:14px;color:var(--text2);line-height:1.7}
 
-/* Scan line overlay */
-.scanlines {
-    position:fixed; top:0; left:0; right:0; bottom:0; z-index:0; pointer-events:none;
-    background:repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.004) 2px, rgba(255,255,255,0.004) 4px);
-    opacity:0.5;
-}
+.how{padding:80px 32px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+@media(max-width:768px){.steps{grid-template-columns:1fr}}
+.step{text-align:center;padding:32px 20px;background:var(--surface);border:1px solid var(--border);border-radius:16px;position:relative}
+.step-num{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(59,130,246,.1));border:1px solid rgba(99,102,241,.3);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#a5b4fc;margin:0 auto 16px}
+.step h3{font-size:17px;font-weight:700;margin-bottom:6px}
+.step p{font-size:13px;color:var(--text2);line-height:1.6}
 
-/* Floating particles */
-.particles{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;pointer-events:none;}
-.particle{position:absolute;width:2px;height:2px;background:var(--accent);border-radius:50%;animation:float 6s infinite ease-in-out;opacity:0;}
-@keyframes float{0%{opacity:0;transform:translateY(100vh) scale(0)}10%{opacity:0.8}90%{opacity:0.2}100%{opacity:0;transform:translateY(-10vh) scale(1)}}
+.cta{padding:120px 32px;text-align:center}
+.cta h2{font-size:clamp(28px,5vw,40px);font-weight:800;margin-bottom:16px}
+.cta p{color:var(--text2);font-size:16px;margin-bottom:36px}
+.cta .trust{font-size:12px;color:var(--text2);margin-top:16px}
+.cta .trust img{vertical-align:middle;margin-right:6px}
 
-/* Glowing border on cards */
-.stat-item::after {
-    content:''; position:absolute; inset:-1px; border-radius:20px; padding:1px;
-    background:linear-gradient(135deg, transparent 40%, rgba(99,102,241,0.3), transparent 60%);
-    -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite:xor; mask-composite:exclude;
-    opacity:0; transition:opacity 0.6s;
-}
-.stat-item:hover::after { opacity:1; }
-
-/* ═══════ NAV ═══════ */
-nav {
-    position:fixed; top:0; left:0; right:0; z-index:100;
-    padding:14px 32px; display:flex; align-items:center; justify-content:space-between;
-    transition: all 0.4s;
-}
-nav.scrolled {
-    background:var(--nav-bg); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
-    border-bottom:1px solid var(--border); padding:10px 32px;
-}
-.nav-logo { font-size:22px; font-weight:800; letter-spacing:-0.5px; display:flex; align-items:center; gap:8px; }
-.nav-cta {
-    padding:8px 22px; border-radius:22px;
-    background:linear-gradient(135deg, #6366f1, #3b82f6);
-    color:#fff; font-size:14px; font-weight:600; border:none; cursor:pointer;
-    text-decoration:none; transition:all 0.3s; position:relative; overflow:hidden;
-}
-.nav-cta::after {
-    content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%;
-    background:linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.1) 50%, transparent 60%);
-    animation: shimmer 3s infinite;
-}
-@keyframes shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
-.nav-cta:hover { transform:translateY(-1px); box-shadow:0 6px 28px rgba(99,102,241,0.45); }
-
-.theme-toggle{width:38px;height:22px;border-radius:11px;background:#888;position:relative;cursor:pointer;transition:all .3s;border:none;padding:0;margin-right:8px;opacity:0.5;}
-.theme-toggle:hover{opacity:0.8;}
-.theme-toggle::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 1px 3px rgba(0,0,0,.2);}
-[data-theme="light"] .theme-toggle::after{transform:translateX(16px);}
-
-/* ═══════ SECTIONS ═══════ */
-section { position:relative; z-index:1; padding:100px 32px; }
-.container { max-width:1080px; margin:0 auto; }
-
-/* ═══════ HERO ═══════ */
-.hero { padding-top:200px; padding-bottom:100px; text-align:center; position:relative; }
-.hero::after {
-    content:''; position:absolute; bottom:0; left:50%; transform:translateX(-50%);
-    width:80%; height:1px;
-    background:linear-gradient(90deg, transparent, rgba(99,102,241,0.3), transparent);
-}
-.hero-badge {
-    display:inline-flex; align-items:center; gap:8px;
-    padding:5px 16px; border-radius:20px;
-    background:var(--surface); border:1px solid var(--border);
-    color:var(--accent); font-size:13px; font-weight:600; margin-bottom:36px;
-    backdrop-filter:blur(10px);
-}
-.hero-badge .dot { width:6px; height:6px; background:var(--green); border-radius:50%; animation:dotPulse 2s infinite; }
-@keyframes dotPulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,0.4)} 50%{opacity:0.5;box-shadow:0 0 0 6px rgba(34,197,94,0)} }
-
-.hero h1 {
-    font-size:clamp(44px, 8vw, 76px); font-weight:800; letter-spacing:-2.5px;
-    line-height:1.04; margin-bottom:28px;
-}
-.hero h1 .word { display:inline-block; opacity:0; transform:translateY(40px); animation:wordUp 0.7s forwards; }
-.hero h1 .word:nth-child(1) { animation-delay:0.1s; }
-.hero h1 .word:nth-child(2) { animation-delay:0.2s; }
-.hero h1 .word:nth-child(3) { animation-delay:0.3s; }
-.hero h1 .word:nth-child(4) { animation-delay:0.4s; }
-@keyframes wordUp { to { opacity:1; transform:translateY(0); } }
-
-.gradient-text {
-    background:linear-gradient(135deg, #6366f1 0%, #3b82f6 40%, #818cf8 70%, #a855f7 100%);
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-    background-size:200% 200%;
-    animation: gradientShift 4s ease infinite;
-}
-@keyframes gradientShift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
-
-.hero p {
-    font-size:clamp(16px, 2.5vw, 19px); color:var(--text2); max-width:560px;
-    margin:0 auto 44px; opacity:0; transform:translateY(20px);
-    animation:fadeUp 0.6s 0.5s forwards;
-}
-@keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
-
-.hero-buttons {
-    display:flex; gap:14px; justify-content:center; flex-wrap:wrap;
-    opacity:0; transform:translateY(20px); animation:fadeUp 0.6s 0.65s forwards;
-}
-.btn-primary {
-    padding:15px 34px; border-radius:30px;
-    background:linear-gradient(135deg, #6366f1, #3b82f6);
-    color:#fff; font-size:16px; font-weight:600; border:none; cursor:pointer;
-    text-decoration:none; transition:all 0.3s; position:relative; overflow:hidden;
-}
-.btn-primary::before {
-    content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
-    background:linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
-    transition:left 0.5s;
-}
-.btn-primary:hover::before { left:100%; }
-.btn-primary:hover { transform:translateY(-2px); box-shadow:0 10px 36px rgba(99,102,241,0.45); }
-.btn-outline {
-    padding:15px 34px; border-radius:30px; background:transparent; color:var(--text);
-    font-size:16px; font-weight:600; border:1px solid var(--border); cursor:pointer;
-    text-decoration:none; transition:all 0.3s; backdrop-filter:blur(10px);
-}
-.btn-outline:hover { background:var(--surface); border-color:var(--text2); }
-
-/* ═══════ STATS ROW ═══════ */
-.stats-row {
-    display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:80px;
-    opacity:0; transform:translateY(30px); animation:fadeUp 0.7s 0.8s forwards;
-}
-@media(max-width:768px){ .stats-row{grid-template-columns:1fr 1fr;} }
-.stat-item {
-    background:var(--surface); border:1px solid var(--border); border-radius:20px;
-    padding:28px 20px; text-align:center; transition:all 0.4s; position:relative; overflow:hidden;
-}
-.stat-item::before {
-    content:''; position:absolute; top:0; left:50%; transform:translateX(-50%);
-    width:0; height:1px; background:linear-gradient(90deg, transparent, var(--accent), transparent);
-    transition:width 0.5s;
-}
-.stat-item:hover::before { width:100%; }
-.stat-item:hover { border-color:var(--border-glow); transform:translateY(-4px); }
-.stat-value { font-size:36px; font-weight:800; letter-spacing:-1px; margin-bottom:4px; }
-.stat-value.red { color:#ef4444; }
-.stat-value.green { color:#22c55e; }
-.stat-label { font-size:13px; color:var(--text2); }
-
-/* ═══════ SECTION HEADER ═══════ */
-.section-header { text-align:center; margin-bottom:64px; }
-.section-label {
-    display:inline-block; font-size:11px; font-weight:700; letter-spacing:3px;
-    color:var(--accent); text-transform:uppercase; margin-bottom:16px;
-}
-.section-title {
-    font-size:clamp(28px, 5vw, 44px); font-weight:800; letter-spacing:-1.5px; margin-bottom:14px;
-}
-.section-sub { color:var(--text2); font-size:17px; max-width:480px; margin:0 auto; }
-
-/* ═══════ FEATURES ═══════ */
-.features-grid {
-    display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:18px;
-}
-.feature-card {
-    background:var(--surface); border:1px solid var(--border); border-radius:20px;
-    padding:38px 32px; transition:all 0.4s; position:relative; overflow:hidden;
-    opacity:0; transform:translateY(50px);
-}
-.feature-card.revealed { opacity:1; transform:translateY(0); }
-.feature-card::after {
-    content:''; position:absolute; top:-1px; left:20px; right:20px; height:1px;
-    background:linear-gradient(90deg, transparent, var(--accent), transparent);
-    opacity:0; transition:opacity 0.4s;
-}
-.feature-card:hover::after { opacity:1; }
-.feature-card:hover { border-color:rgba(99,102,241,0.2); transform:translateY(-6px); }
-.feature-icon {
-    width:48px; height:48px; border-radius:14px; display:flex; align-items:center;
-    justify-content:center; margin-bottom:22px; position:relative;
-    background:linear-gradient(135deg, rgba(99,102,241,0.12), rgba(59,130,246,0.08));
-    border:1px solid rgba(99,102,241,0.15);
-}
-.feature-icon svg{width:22px;height:22px;stroke:var(--accent);fill:none;stroke-width:1.5;}
-.feature-card:hover .feature-icon{box-shadow:0 0 24px rgba(99,102,241,.15);border-color:rgba(99,102,241,.3);}
-.feature-card h3 { font-size:17px; font-weight:700; margin-bottom:8px; }
-.feature-card p { font-size:14px; color:var(--text2); line-height:1.75; }
-
-/* ═══════ COMPARISON ═══════ */
-.comparison { display:flex; gap:20px; justify-content:center; flex-wrap:wrap; }
-.compare-card {
-    flex:1; min-width:300px; max-width:440px; border-radius:24px;
-    padding:36px 32px; position:relative; overflow:hidden;
-    opacity:0; transform:translateY(50px);
-}
-.compare-card.revealed { opacity:1; transform:translateY(0); }
-.compare-card.old {
-    background:rgba(239,68,68,0.03); border:1px solid rgba(239,68,68,0.15);
-}
-.compare-card.new {
-    background:rgba(99,102,241,0.03); border:1px solid rgba(99,102,241,0.2);
-    box-shadow:0 0 40px rgba(99,102,241,0.05);
-}
-.compare-card .c-badge {
-    display:inline-block; padding:4px 14px; border-radius:20px;
-    font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
-    margin-bottom:20px;
-}
-.c-badge-old { background:rgba(239,68,68,0.1); color:#ef4444; }
-.c-badge-new { background:rgba(99,102,241,0.15); color:#818cf8; }
-.compare-card h3 { font-size:22px; font-weight:700; margin-bottom:22px; }
-.compare-row { display:flex; justify-content:space-between; padding:13px 0; border-bottom:1px solid var(--border); font-size:14px; }
-.compare-row:last-child { border:none; }
-.compare-row span:last-child { font-weight:600; }
-
-/* ═══════ HOW IT WORKS ═══════ */
-.steps {
-    display:grid; grid-template-columns:repeat(3, 1fr); gap:24px;
-}
-@media(max-width:768px){ .steps{grid-template-columns:1fr;} }
-.step {
-    text-align:center; padding:0 20px; position:relative;
-    opacity:0; transform:translateY(50px);
-}
-.step.revealed { opacity:1; transform:translateY(0); }
-.step-num {
-    width:64px; height:64px; border-radius:20px; margin:0 auto 20px;
-    display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:800;
-    background:linear-gradient(135deg, rgba(99,102,241,0.2), rgba(59,130,246,0.1));
-    border:1px solid rgba(99,102,241,0.3); color:#818cf8; transition:all 0.4s;
-}
-.step:hover .step-num { box-shadow:0 0 32px rgba(99,102,241,0.2); border-color:var(--accent); }
-.step-arrow {
-    position:absolute; top:32px; right:-16px; font-size:20px; color:var(--text2);
-}
-@media(max-width:768px){ .step-arrow{display:none;} }
-.step h3 { font-size:18px; font-weight:700; margin-bottom:6px; }
-.step p { font-size:13px; color:var(--text2); line-height:1.7; }
-
-/* ═══════ CTA ═══════ */
-.cta-section {
-    text-align:center; padding:140px 32px; position:relative;
-}
-.cta-section::before {
-    content:''; position:absolute; top:0; left:50%; transform:translateX(-50%);
-    width:60%; height:1px;
-    background:linear-gradient(90deg, transparent, rgba(99,102,241,0.3), transparent);
-}
-.cta-section h2 { font-size:clamp(28px,5vw,44px); font-weight:800; letter-spacing:-1px; margin-bottom:16px; }
-.cta-section p { color:var(--text2); font-size:17px; margin-bottom:44px; }
-.cta-buttons { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
-
-/* ═══════ FOOTER ═══════ */
-footer {
-    text-align:center; padding:48px 32px 36px;
-    color:var(--text2); font-size:13px; border-top:1px solid var(--border);
-    position:relative; z-index:1;
-}
-footer a { color:var(--accent); text-decoration:none; }
-footer a:hover { color:#c7d2fe; }
-
-/* ═══════ RESPONSIVE ═══════ */
-@media(max-width:768px){
-    nav{ padding:10px 18px; }
-    .hero{ padding-top:140px; padding-bottom:80px; }
-    section{ padding:60px 18px; }
-    .cta-section{ padding:80px 18px; }
-}
-
-/* ═══════ SCROLL REVEAL ═══════ */
-.reveal {
-    opacity:0; transform:translateY(60px);
-    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.reveal.visible { opacity:1; transform:translateY(0); }
+footer{text-align:center;padding:40px 32px;color:var(--text2);font-size:12px;border-top:1px solid var(--border);position:relative;z-index:1}
+footer a{color:#a5b4fc;text-decoration:none}
 </style>
 </head>
 <body>
+<div class="bg-grid"></div><div class="orb orb-1"></div><div class="orb orb-2"></div>
 
-<div class="bg-grid"></div>
-<div class="scanlines"></div>
-<div class="particles" id="particles"></div>
-<div class="orb orb-1"></div>
-<div class="orb orb-2"></div>
-<div class="orb orb-3"></div>
-
-<!-- ═══════ NAV ═══════ -->
 <nav id="navbar">
-    <div class="nav-logo"><img src="/favicon.png" style="width:24px;height:24px;vertical-align:middle;border-radius:6px;"> PayFlash</div>
-    <div style="display:flex;align-items:center;gap:12px;">
-        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme"></button>
-        <a href="/brand" class="nav-cta">Launch Demo →</a>
-    </div>
+    <a href="/" class="nav-logo"><img src="/favicon.png" alt="">PayFlash</a>
+    <a href="/brand" class="nav-cta">Launch App →</a>
 </nav>
 
-<!-- ═══════ HERO ═══════ -->
 <section class="hero">
     <div class="container">
-        <div class="hero-badge"><span class="dot"></span> Powered by Base L2 + Circle USDC</div>
-        <h1>
-            <span class="word">Settle</span>
-            <span class="word">cross-border</span>
-            <span class="word">commissions</span><br>
-            <span class="word gradient-text">in 3 minutes.</span>
-        </h1>
-        <p>PayFlash replaces 30-day PayPal settlement with USDC smart contracts on Base L2. No SWIFT. No FX desk. No waiting. Just instant, verifiable, on-chain settlement at a fraction of the cost.</p>
-        <div style="margin:0 0 36px;padding:14px 24px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 10px 10px 0;text-align:left;max-width:560px;margin-left:auto;margin-right:auto;font-size:14px;color:var(--text2);font-style:italic;letter-spacing:.2px;">
-            "We don't hold your money. We tell you who to pay and how much. You pay them directly. We verify it on-chain."
-        </div>
+        <div class="hero-badge"><span class="dot"></span>Powered by Base L2 + Circle USDC</div>
+        <h1>Pay affiliates<br><span class="grad">in 3 minutes, not 30 days.</span></h1>
+        <p>PayFlash settles cross-border affiliate commissions on Base L2 using USDC. No SWIFT. No correspondent banks. No FX desk. Just instant, verifiable, on-chain settlement at a fraction of PayPal's cost.</p>
         <div class="hero-buttons">
-            <a href="/brand" class="btn-primary">⚡ Try the Demo</a>
-            <a href="#features" class="btn-outline">Explore Features ↓</a>
+            <a href="/brand" class="btn btn-primary">Try Brand Dashboard →</a>
+            <a href="/affiliate" class="btn btn-outline">View Affiliate Demo</a>
         </div>
-        <div class="stats-row">
-            <div class="stat-item reveal">
-                <div class="stat-value red" data-count="30">30 days</div>
-                <div class="stat-label">Traditional Settlement Time</div>
-            </div>
-            <div class="stat-item reveal">
-                <div class="stat-value green">~3 min</div>
-                <div class="stat-label">PayFlash Settlement Time</div>
-            </div>
-            <div class="stat-item reveal">
-                <div class="stat-value red">5%+</div>
-                <div class="stat-label">Traditional Total Fees</div>
-            </div>
-            <div class="stat-item reveal">
-                <div class="stat-value green">< 1%</div>
-                <div class="stat-label">PayFlash Total Cost</div>
-            </div>
+        <div class="trust-strip">
+            <div class="trust-item"><div class="val red">30 days</div><div class="lbl">PayPal Settlement</div></div>
+            <div class="trust-item"><div class="val green">~3 min</div><div class="lbl">PayFlash Settlement</div></div>
+            <div class="trust-item"><div class="val red">5%+</div><div class="lbl">PayPal Fees</div></div>
+            <div class="trust-item"><div class="val green">< 1%</div><div class="lbl">PayFlash Fees</div></div>
+            <div class="trust-item"><div class="val green">$0.003</div><div class="lbl">Gas per tx</div></div>
         </div>
     </div>
 </section>
 
-<!-- ═══════ FEATURES ═══════ -->
-<section id="features">
+<section class="features">
     <div class="container">
-        <div class="section-header reveal">
-            <div class="section-label">Why PayFlash</div>
-            <h2 class="section-title">Cross-border payments,<br>finally at internet speed.</h2>
-            <p class="section-sub">PayPal and SWIFT were built in the 1990s. PayFlash is built on Base L2, where value moves as fast as data.</p>
-        </div>
+        <div class="section-label">Why PayFlash</div>
+        <div class="section-title">Cross-border payments at internet speed</div>
+        <div class="section-sub">Built on Base L2, backed by Circle USDC, deployed on-chain</div>
         <div class="features-grid">
-            <div class="feature-card reveal">
+            <div class="feature-card">
                 <div class="feature-icon"><svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
                 <h3>Instant Settlement</h3>
-                <p>Base L2 confirms blocks every ~2 seconds. Your affiliates get paid in minutes, not weeks. Zero "where's my money?" emails.</p>
+                <p>Base L2 confirms blocks every ~2s. Affiliates receive USDC in minutes, not weeks. No batch processing, no bank hours.</p>
             </div>
-            <div class="feature-card reveal">
-                <div class="feature-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><path d="M12 18V6"/></svg></div>
-                <h3>80%+ Cheaper</h3>
-                <p>No correspondent banks. No FX spread. No SWIFT fees. Just Base L2 gas (~$0.003/tx) + our platform fee. Every payout costs pennies instead of dollars.</p>
+            <div class="feature-card">
+                <div class="feature-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/></svg></div>
+                <h3>85%+ Cheaper</h3>
+                <p>No SWIFT fees, no FX markup, no intermediary banks. ~$0.003 gas per transaction + platform fee. Every payout saves money.</p>
             </div>
-            <div class="feature-card reveal">
+            <div class="feature-card">
                 <div class="feature-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
                 <h3>Smart Contract Escrow</h3>
-                <p>Funds are locked in an auditable, open-source smart contract. No one — not even PayFlash — can touch the money. Blockchain is the receipt.</p>
+                <p>Funds locked in auditable, open-source contract on Base L2. No one — including PayFlash — can touch the money.</p>
             </div>
-            <div class="feature-card reveal">
+            <div class="feature-card">
                 <div class="feature-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
                 <h3>Truly Global</h3>
-                <p>USDC is a regulated digital dollar. Affiliates in Brazil, Korea, Germany, or Nigeria receive the same asset. No per-country banking setup required.</p>
+                <p>USDC is the same digital dollar everywhere. Affiliates in Brazil, Korea, Nigeria — same asset, same speed, no per-country setup.</p>
             </div>
-            <div class="feature-card reveal">
-                <div class="feature-icon"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="9" y1="16" x2="9" y2="19"/><line x1="15" y1="16" x2="15" y2="19"/></svg></div>
+            <div class="feature-card">
+                <div class="feature-icon"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
                 <h3>On-Chain Audit Trail</h3>
-                <p>Every settlement is a permanent Base L2 transaction. Public. Immutable. Verifiable by anyone. Reconciliation goes from 3 workdays to 0.</p>
+                <p>Every settlement is a permanent Base L2 transaction. Public. Immutable. Verifiable by anyone. No disputes.</p>
             </div>
-            <div class="feature-card reveal">
+            <div class="feature-card">
                 <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-                <h3>Compliant by Design</h3>
-                <p>USDC is issued by Circle (US-regulated, audited monthly). Smart contracts are open-source. Built for real businesses that care about compliance.</p>
+                <h3>Regulated Stablecoin</h3>
+                <p>USDC issued by Circle — US-regulated, audited monthly, 1:1 backed. Built for real businesses, not speculation.</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ═══════ COMPARISON ═══════ -->
-<section>
+<section class="how">
     <div class="container">
-        <div class="section-header reveal">
-            <div class="section-label">The Difference</div>
-            <h2 class="section-title">One column costs you.<br>The other makes you money.</h2>
-        </div>
-        <div class="comparison">
-            <div class="compare-card old reveal">
-                <div class="c-badge c-badge-old">Legacy</div>
-                <h3>PayPal / SWIFT</h3>
-                <div class="compare-row"><span>Settlement Time</span><span style="color:#ef4444;">15–45 days</span></div>
-                <div class="compare-row"><span>Total Fees</span><span style="color:#ef4444;">3–6%</span></div>
-                <div class="compare-row"><span>Traceability</span><span>Email + bank slips</span></div>
-                <div class="compare-row"><span>Availability</span><span>Business days only</span></div>
-                <div class="compare-row"><span>Reconciliation</span><span>Manual, hours of work</span></div>
-                <div class="compare-row"><span>Affiliate UX</span><span>Long wait, uncertainty</span></div>
-            </div>
-            <div class="compare-card new reveal">
-                <div class="c-badge c-badge-new">PayFlash</div>
-                <h3>USDC on Base L2</h3>
-                <div class="compare-row"><span>Settlement Time</span><span style="color:#22c55e;">~3 minutes</span></div>
-                <div class="compare-row"><span>Total Fees</span><span style="color:#22c55e;">< 1%</span></div>
-                <div class="compare-row"><span>Traceability</span><span style="color:#22c55e;">On-chain, public, forever</span></div>
-                <div class="compare-row"><span>Availability</span><span style="color:#22c55e;">24 / 7 / 365</span></div>
-                <div class="compare-row"><span>Reconciliation</span><span style="color:#22c55e;">Fully automated</span></div>
-                <div class="compare-row"><span>Affiliate UX</span><span style="color:#22c55e;">Instant notification</span></div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ═══════ HOW IT WORKS ═══════ -->
-<section>
-    <div class="container">
-        <div class="section-header reveal">
-            <div class="section-label">How It Works</div>
-            <h2 class="section-title">Three steps. Zero friction.</h2>
-        </div>
+        <div class="section-label">How It Works</div>
+        <div class="section-title">Three steps. Zero friction.</div>
+        <div class="section-sub" style="margin-bottom:48px"></div>
         <div class="steps">
-            <div class="step reveal">
+            <div class="step">
                 <div class="step-num">1</div>
                 <h3>Fund Escrow</h3>
-                <p>Brand deposits USDC into a Base L2 smart contract. Funds are locked on-chain and fully auditable.</p>
-                <div class="step-arrow">→</div>
+                <p>Brand deposits USDC into a smart contract on Base L2. Funds are locked, auditable, and visible on-chain.</p>
             </div>
-            <div class="step reveal">
+            <div class="step">
                 <div class="step-num">2</div>
                 <h3>Confirm & Settle</h3>
-                <p>Order confirmed → contract auto-releases funds to affiliate. No manual approval. No batch processing.</p>
-                <div class="step-arrow">→</div>
+                <p>Order confirmed. Contract releases USDC to affiliate automatically. No manual approval, no batch processing.</p>
             </div>
-            <div class="step reveal">
+            <div class="step">
                 <div class="step-num">3</div>
                 <h3>Instant Payout</h3>
-                <p>Affiliate gets a live popup. USDC lands in their wallet. ~3 minutes. Under 1% total cost. Done.</p>
+                <p>Affiliate gets a live notification. USDC in their wallet in ~3 minutes. Under 1% total cost. Done.</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ═══════ CTA ═══════ -->
-<section class="cta-section">
-    <div class="container reveal">
-        <h2>Ready to see it in action?</h2>
-        <p>Two dashboards. Real-time sync. Instant settlement. All simulated with live data.</p>
-        <div class="cta-buttons">
-            <a href="/brand" class="btn-primary">🏪 Brand Dashboard</a>
-            <a href="/affiliate" class="btn-outline">👤 Affiliate Dashboard</a>
+<section class="cta">
+    <div class="container">
+        <h2>Ready to settle in 3 minutes?</h2>
+        <p>Brand dashboard + affiliate dashboard. Real-time sync. Instant settlement.</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+            <a href="/brand" class="btn btn-primary">🚀 Try Brand Demo</a>
+            <a href="/affiliate" class="btn btn-outline">👤 Affiliate View</a>
         </div>
+        <div class="trust">Built on <strong>Base L2</strong> · Powered by <strong>Circle USDC</strong> · Open source on <a href="https://github.com/kaylee630-afk/affiliate-settlement-demo" target="_blank">GitHub</a></div>
     </div>
 </section>
 
-<!-- ═══════ FOOTER ═══════ -->
 <footer>
-    <p><a href="https://github.com/kaylee630-afk/affiliate-settlement-demo" target="_blank">View on GitHub</a></p>
-    <p style="margin-top:4px;color:rgba(255,255,255,0.3);">PayFlash · Instant settlement on Base L2 · 2026</p>
+    <p>PayFlash · Cross-border affiliate settlement on Base L2 · 2026</p>
+    <p style="margin-top:4px"><a href="https://github.com/kaylee630-afk/affiliate-settlement-demo" target="_blank">Open Source</a> · <a href="/brand">Brand</a> · <a href="/affiliate">Affiliate</a></p>
 </footer>
 
 <script>
-// Theme
-const html=document.documentElement;
-function applyTheme(){const s=localStorage.getItem('payflash-theme');html.setAttribute('data-theme',s||(window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark'));}
-applyTheme();
-window.matchMedia('(prefers-color-scheme:light)').addEventListener('change',()=>{if(!localStorage.getItem('payflash-theme'))applyTheme();});
-function toggleTheme(){const n=html.getAttribute('data-theme')==='dark'?'light':'dark';html.setAttribute('data-theme',n);localStorage.setItem('payflash-theme',n);}
-
-// Nav scroll effect
-window.addEventListener('scroll', () => {
-    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
-});
-
-// Parallax orbs
-window.addEventListener('mousemove', (e) => {
-    const x = e.clientX / window.innerWidth - 0.5;
-    const y = e.clientY / window.innerHeight - 0.5;
-    document.querySelector('.orb-1').style.transform = `translate(${x*30}px, ${y*30}px)`;
-    document.querySelector('.orb-2').style.transform = `translate(${-x*25}px, ${-y*25}px)`;
-    document.querySelector('.orb-3').style.transform = `translate(${x*15}px, ${-y*15}px)`;
-});
-
-// Scroll reveal
-const revealEls = document.querySelectorAll('.reveal');
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-        }
-    });
-}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-
-revealEls.forEach(el => observer.observe(el));
-
-// Floating particles
-(function spawnParticle(){
-    const p=document.createElement('div');p.className='particle';
-    p.style.left=Math.random()*100+'%';
-    p.style.animationDuration=(4+Math.random()*8)+'s';
-    p.style.animationDelay=Math.random()*2+'s';
-    p.style.width=(1+Math.random()*3)+'px';
-    p.style.height=p.style.width;
-    document.getElementById('particles').appendChild(p);
-    setTimeout(()=>p.remove(),12000);
-    setTimeout(spawnParticle,800+Math.random()*1200);
-})();
+window.addEventListener('scroll',()=>{document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>60)});
+// Reveal animations
+const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}})});
+document.querySelectorAll('.feature-card,.step').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(30px)';el.style.transition='all .6s cubic-bezier(.16,1,.3,1)';obs.observe(el)});
 </script>
 </body>
 </html>
