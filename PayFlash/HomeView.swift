@@ -18,6 +18,9 @@ struct HomeView: View {
                     .padding(.vertical, 32)
                     .background(RoundedRectangle(cornerRadius: 20).fill(Color(.systemBackground)))
 
+                    // Weekly Chart Card
+                    WeekChartView()
+
                     // Quick Actions
                     HStack(spacing: 16) {
                         Button(action: switchToSend) {

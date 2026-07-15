@@ -1,151 +1,244 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PayFlash — Send Money Globally in 3 Minutes</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PayFlash — Send Money in 3 Minutes</title>
 <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="PayFlash">
-<link rel="apple-touch-icon" href="/favicon.png">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#010314">
 <link rel="manifest" href="/manifest.json">
+<script src="/sw-register.js"></script>
 <style>
-:root{--bg:#080810;--surface:rgba(255,255,255,0.03);--border:rgba(255,255,255,0.06);--text:#f5f5f7;--text2:#8b8fa3;--accent:#6366f1;--green:#22c55e;--red:#ef4444;--nav-bg:rgba(8,8,16,0.85)}
+:root {
+  --bg: #010314; --surface: rgba(255,255,255,0.03); --text: #f5f5f7; --text2: #8b8fa3;
+  --accent: #6366f1; --green: #22c55e; --gold: #f5a623;
+}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
-.bg-grid{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;pointer-events:none;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.5}
-.orb{position:fixed;border-radius:50%;filter:blur(140px);pointer-events:none;z-index:0;opacity:.08}
-.orb-1{width:600px;height:600px;background:radial-gradient(circle,#6366f1,transparent);top:-200px;right:-100px}
-.orb-2{width:500px;height:500px;background:radial-gradient(circle,#3b82f6,transparent);bottom:-150px;left:-80px}
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;transition:all .4s}
-nav.scrolled{background:var(--nav-bg);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
-.nav-logo{font-size:20px;font-weight:800;letter-spacing:-.3px;display:flex;align-items:center;gap:8px;color:var(--text);text-decoration:none}
-.nav-logo img{width:28px;height:28px;border-radius:7px}
-.nav-cta{padding:8px 20px;border-radius:20px;background:linear-gradient(135deg,#6366f1,#3b82f6);color:#fff;font-size:13px;font-weight:600;text-decoration:none;transition:all .3s}
-.nav-cta:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(99,102,241,.4)}
-section{position:relative;z-index:1;padding:100px 32px}.container{max-width:1000px;margin:0 auto}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
 
-.hero{padding-top:180px;padding-bottom:100px;text-align:center}
-.hero-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);color:#a5b4fc;font-size:12px;font-weight:600;margin-bottom:32px}
-.hero-badge .dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.hero h1{font-size:clamp(42px,8vw,64px);font-weight:800;letter-spacing:-2px;line-height:1.05;margin-bottom:24px}
-.hero h1 .grad{background:linear-gradient(135deg,#6366f1,#3b82f6,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero p{font-size:18px;color:var(--text2);max-width:560px;margin:0 auto 40px}
-.hero-buttons{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 30px;border-radius:28px;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;transition:all .3s;font-family:inherit;border:none}
-.btn-primary{background:linear-gradient(135deg,#6366f1,#3b82f6);color:#fff}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(99,102,241,.4)}
-.btn-outline{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,.15)}.btn-outline:hover{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.25)}
+/* liquid glass */
+.liquid-glass {
+  background: rgba(255,255,255,.01);
+  backdrop-filter: blur(4px);-webkit-backdrop-filter:blur(4px);
+  border: none;box-shadow:inset 0 1px 1px rgba(255,255,255,.1);
+  position:relative;overflow:hidden;
+}
+.liquid-glass::before {
+  content:'';position:absolute;inset:0;border-radius:inherit;padding:1.4px;
+  background:linear-gradient(180deg,rgba(255,255,255,.45)0%,rgba(255,255,255,.15)20%,transparent 40%,transparent 60%,rgba(255,255,255,.15)80%,rgba(255,255,255,.45)100%);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;
+}
+.text-glow{text-shadow:0 0 40px rgba(99,102,241,.4),0 0 80px rgba(99,102,241,.2)}
+.btn-glow{box-shadow:0 0 20px rgba(99,102,241,.3),0 0 40px rgba(99,102,241,.1)}
 
-.trust-strip{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;margin-top:64px;padding-top:40px;border-top:1px solid var(--border)}
-.trust-item{text-align:center}.trust-item .val{font-size:24px;font-weight:700;margin-bottom:2px}.trust-item .lbl{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px}
+/* animations */
+@keyframes fadeRise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes zoomOut{from{transform:scale(1.12)}to{transform:scale(1)}}
+.anim{animation-fill-mode:forwards;animation-timing-function:cubic-bezier(.16,1,.3,1)}
+.fade-rise{animation:fadeRise 1s}.fade-up{animation:fadeUp .8s}
+.zoom-out{animation:zoomOut 1.8s cubic-bezier(.16,1,.3,1) forwards}
 
-.features{padding:80px 32px}
-.section-label{text-align:center;font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:2px;margin-bottom:16px}
-.section-title{text-align:center;font-size:clamp(28px,5vw,40px);font-weight:800;letter-spacing:-1px;margin-bottom:12px}
-.section-sub{text-align:center;color:var(--text2);font-size:16px;margin-bottom:56px}
-.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
-.feature-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;transition:all .3s;position:relative;overflow:hidden}
-.feature-card:hover{border-color:rgba(99,102,241,.2);transform:translateY(-2px)}
-.feature-card::before{content:'';position:absolute;top:0;left:20px;right:20px;height:1px;background:linear-gradient(90deg,transparent,rgba(99,102,241,.3),transparent);opacity:0;transition:opacity .3s}
-.feature-card:hover::before{opacity:1}
-.feature-icon{width:44px;height:44px;border-radius:12px;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);display:flex;align-items:center;justify-content:center;margin-bottom:20px}
-.feature-card svg{width:20px;height:20px;stroke:var(--accent);fill:none;stroke-width:1.5}
-.feature-card h3{font-size:16px;font-weight:700;margin-bottom:8px}
-.feature-card p{font-size:14px;color:var(--text2);line-height:1.7}
+@keyframes twinkle{0%,100%{opacity:.2}50%{opacity:1}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 
-.how{padding:80px 32px}
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}@media(max-width:768px){.steps{grid-template-columns:1fr}}
-.step{text-align:center;padding:32px 20px;background:var(--surface);border:1px solid var(--border);border-radius:16px}
-.step-icon{font-size:40px;margin-bottom:12px}
-.step h3{font-size:17px;font-weight:700;margin-bottom:6px}
-.step p{font-size:13px;color:var(--text2);line-height:1.6}
+/* nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 32px}
+.nav-logo{font-family:'Instrument Serif',serif;font-size:28px;color:#fff;text-decoration:none;letter-spacing:-.5px}
+.nav-links{display:flex;gap:32px}
+.nav-links a{color:rgba(255,255,255,.7);text-decoration:none;font-size:14px;transition:color .3s}
+.nav-links a:hover{color:#fff}
+.nav-cta{background:#fff;color:#000;padding:10px 24px;border-radius:999px;font-size:14px;font-weight:600;text-decoration:none;transition:all .3s}
+.nav-cta:hover{transform:scale(1.03);box-shadow:0 4px 20px rgba(255,255,255,.15)}
 
-.cta{padding:120px 32px;text-align:center}.cta h2{font-size:clamp(28px,5vw,40px);font-weight:800;margin-bottom:16px}.cta p{color:var(--text2);font-size:16px;margin-bottom:36px}
-.cta .trust{font-size:12px;color:var(--text2);margin-top:16px}
+/* hero */
+.hero{position:relative;height:100dvh;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.hero-video{position:absolute;inset:0;z-index:0}
+.hero-video video{width:100%;height:100%;object-fit:cover}
+.hero-overlay{position:absolute;inset:0;background:rgba(1,3,20,.45);z-index:1}
+.hero-content{position:relative;z-index:10;text-align:center;padding:0 24px}
+.hero h1{font-family:'Instrument Serif',serif;font-size:clamp(42px,8vw,110px);line-height:.9;color:#fff;text-glow}
+.hero h1 em{font-style:italic;color:rgba(255,255,255,.6)}
+.hero p{color:rgba(255,255,255,.6);font-size:16px;max-width:560px;margin:24px auto 0;line-height:1.6}
+.hero-btn{display:inline-block;margin-top:36px;background:#6366f1;color:#fff;padding:16px 48px;border-radius:999px;font-size:16px;font-weight:600;text-decoration:none;transition:all .3s}
+.hero-btn:hover{transform:scale(1.03);box-shadow:0 8px 30px rgba(99,102,241,.5)}
 
-footer{text-align:center;padding:40px 32px;color:var(--text2);font-size:12px;border-top:1px solid var(--border);position:relative;z-index:1}
-footer a{color:#a5b4fc;text-decoration:none}
+/* sound btn */
+.sound-btn{position:absolute;bottom:32px;left:32px;z-index:20;display:flex;align-items:center;gap:8px;cursor:pointer;background:none;border:none;color:rgba(255,255,255,.5);font-size:12px;font-family:'Inter',sans-serif}
+
+/* sections */
+.sec{padding:100px 32px;position:relative;z-index:1}.sec-inner{max-width:1100px;margin:0 auto}
+.sec-label{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;text-align:center}
+.sec-title{font-family:'Instrument Serif',serif;font-size:clamp(28px,5vw,48px);text-align:center;margin-bottom:12px}
+.sec-sub{color:var(--text2);font-size:16px;text-align:center;max-width:600px;margin:0 auto 56px}
+
+/* features */
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.feat-card{background:var(--surface);border:1px solid rgba(255,255,255,.05);border-radius:18px;padding:28px;transition:all .3s}
+.feat-card:hover{border-color:rgba(99,102,241,.2);transform:translateY(-2px)}
+.feat-card .icon{width:44px;height:44px;border-radius:12px;background:rgba(99,102,241,.1);display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:20px}
+.feat-card h3{font-size:17px;font-weight:700;margin-bottom:8px}
+.feat-card p{font-size:14px;color:var(--text2);line-height:1.7}
+
+/* compare */
+.compare{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:60px}
+.compare-card{text-align:center;padding:24px;background:var(--surface);border:1px solid rgba(255,255,255,.05);border-radius:16px}
+.compare-card .old{font-size:15px;color:#ef4444;text-decoration:line-through}
+.compare-card .new{font-size:24px;font-weight:700;color:var(--green)}
+.compare-card .label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+
+/* cta */
+.cta{text-align:center;padding:120px 32px}.cta h2{font-family:'Instrument Serif',serif;font-size:clamp(28px,5vw,48px);margin-bottom:16px}.cta p{color:var(--text2);margin-bottom:32px}.cta .trust{color:var(--text2);font-size:12px;margin-top:16px}
+
+footer{text-align:center;padding:40px;color:var(--text2);font-size:12px;border-top:1px solid rgba(255,255,255,.05)}
+footer a{color:#818cf8;text-decoration:none}
+
+@media(max-width:768px){
+  .nav-links{display:none}
+  .compare{grid-template-columns:1fr}
+}
+
+/* scroll reveal */
+.reveal{opacity:0;transform:translateY(30px);transition:all .6s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
 </style>
 </head>
 <body>
-<div class="bg-grid"></div><div class="orb orb-1"></div><div class="orb orb-2"></div>
 
-<nav id="navbar">
-    <a href="/" class="nav-logo"><img src="/favicon.png" alt="">PayFlash</a>
-    <a href="/brand" class="nav-cta">Launch App →</a>
+<!-- stars bg -->
+<div style="position:fixed;inset:0;pointer-events:none;z-index:0">
+  <script>
+  for(let i=0;i<80;i++){
+    const d=document.createElement('div');
+    d.style.cssText=`position:absolute;width:${1+Math.random()*2}px;height:${1+Math.random()*2}px;background:#fff;border-radius:50%;left:${Math.random()*100}%;top:${Math.random()*100}%;opacity:${.15+Math.random()*.5};animation:twinkle ${2+Math.random()*5}s ease-in-out infinite ${Math.random()*4}s`;
+    document.currentScript.parentElement.appendChild(d);
+  }
+  </script>
+</div>
+
+<!-- nav -->
+<nav>
+  <a href="/" class="nav-logo">PayFlash</a>
+  <div class="nav-links">
+    <a href="/brand">Send</a><a href="#features">Features</a><a href="#compare">Compare</a><a href="#">Docs</a>
+  </div>
+  <a href="/brand" class="nav-cta">Launch App</a>
 </nav>
 
+<!-- hero -->
 <section class="hero">
-    <div class="container">
-        <div class="hero-badge"><span class="dot"></span>Built on Base L2 · Powered by USDC</div>
-        <h1>Send money<br><span class="grad">in 3 minutes, not 3 days.</span></h1>
-        <p>PayFlash sends USDC on Base L2 to anyone, anywhere in the world. No SWIFT. No intermediary banks. No waiting. Just instant, verifiable, on-chain transfers at a fraction of the cost.</p>
-        <div class="hero-buttons">
-            <a href="/brand" class="btn btn-primary">Try It Now →</a>
-            <a href="#features" class="btn btn-outline">How It Works ↓</a>
-        </div>
-        <div class="trust-strip">
-            <div class="trust-item"><div class="val red">3 days</div><div class="lbl">Bank Wire</div></div>
-            <div class="trust-item"><div class="val green">~3 min</div><div class="lbl">PayFlash</div></div>
-            <div class="trust-item"><div class="val red">5%+</div><div class="lbl">PayPal</div></div>
-            <div class="trust-item"><div class="val green">< 1%</div><div class="lbl">PayFlash</div></div>
-        </div>
-    </div>
+  <div class="hero-video">
+    <video autoplay loop muted playsinline>
+      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260613_180732_a54afbf6-b30d-470e-861f-669871f09f67.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1>Send money<br><em>in 3 minutes.</em></h1>
+    <p>Built on Base L2 and powered by USDC — instant, borderless, near-zero fees. No SWIFT, no banks, no waiting.</p>
+    <a href="/brand" class="hero-btn">🚀 Launch App</a>
+  </div>
+  <button class="sound-btn" id="soundBtn" onclick="toggleSound()">
+    <span style="width:10px;height:2px;background:rgba(255,255,255,.5);border-radius:2px"></span> Sound on
+  </button>
+  <script>
+  const v=document.querySelector('video');
+  function toggleSound(){v.muted=!v.muted;document.getElementById('soundBtn').textContent=v.muted?'🔇 Sound off':'🔊 Sound on'}
+  </script>
 </section>
 
-<section class="features" id="features">
-    <div class="container">
-        <div class="section-label">Why PayFlash</div>
-        <div class="section-title">Global payments at internet speed</div>
-        <div class="section-sub">Stop waiting for bank wires. Send USDC on Base L2 — instant, cheap, verifiable.</div>
-        <div class="features-grid">
-            <div class="feature-card"><div class="feature-icon"><svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><h3>Lightning Fast</h3><p>Base L2 confirms in ~2 seconds. Recipients get USDC in minutes. 7x24, no bank hours.</p></div>
-            <div class="feature-card"><div class="feature-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/></svg></div><h3>Dirt Cheap</h3><p>~$0.003 gas per transaction. No SWIFT fees, no FX markup, no hidden costs.</p></div>
-            <div class="feature-card"><div class="feature-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div><h3>Truly Global</h3><p>USDC is the same digital dollar everywhere. Send to Brazil, Korea, Nigeria — one currency, one speed.</p></div>
-            <div class="feature-card"><div class="feature-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div><h3>Your Keys, Your Money</h3><p>USDC issued by Circle (US-regulated). Smart contracts are open-source. No one can freeze your funds.</p></div>
-            <div class="feature-card"><div class="feature-icon"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><h3>On-Chain Records</h3><p>Every transfer leaves a permanent trail on Base L2. Public. Immutable. No disputes, no "lost payments".</p></div>
-            <div class="feature-card"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><h3>Compliant & Safe</h3><p>USDC is 1:1 backed, audited monthly. Built for real people and businesses who care about trust.</p></div>
-        </div>
+<!-- features -->
+<section class="sec" id="features">
+  <div class="sec-inner">
+    <div class="sec-label">Why PayFlash</div>
+    <div class="sec-title">Global payments at internet speed.</div>
+    <div class="sec-sub">Stop waiting for bank wires. Send USDC on Base L2 — instant, cheap, verifiable.</div>
+    <div class="feat-grid">
+      <div class="feat-card reveal">
+        <div class="icon">⚡</div>
+        <h3>Lightning Fast</h3>
+        <p>Base L2 confirms in ~2 seconds. 7×24, no bank hours, no holidays.</p>
+      </div>
+      <div class="feat-card reveal">
+        <div class="icon">💸</div>
+        <h3>Near-Zero Fees</h3>
+        <p>~$0.003 gas per transaction. No SWIFT fees, no FX markup, no hidden costs.</p>
+      </div>
+      <div class="feat-card reveal">
+        <div class="icon">🌍</div>
+        <h3>Truly Global</h3>
+        <p>USDC is the same digital dollar everywhere. One currency, one network.</p>
+      </div>
+      <div class="feat-card reveal">
+        <div class="icon">🔒</div>
+        <h3>On-Chain Records</h3>
+        <p>Every transfer is public, immutable, verifiable. No disputes, no "lost payments".</p>
+      </div>
+      <div class="feat-card reveal">
+        <div class="icon">🛡️</div>
+        <h3>Compliant & Safe</h3>
+        <p>USDC is 1:1 backed, audited monthly by Circle. Regulated and transparent.</p>
+      </div>
+      <div class="feat-card reveal">
+        <div class="icon">🏗️</div>
+        <h3>Built on Base</h3>
+        <p>Coinbase's L2 — secure, scalable, and battle-tested with millions of users.</p>
+      </div>
     </div>
+  </div>
 </section>
 
-<section class="how">
-    <div class="container">
-        <div class="section-label">How It Works</div>
-        <div class="section-title">Three steps. Zero friction.</div>
-        <div class="section-sub" style="margin-bottom:48px"></div>
-        <div class="steps">
-            <div class="step"><div class="step-icon">1</div><h3>Open App</h3><p>Connect your wallet. See your USDC balance. Pick who to pay.</p></div>
-            <div class="step"><div class="step-icon">2</div><h3>Enter Amount</h3><p>Type the amount. Review the details. Gas fee shown upfront (~$0.003).</p></div>
-            <div class="step"><div class="step-icon">3</div><h3>Send</h3><p>Hit send. USDC arrives in their wallet in ~3 minutes. On-chain confirmation.</p></div>
-        </div>
+<!-- compare -->
+<section class="sec" id="compare" style="background:rgba(255,255,255,.01)">
+  <div class="sec-inner">
+    <div class="sec-label">The Difference</div>
+    <div class="sec-title">Why switch to PayFlash?</div>
+    <div class="compare">
+      <div class="compare-card reveal">
+        <div class="label">Settlement Time</div>
+        <div class="old">3-5 days</div>
+        <div style="color:var(--text2);margin:4px 0">→</div>
+        <div class="new">~3 min</div>
+      </div>
+      <div class="compare-card reveal">
+        <div class="label">Fees</div>
+        <div class="old">3-6%</div>
+        <div style="color:var(--text2);margin:4px 0">→</div>
+        <div class="new">< 0.1%</div>
+      </div>
+      <div class="compare-card reveal">
+        <div class="label">Record Keeping</div>
+        <div class="old">Email + bank</div>
+        <div style="color:var(--text2);margin:4px 0">→</div>
+        <div class="new">On-chain</div>
+      </div>
     </div>
+  </div>
 </section>
 
+<!-- cta -->
 <section class="cta">
-    <div class="container">
-        <h2>Ready to send money at internet speed?</h2>
-        <p>Stop paying 5% to PayPal and waiting 3 days for a bank wire.</p>
-        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-            <a href="/brand" class="btn btn-primary">🚀 Try the Demo</a>
-            <a href="https://github.com/kaylee630-afk/affiliate-settlement-demo" target="_blank" class="btn btn-outline">View on GitHub</a>
-        </div>
-        <div class="trust">Built on <strong>Base L2</strong> · Powered by <strong>Circle USDC</strong> · Open Source</div>
-    </div>
+  <h2>Ready to send money at internet speed?</h2>
+  <p>Stop paying 5% to PayPal and waiting 3 days for a bank wire.</p>
+  <a href="/brand" class="hero-btn" style="font-size:18px">🚀 Try the Demo</a>
+  <div class="trust">Built on <strong>Base L2</strong> · Powered by <strong>Circle USDC</strong> · Open Source</div>
 </section>
 
 <footer>
-    <p>PayFlash · Send money globally on Base L2 · 2026</p>
-    <p style="margin-top:4px"><a href="https://github.com/kaylee630-afk/affiliate-settlement-demo" target="_blank">GitHub</a> · <a href="/brand">App</a></p>
+  <p>PayFlash · Send money globally on Base L2 · 2026</p>
+  <p style="margin-top:4px"><a href="https://github.com/kaylee630-afk/affiliate-settlement-demo">GitHub</a> · <a href="/brand">App</a> · <a href="/affiliate">Affiliate</a></p>
 </footer>
 
 <script>
-window.addEventListener('scroll',()=>{document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>60)});
-const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)'}})});
-document.querySelectorAll('.feature-card,.step').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(30px)';el.style.transition='all .6s cubic-bezier(.16,1,.3,1)';obs.observe(el)});
+// scroll reveal
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 </script>
-<script src="/sw-register.js"></script>
 </body>
 </html>
