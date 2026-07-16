@@ -107,9 +107,9 @@ nav.scrolled{background:rgba(1,3,20,.85);backdrop-filter:blur(24px);-webkit-back
 footer{text-align:center;padding:40px;color:var(--text2);font-size:12px;border-top:1px solid rgba(255,255,255,.05)}
 footer a{color:var(--accent);text-decoration:none}
 
-/* ── Reveal ── */
-.reveal{opacity:0;transform:translateY(30px);transition:all .7s cubic-bezier(.16,1,.3,1)}
-.reveal.visible{opacity:1;transform:translateY(0)}
+/* ── Reveal: blur → clear ── */
+.reveal{opacity:0;transform:translateY(40px);filter:blur(12px);transition:all .9s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0);filter:blur(0)}
 
 /* ── Orbs ── */
 .orb{position:fixed;border-radius:50%;filter:blur(140px);pointer-events:none;z-index:0;opacity:.06}
@@ -171,22 +171,22 @@ footer a{color:var(--accent);text-decoration:none}
     <div class="sec-title">Global payments at internet speed.</div>
     <div class="sec-sub">Stop waiting for bank wires. Send USDC on Base L2 — instant, cheap, verifiable.</div>
     <div class="feat-grid">
-      <div class="feat-card jelly reveal">
+      <div class="feat-card jelly reveal" style="transition-delay:0s">
         <div class="feat-icon">⚡</div><h3>Lightning Fast</h3><p>Base L2 confirms in ~2 seconds. 7×24, no bank hours, no holidays.</p>
       </div>
-      <div class="feat-card jelly reveal">
+      <div class="feat-card jelly reveal" style="transition-delay:.1s">
         <div class="feat-icon">💸</div><h3>Near-Zero Fees</h3><p>~$0.003 gas per transaction. No SWIFT fees, no FX markup.</p>
       </div>
-      <div class="feat-card jelly reveal">
+      <div class="feat-card jelly reveal" style="transition-delay:.2s">
         <div class="feat-icon">🌍</div><h3>Truly Global</h3><p>USDC is the same digital dollar everywhere. One currency, one network.</p>
       </div>
-      <div class="feat-card jelly reveal">
+      <div class="feat-card jelly reveal" style="transition-delay:.15s">
         <div class="feat-icon">🔒</div><h3>On-Chain Records</h3><p>Every transfer is public, immutable, verifiable. No "lost payments".</p>
       </div>
-      <div class="feat-card jelly reveal">
+      <div class="feat-card jelly reveal" style="transition-delay:.25s">
         <div class="feat-icon">🛡️</div><h3>Compliant & Safe</h3><p>USDC 1:1 backed, audited monthly by Circle. Regulated and transparent.</p>
       </div>
-      <div class="feat-card jelly reveal">
+      <div class="feat-card jelly reveal" style="transition-delay:.35s">
         <div class="feat-icon">🏗️</div><h3>Built on Base</h3><p>Coinbase's L2 — secure, scalable, battle-tested with millions of users.</p>
       </div>
     </div>
@@ -199,13 +199,13 @@ footer a{color:var(--accent);text-decoration:none}
     <div class="sec-label">The Difference</div>
     <div class="sec-title">Why switch to PayFlash?</div>
     <div class="compare">
-      <div class="compare-card jelly reveal">
+      <div class="compare-card jelly reveal" style="transition-delay:0s">
         <div class="label">Settlement</div><div class="old">3-5 days</div><div class="compare-arrow">→</div><div class="new">~3 min</div>
       </div>
-      <div class="compare-card jelly reveal">
+      <div class="compare-card jelly reveal" style="transition-delay:.15s">
         <div class="label">Fees</div><div class="old">3-6%</div><div class="compare-arrow">→</div><div class="new">< 0.1%</div>
       </div>
-      <div class="compare-card jelly reveal">
+      <div class="compare-card jelly reveal" style="transition-delay:.3s">
         <div class="label">Records</div><div class="old">Email + bank</div><div class="compare-arrow">→</div><div class="new">On-chain</div>
       </div>
     </div>
@@ -229,7 +229,7 @@ footer a{color:var(--accent);text-decoration:none}
 // scroll nav
 window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>60));
 // reveal
-const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})});
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{rootMargin:'0px 0px -60px 0px',threshold:0.1});
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 // sound
 const v=document.querySelector('video');
