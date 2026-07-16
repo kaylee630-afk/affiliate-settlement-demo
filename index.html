@@ -139,7 +139,7 @@ void main(){
   float R=f2*0.3; float G=pow(fresnel,3.2)*0.25; float B=pow(fresnel,2.5)*0.35;
 
   // === Specular highlights (3 lights) ===
-  float spec(Vec3 l,float p,float s){Vec3 H=normalize(l+V);return pow(max(dot(N,H),0.),p)*s;}
+  float spec(vec3 l,float p,float s){vec3 H=normalize(l+V);return pow(max(dot(N,H),0.),p)*s;}
   float s1=spec(uLight1,120.,.6); float s2=spec(uLight2,60.,.25); float s3=spec(uLight3,200.,.35);
 
   // === Subsurface approximation ===
