@@ -9,14 +9,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="manifest" href="/manifest.json">
 <script src="/sw-register.js"></script>
-<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.157.0/build/three.module.js"}}</script>
 <style>
 :root{--text:#f5f5f7;--text2:#8b8fa3;--accent:#6366f1;--green:#22c55e}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',sans-serif;background:#010314;color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
-#c{position:fixed;inset:0;z-index:0}
+canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
 .content{position:relative;z-index:1}
-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 32px}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 32px;transition:all .4s}
 nav.scrolled{background:rgba(1,3,20,.8);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,.06)}
 .nav-logo{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:800;color:#fff;text-decoration:none}
 .nav-logo img{width:28px;height:28px;border-radius:7px}
@@ -29,30 +28,27 @@ nav.scrolled{background:rgba(1,3,20,.8);backdrop-filter:blur(24px);-webkit-backd
 .hero h1 .dim{color:rgba(255,255,255,.45);font-style:italic}
 .hero p{color:rgba(255,255,255,.55);font-size:clamp(14px,2vw,17px);max-width:540px;margin:20px auto 0}
 .hero-btns{display:flex;gap:12px;justify-content:center;margin-top:32px;flex-wrap:wrap}
-.btn{padding:14px 36px;border-radius:999px;font-size:15px;font-weight:600;text-decoration:none;cursor:pointer;border:none;position:relative;overflow:hidden}
+.btn{padding:14px 36px;border-radius:999px;font-size:15px;font-weight:600;text-decoration:none;cursor:pointer;border:none}
 .btn.primary{background:var(--accent);color:#fff}.btn.ghost{background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.15)}
 .sec{padding:100px 32px;position:relative;z-index:1}.sec-inner{max-width:1100px;margin:0 auto}
 .sec-label{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;text-align:center}
 .sec-title{font-family:'Instrument Serif',serif;font-size:clamp(28px,5vw,48px);text-align:center;margin-bottom:12px}
 .sec-sub{color:var(--text2);font-size:16px;text-align:center;max-width:580px;margin:0 auto 48px}
 .feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
-.feat-card{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:20px;padding:30px;position:relative;overflow:hidden;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.feat-card{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:20px;padding:30px;position:relative;overflow:hidden;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:all .4s}
+.feat-card:hover{transform:translateY(-4px);border-color:rgba(99,102,241,.2);box-shadow:0 16px 40px rgba(0,0,0,.4)}
 .feat-icon{width:46px;height:46px;border-radius:13px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.12);display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:20px}
 .feat-card h3{font-size:17px;font-weight:700;margin-bottom:8px}
 .feat-card p{font-size:14px;color:var(--text2);line-height:1.7}
 .compare{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:60px}
-.c-card{text-align:center;padding:28px 20px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:20px}
+.c-card{text-align:center;padding:28px 20px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:20px;transition:all .4s}
+.c-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.12)}
 .c-card .old{font-size:16px;color:#ef4444;text-decoration:line-through}.c-card .new{font-size:26px;font-weight:700;color:var(--green)}.c-card .arr{color:var(--text2);margin:6px 0;font-size:18px}
 .c-card .lbl{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;margin-top:6px;font-weight:600}
 .stats{display:flex;justify-content:center;gap:48px;flex-wrap:wrap;padding:60px 32px;border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);max-width:800px;margin:0 auto}
 .s-item{text-align:center}.s-item .val{font-size:28px;font-weight:800;letter-spacing:-1px}.s-item .lbl{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-top:2px}
 .cta{text-align:center;padding:100px 32px}.cta h2{font-family:'Instrument Serif',serif;font-size:clamp(28px,5vw,48px);margin-bottom:16px}.cta p{color:var(--text2);margin-bottom:32px}
 footer{text-align:center;padding:40px;color:var(--text2);font-size:12px;border-top:1px solid rgba(255,255,255,.05)}footer a{color:var(--accent);text-decoration:none}
-
-/* Shockwave ring */
-.shockwave{position:fixed;border-radius:50%;border:2px solid rgba(99,102,241,.4);pointer-events:none;z-index:200;animation:sw .8s cubic-bezier(.16,1,.3,1) forwards}
-@keyframes sw{0%{width:0;height:0;opacity:1}100%{width:600px;height:600px;opacity:0;margin-left:-300px;margin-top:-300px}}
-
 .reveal{opacity:0;transform:translateY(40px);filter:blur(12px);transition:all .8s cubic-bezier(.16,1,.3,1)}
 .reveal.visible{opacity:1;transform:translateY(0);filter:blur(0)}
 @media(max-width:768px){.nav-links{display:none}.compare{grid-template-columns:1fr}.stats{gap:24px}}
@@ -94,154 +90,74 @@ footer{text-align:center;padding:40px;color:var(--text2);font-size:12px;border-t
 </div>
 
 <script type="module">
-import * as THREE from 'three';
+import * as THREE from 'https://unpkg.com/three@0.157.0/build/three.module.js';
 
-/* ═══════════════════════════════════════
-   Premium Jelly Shader
-   ═══════════════════════════════════════ */
-const vert = /*glsl*/`
-varying vec3 vWorldPos; varying vec3 vWorldNorm; varying vec3 vViewDir; varying vec2 vUv; varying vec3 vModelPos;
-void main(){
-  vec4 worldPos=modelMatrix*vec4(position,1.);
-  vWorldPos=worldPos.xyz;
-  vWorldNorm=normalize(mat3(modelMatrix)*normal);
-  vec4 mv=modelViewMatrix*vec4(position,1.);
-  vViewDir=normalize(-mv.xyz);
-  vModelPos=position.xyz;
-  vUv=uv;
-  gl_Position=projectionMatrix*mv;
-}`;
-
-const frag = /*glsl*/`
-varying vec3 vWorldPos; varying vec3 vWorldNorm; varying vec3 vViewDir; varying vec2 vUv; varying vec3 vModelPos;
-uniform vec3 uLight1; uniform vec3 uLight2; uniform vec3 uLight3;
-uniform float uTime; uniform float uJelly; uniform float uHover;
-uniform vec3 uMouseWorld; uniform float uShockwave; uniform vec3 uShockOrigin;
-uniform vec3 uBaseColor; uniform samplerCube uEnv;
-
-void main(){
-  vec3 N=normalize(vWorldNorm); vec3 V=normalize(vViewDir);
-
-  // === Soft body displacement from vertex shader (via jelly uniform) ===
-  // Simulated in fragment: normals are perturbed by jelly wobble
-  float wobble=sin(vModelPos.x*12.+uTime*3.)*cos(vModelPos.y*10.+uTime*2.5)*uJelly*0.04;
-  N=normalize(N+vec3(wobble,wobble*0.7,wobble*0.5));
-
-  // === Shockwave ripple ===
-  float shockDist=length(vWorldPos.xz-uShockOrigin.xz)*0.3;
-  float shock=exp(-shockDist*3.)*sin(shockDist*15.-uShockwave*10.)*uShockwave;
-  N=normalize(N+vec3(shock*0.2,0.,shock*0.1));
-
-  // === Fresnel ===
-  float fresnel=1.-abs(dot(N,V)); float f2=pow(fresnel,2.8); float f4=pow(fresnel,6.);
-
-  // === Chromatic dispersion on edges ===
-  float R=f2*0.3; float G=pow(fresnel,3.2)*0.25; float B=pow(fresnel,2.5)*0.35;
-
-  // === Specular highlights (3 lights) ===
-  float spec(vec3 l,float p,float s){vec3 H=normalize(l+V);return pow(max(dot(N,H),0.),p)*s;}
-  float s1=spec(uLight1,120.,.6); float s2=spec(uLight2,60.,.25); float s3=spec(uLight3,200.,.35);
-
-  // === Subsurface approximation ===
-  float ss=pow(1.-abs(dot(N,V)),5.)*.15;
-
-  // === Mouse proximity glow ===
-  float md=length(vWorldPos.xz-uMouseWorld.xz)*0.4;
-  float mouseGlow=exp(-md*md)*uHover*.5;
-  float mouseSpec=pow(exp(-md*md),2.)*uHover*.3;
-
-  // === Environment reflection ===
-  vec3 refl=reflect(-V,N);
-  vec3 env=vec3(.05,.06,.1);
-  env+=vec3(.3,.4,.6)*f2*.3;
-
-  // === Assemble ===
-  vec3 col=uBaseColor*(.5+ss+.15);
-  col+=vec3(R,G,B)*(.5+uJelly*.5);
-  col+=vec3(.7,.8,1.)*(s1+s2+s3);
-  col+=vec3(.8,.9,1.)*mouseGlow;
-  col+=vec3(1.,.95,.9)*mouseSpec;
-  col+=env;
-  col+=vec3(.5,.6,1.)*f4*.15;
-  col+=shock*vec3(.6,.7,1.)*.5;
-
-  // HDR tone
-  col=col/(col+vec3(1.));
-
-  float alpha=.12+fresnel*.22+ss*.2+uHover*.12+mouseGlow*.3;
-  gl_FragColor=vec4(col,clamp(alpha,.05,.7));
-}`;
-
-/* ═══════════════════════ Scene Setup ═══════════════════════ */
 const canvas=document.getElementById('c');
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(innerWidth,innerHeight);
-renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.2;
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.3;
 
 const scene=new THREE.Scene();
-const camera=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,.1,50);camera.position.z=10;
-scene.fog=new THREE.FogExp2('#010314',.008);
-
-// Environment cubemap
-const cubeRenderTarget=new THREE.WebGLCubeRenderTarget(128);
-const cubeCamera=new THREE.CubeCamera(.1,20,cubeRenderTarget);
-const pmremGenerator=new THREE.PMREMGenerator(renderer);pmremGenerator.compileCubemapShader();
-
-// Lights
-scene.add(new THREE.AmbientLight('#334466',.35));
-const l1=new THREE.DirectionalLight('#8899ff',2.5);l1.position.set(5,3,5);scene.add(l1);
-const l2=new THREE.DirectionalLight('#ff8899',.8);l2.position.set(-5,-2,3);scene.add(l2);
-const l3=new THREE.DirectionalLight('#88ffcc',.6);l3.position.set(0,5,-2);scene.add(l3);
+const camera=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,.1,50);
+camera.position.z=10;
+scene.fog=new THREE.FogExp2('#010314',.006);
 
 // Stars
-const sGeo=new THREE.BufferGeometry();const sPos=new Float32Array(400*3);
-for(let i=0;i<400;i++){const th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1),r=18+Math.random()*18;sPos[i*3]=r*Math.sin(ph)*Math.cos(th);sPos[i*3+1]=r*Math.sin(ph)*Math.sin(th);sPos[i*3+2]=r*Math.cos(ph);}
-sGeo.setAttribute('position',new THREE.BufferAttribute(sPos,3));
-scene.add(new THREE.Points(sGeo,new THREE.PointsMaterial({color:'#fff',size:.04,transparent:true,opacity:.5,blending:THREE.AdditiveBlending,depthWrite:false})));
+const sg=new THREE.BufferGeometry();
+const sp=new Float32Array(500*3);
+for(let i=0;i<500;i++){const th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1),r=16+Math.random()*20;sp[i*3]=r*Math.sin(ph)*Math.cos(th);sp[i*3+1]=r*Math.sin(ph)*Math.sin(th);sp[i*3+2]=r*Math.cos(ph);}
+sg.setAttribute('position',new THREE.BufferAttribute(sp,3));
+scene.add(new THREE.Points(sg,new THREE.PointsMaterial({color:'#fff',size:.04,transparent:true,opacity:.5,blending:THREE.AdditiveBlending,depthWrite:false})));
 
 // Particles
-const pGeo=new THREE.BufferGeometry();const pCount=250;const pArr=new Float32Array(pCount*3);const pVel=[];
-for(let i=0;i<pCount;i++){pArr[i*3]=(Math.random()-.5)*18;pArr[i*3+1]=(Math.random()-.5)*14;pArr[i*3+2]=(Math.random()-.5)*6;pVel.push({vx:(Math.random()-.5)*.02,vy:(Math.random()-.5)*.02,vz:(Math.random()-.5)*.01,life:Math.random(),sp:.3+Math.random()*.7});}
-pGeo.setAttribute('position',new THREE.BufferAttribute(pArr,3));
-const pMat=new THREE.PointsMaterial({color:'#8899ff',size:.05,transparent:true,opacity:.5,blending:THREE.AdditiveBlending,depthWrite:false});
-const particles=new THREE.Points(pGeo,pMat);scene.add(particles);
+const pg=new THREE.BufferGeometry();
+const pc=200;const pa=new Float32Array(pc*3);const pv=[];
+for(let i=0;i<pc;i++){pa[i*3]=(Math.random()-.5)*16;pa[i*3+1]=(Math.random()-.5)*12;pa[i*3+2]=(Math.random()-.5)*5;pv.push({vx:(Math.random()-.5)*.02,vy:(Math.random()-.5)*.02,life:Math.random(),sp:.3+Math.random()*.7});}
+pg.setAttribute('position',new THREE.BufferAttribute(pa,3));
+const pm=new THREE.PointsMaterial({color:'#8899ff',size:.04,transparent:true,opacity:.5,blending:THREE.AdditiveBlending,depthWrite:false});
+const particles=new THREE.Points(pg,pm);scene.add(particles);
 
-// ====== JELLY CARDS ======
-const cards=[];const CARD_Z=-1;
+// Lights
+scene.add(new THREE.AmbientLight('#334466',.4));
+const d1=new THREE.DirectionalLight('#8899ff',2.5);d1.position.set(5,3,5);scene.add(d1);
+const d2=new THREE.DirectionalLight('#ff88aa',.8);d2.position.set(-5,-2,3);scene.add(d2);
+const d3=new THREE.DirectionalLight('#88ffcc',.5);d3.position.set(0,5,-2);scene.add(d3);
+
+// Jelly card overlays
+const cards=[];
 document.querySelectorAll('.jelly-target').forEach((el,i)=>{
+  const r=el.getBoundingClientRect();
+  const w=r.width/innerWidth*12,h=r.height/innerHeight*8;
+  const x=(r.left+r.width/2-innerWidth/2)/innerWidth*14;
+  const y=-(r.top+r.height/2-innerHeight/2)/innerHeight*10;
+  const geo=new THREE.PlaneGeometry(w,h,40,40);
   const hue=.6+i*.04;
-  const geo=new THREE.PlaneGeometry(3.3,1.9,48,48);
-  const uni={
-    uLight1:{value:l1.position.clone().normalize()},uLight2:{value:l2.position.clone().normalize()},
-    uLight3:{value:l3.position.clone().normalize()},uTime:{value:0},uJelly:{value:0},uHover:{value:0},
-    uMouseWorld:{value:new THREE.Vector3()},uShockwave:{value:0},uShockOrigin:{value:new THREE.Vector3()},
-    uBaseColor:{value:new THREE.Color().setHSL(hue,.5,.35)},uEnv:{value:null}
-  };
-  const mat=new THREE.ShaderMaterial({vertexShader:vert,fragmentShader:frag,uniforms:uni,transparent:true,depthWrite:false,side:THREE.DoubleSide});
+  const mat=new THREE.MeshPhysicalMaterial({
+    color:new THREE.Color().setHSL(hue,.4,.35),
+    metalness:0,roughness:.3,clearcoat:.6,clearcoatRoughness:.4,
+    transparent:true,opacity:.15,envMapIntensity:.5,
+    specularIntensity:.8,specularColor:new THREE.Color('#8899ff')
+  });
   const mesh=new THREE.Mesh(geo,mat);
-  scene.add(mesh);
-  cards.push({el,mesh,uni,geo,baseY:0,baseX:0,velX:0,velY:0,jelly:0,jellyVel:0,orig:new Float32Array(geo.attributes.position.array)});
+  mesh.position.set(x,y,-1);scene.add(mesh);
+  cards.push({el,mesh,geo,baseY:y,baseX:x,velX:0,velY:0,jelly:0,jellyVel:0,
+    orig:new Float32Array(geo.attributes.position.array)});
 });
 
-// ====== SHOCKWAVE ======
-let shockwaves=[];
-window.addEventListener('click',e=>{
-  const x=(e.clientX/innerWidth)*2-1;const y=-(e.clientY/innerHeight)*2+1;
-  shockwaves.push({x,y*7,x,y,t:0,intensity:1});
-
-  // DOM shockwave ring
-  const ring=document.createElement('div');ring.className='shockwave';
-  ring.style.left=e.clientX+'px';ring.style.top=e.clientY+'px';
-  document.body.appendChild(ring);
-  ring.addEventListener('animationend',()=>ring.remove());
-});
-
-// ====== MOUSE ======
+// Mouse
 const mouse={x:0,y:0,tx:0,ty:0,vx:0,vy:0};
 window.addEventListener('mousemove',e=>{mouse.tx=(e.clientX/innerWidth)*2-1;mouse.ty=-(e.clientY/innerHeight)*2+1;});
 window.addEventListener('touchmove',e=>{mouse.tx=(e.touches[0].clientX/innerWidth)*2-1;mouse.ty=-(e.touches[0].clientY/innerHeight)*2+1;},{passive:true});
 
-// ====== ANIMATION LOOP ======
+// Shockwave on click
+const shockwaves=[];
+window.addEventListener('click',e=>{
+  const sx=(e.clientX/innerWidth)*2-1,sy=-(e.clientY/innerHeight)*2+1;
+  shockwaves.push({x:sx*7,y:sy*7,t:0,intensity:1});
+});
+
 const clock=new THREE.Clock();
 function animate(){
   requestAnimationFrame(animate);
@@ -251,53 +167,58 @@ function animate(){
   mouse.vx+=(mouse.tx-mouse.x)*10*dt;mouse.vy+=(mouse.ty-mouse.y)*10*dt;
   mouse.vx*=.82;mouse.vy*=.82;mouse.x+=mouse.vx*dt*3;mouse.y+=mouse.vy*dt*3;
 
-  // Update cards
   cards.forEach(c=>{
     const r=c.el.getBoundingClientRect();
-    if(!(r.top<innerHeight&&r.bottom>0))return;
+    if(r.bottom<0||r.top>innerHeight)return;
     const cx=(r.left+r.width/2-innerWidth/2)/innerWidth*14;
     const cy=-(r.top+r.height/2-innerHeight/2)/innerHeight*10;
 
-    // Spring to DOM position
-    c.velX+=(cx-c.mesh.position.x)*7*dt;c.velY+=(cy-c.mesh.position.y)*7*dt;
-    c.velX*=.88;c.velY*=.88;c.mesh.position.x+=c.velX*dt;c.mesh.position.y+=c.velY*dt;c.mesh.position.z=CARD_Z;
+    // Spring position
+    c.velX+=(cx-c.mesh.position.x)*8*dt;c.velX*=.85;
+    c.velY+=(cy-c.mesh.position.y)*8*dt;c.velY*=.85;
+    c.mesh.position.x+=c.velX*dt;c.mesh.position.y+=c.velY*dt;
 
-    // Mouse influence → jelly wobble
-    const dx=mouse.x*7-c.mesh.position.x;const dy=mouse.y*7-c.mesh.position.y;
-    const dist=Math.sqrt(dx*dx+dy*dy);const influence=Math.max(0,1-dist/5);
-    c.jellyVel+=(influence-c.jelly)*12*dt;c.jellyVel*=.78;c.jelly+=c.jellyVel*dt;
-    c.uni.uJelly.value+=(Math.max(0,c.jelly)-c.uni.uJelly.value)*10*dt;
-    c.uni.uHover.value+=(influence-c.uni.uHover.value)*6*dt;
-    c.uni.uMouseWorld.value.set(mouse.x*7,mouse.y*7,CARD_Z);
-    c.uni.uTime.value=t;
+    // Mouse influence
+    const dx=mouse.x*7-c.mesh.position.x,dy=mouse.y*7-c.mesh.position.y;
+    const dist=Math.sqrt(dx*dx+dy*dy);
+    const influence=Math.max(0,1-dist/5);
+    c.jellyVel+=(influence-c.jelly)*12*dt;c.jellyVel*=.75;
+    c.jelly+=c.jellyVel*dt;
 
-    // Vertex displacement — soft body jelly
-    const pos=c.geo.attributes.position.array;const o=c.orig;
+    // Jelly distortion on vertices
+    const pos=c.geo.attributes.position.array,o=c.orig;
     for(let i=0;i<pos.length;i+=3){
       const ox=o[i],oy=o[i+1];
       const d2=ox*ox+oy*oy;
-      const md2=(ox-mouse.x*.5)*(ox-mouse.x*.5)+(oy-mouse.y*.5)*(oy-mouse.y*.5);
-      const wave=Math.sin(d2*4-t*5)*influence*.06;
-      const bulge=(1-Math.min(d2/3,1))*influence*.04;
-      const mouseBulge=Math.exp(-md2*1.5)*influence*.08;
-      pos[i]=ox+ox*bulge+wave*ox+mouseBulge*ox;
-      pos[i+1]=oy+oy*bulge+wave*oy+mouseBulge*oy;
-      pos[i+2]=wave*.6+mouseBulge*.3;
+      const md2=(ox-mouse.x*.4)*(ox-mouse.x*.4)+(oy-mouse.y*.4)*(oy-mouse.y*.4);
+      const wave=Math.sin(d2*3.5-t*5)*influence*.05;
+      const mouseBulge=Math.exp(-md2*1.8)*influence*.07;
+      pos[i]=ox+ox*wave+mouseBulge*ox;
+      pos[i+1]=oy+oy*wave+mouseBulge*oy;
+      pos[i+2]=wave*.5+mouseBulge*.25;
     }
     c.geo.attributes.position.needsUpdate=true;
 
-    // Shockwave
-    let sw=0;
-    shockwaves.forEach(s=>{const d2=(c.mesh.position.x-s.x)*(c.mesh.position.x-s.x)+(c.mesh.position.y-s.y)*(c.mesh.position.y-s.y);sw+=Math.exp(-d2*2)*s.intensity;});
-    c.uni.uShockwave.value+=(sw-c.uni.uShockwave.value)*8*dt;
+    // Material responds to mouse
+    c.mesh.material.opacity=.12+influence*.2;
+    c.mesh.material.clearcoat=.6+influence*.3;
   });
 
-  // Update shockwaves
-  for(let i=shockwaves.length-1;i>=0;i--){shockwaves[i].t+=dt;shockwaves[i].intensity*=Math.exp(-dt*4);if(shockwaves[i].intensity<.01)shockwaves.splice(i,1);}
+  // Shockwaves
+  for(let i=shockwaves.length-1;i>=0;i--){
+    shockwaves[i].t+=dt;shockwaves[i].intensity*=Math.exp(-dt*5);
+    if(shockwaves[i].intensity<.01){shockwaves.splice(i,1);continue;}
+    cards.forEach(c=>{
+      const d2=(c.mesh.position.x-shockwaves[i].x)*(c.mesh.position.x-shockwaves[i].x)+(c.mesh.position.y-shockwaves[i].y)*(c.mesh.position.y-shockwaves[i].y);
+      const sw=Math.exp(-d2*3)*shockwaves[i].intensity;
+      c.mesh.material.opacity+=sw*.3;
+      c.mesh.material.clearcoat+=sw*.4;
+    });
+  }
 
   // Particles
-  for(let i=0;i<pCount;i++){const pv=pVel[i];pv.life+=pv.sp*dt;const a=pv.life*Math.PI*2;pArr[i*3]+=Math.cos(a)*dt*.4+pv.vx;pArr[i*3+1]+=Math.sin(a)*dt*.4+pv.vy;pArr[i*3+2]+=pv.vz;if(pv.life>1){pv.life=0;pArr[i*3]=(Math.random()-.5)*16;pArr[i*3+1]=(Math.random()-.5)*12;pArr[i*3+2]=(Math.random()-.5)*4;}}
-  pGeo.attributes.position.needsUpdate=true;
+  for(let i=0;i<pc;i++){const v=pv[i];v.life+=v.sp*dt;const a=v.life*Math.PI*2;pa[i*3]+=Math.cos(a)*dt*.3+v.vx;pa[i*3+1]+=Math.sin(a)*dt*.3+v.vy;pa[i*3+2]+=0;if(v.life>1){v.life=0;pa[i*3]=(Math.random()-.5)*16;pa[i*3+1]=(Math.random()-.5)*12;pa[i*3+2]=(Math.random()-.5)*4;}}
+  pg.attributes.position.needsUpdate=true;
 
   renderer.render(scene,camera);
 }
