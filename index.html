@@ -3,228 +3,242 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>PayFlash — Global Payments</title>
+<title>PayFlash — Send Money in 3 Minutes</title>
 <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#010314">
 <link rel="manifest" href="/manifest.json">
 <script src="/sw-register.js"></script>
 <style>
-:root{--bg:#08080c;--surface:#111116;--border:rgba(255,255,255,.06);--text:#f5f5f7;--text2:#8b8fa3;--accent:#6366f1;--green:#22c55e;--gold:#f5a623;--radius:14px}
+:root {
+  --bg: #010314; --surface: rgba(255,255,255,0.03); --text: #f5f5f7; --text2: #8b8fa3;
+  --accent: #6366f1; --green: #22c55e; --gold: #f5a623;
+}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* liquid glass */
+.liquid-glass {
+  background: rgba(255,255,255,.01);
+  backdrop-filter: blur(4px);-webkit-backdrop-filter:blur(4px);
+  border: none;box-shadow:inset 0 1px 1px rgba(255,255,255,.1);
+  position:relative;overflow:hidden;
+}
+.liquid-glass::before {
+  content:'';position:absolute;inset:0;border-radius:inherit;padding:1.4px;
+  background:linear-gradient(180deg,rgba(255,255,255,.45)0%,rgba(255,255,255,.15)20%,transparent 40%,transparent 60%,rgba(255,255,255,.15)80%,rgba(255,255,255,.45)100%);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;
+}
+.text-glow{text-shadow:0 0 40px rgba(99,102,241,.4),0 0 80px rgba(99,102,241,.2)}
+.btn-glow{box-shadow:0 0 20px rgba(99,102,241,.3),0 0 40px rgba(99,102,241,.1)}
+
+/* animations */
+@keyframes fadeRise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes zoomOut{from{transform:scale(1.12)}to{transform:scale(1)}}
+.anim{animation-fill-mode:forwards;animation-timing-function:cubic-bezier(.16,1,.3,1)}
+.fade-rise{animation:fadeRise 1s}.fade-up{animation:fadeUp .8s}
+.zoom-out{animation:zoomOut 1.8s cubic-bezier(.16,1,.3,1) forwards}
+
+@keyframes twinkle{0%,100%{opacity:.2}50%{opacity:1}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 
 /* nav */
-nav{position:sticky;top:0;z-index:100;background:rgba(8,8,12,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:56px}
-.nav-logo{font-size:20px;font-weight:800;color:var(--text);text-decoration:none;letter-spacing:-.5px}
-.nav-links{display:flex;gap:28px;align-items:center}
-.nav-links a{color:var(--text2);text-decoration:none;font-size:13px;transition:color .2s}
-.nav-links a:hover,.nav-links a.active{color:var(--text)}
-.nav-cta{padding:7px 18px;border-radius:20px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;text-decoration:none;transition:all .2s}
-.nav-cta:hover{filter:brightness(1.1)}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 32px}
+.nav-logo{font-family:'Instrument Serif',serif;font-size:28px;color:#fff;text-decoration:none;letter-spacing:-.5px}
+.nav-links{display:flex;gap:32px}
+.nav-links a{color:rgba(255,255,255,.7);text-decoration:none;font-size:14px;transition:color .3s}
+.nav-links a:hover{color:#fff}
+.nav-cta{background:#fff;color:#000;padding:10px 24px;border-radius:999px;font-size:14px;font-weight:600;text-decoration:none;transition:all .3s}
+.nav-cta:hover{transform:scale(1.03);box-shadow:0 4px 20px rgba(255,255,255,.15)}
 
 /* hero */
-.hero{padding:80px 32px 60px;text-align:center;max-width:800px;margin:0 auto}
-.hero h1{font-size:clamp(36px,6vw,56px);font-weight:800;letter-spacing:-1.5px;margin-bottom:12px}
-.hero h1 .grad{background:linear-gradient(135deg,var(--accent),#818cf8,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero p{color:var(--text2);font-size:16px;max-width:500px;margin:0 auto}
+.hero{position:relative;height:100dvh;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.hero-video{position:absolute;inset:0;z-index:0}
+.hero-video video{width:100%;height:100%;object-fit:cover}
+.hero-overlay{position:absolute;inset:0;background:rgba(1,3,20,.45);z-index:1}
+.hero-content{position:relative;z-index:10;text-align:center;padding:0 24px}
+.hero h1{font-family:'Instrument Serif',serif;font-size:clamp(42px,8vw,110px);line-height:.9;color:#fff;text-glow}
+.hero h1 em{font-style:italic;color:rgba(255,255,255,.6)}
+.hero p{color:rgba(255,255,255,.6);font-size:16px;max-width:560px;margin:24px auto 0;line-height:1.6}
+.hero-btn{display:inline-block;margin-top:36px;background:#6366f1;color:#fff;padding:16px 48px;border-radius:999px;font-size:16px;font-weight:600;text-decoration:none;transition:all .3s}
+.hero-btn:hover{transform:scale(1.03);box-shadow:0 8px 30px rgba(99,102,241,.5)}
 
-/* search */
-.search-wrap{max-width:600px;margin:32px auto 0;position:relative}
-.search-wrap input{width:100%;padding:14px 20px 14px 44px;background:var(--surface);border:1px solid var(--border);border-radius:28px;color:var(--text);font-size:15px;outline:none;transition:border-color .3s;font-family:'Inter',sans-serif}
-.search-wrap input:focus{border-color:var(--accent)}
-.search-wrap .search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:16px}
-
-/* tags */
-.tags{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px}
-.tag{padding:6px 16px;border-radius:20px;background:var(--surface);border:1px solid var(--border);color:var(--text2);font-size:13px;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
-.tag:hover,.tag.active{background:var(--accent);border-color:var(--accent);color:#fff}
-
-/* category tabs */
-.cats{display:flex;gap:4px;max-width:900px;margin:40px auto 0;padding:0 32px;overflow-x:auto;scrollbar-width:none}
-.cats::-webkit-scrollbar{display:none}
-.cat{padding:10px 20px;border-radius:24px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .2s;display:flex;align-items:center;gap:8px;font-family:'Inter',sans-serif;background:none;border:none}
-.cat:hover,.cat.active{background:var(--surface);color:var(--text)}
-.cat .icon{font-size:16px}
-
-/* filter bar */
-.fbar{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:24px auto 0;padding:0 32px}
-.fbar-left{display:flex;gap:8px}
-.fbar-btn{padding:8px 16px;border-radius:20px;background:var(--surface);border:1px solid var(--border);color:var(--text2);font-size:13px;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:6px}
-.fbar-btn:hover{color:var(--text);border-color:rgba(255,255,255,.12)}
-.fbar-right{font-size:13px;color:var(--text2)}
-
-/* cards grid */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;max-width:1100px;margin:16px auto 60px;padding:0 32px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:all .3s;cursor:pointer}
-.card:hover{border-color:rgba(255,255,255,.12);transform:translateY(-2px)}
-.card-preview{aspect-ratio:16/10;background:var(--bg);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.card-preview .icon{font-size:40px;opacity:.4}
-.card-preview .play{position:absolute;width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px}
-.card-info{padding:16px}
-.card-info h3{font-size:15px;font-weight:600;margin-bottom:4px}
-.card-info p{font-size:13px;color:var(--text2);line-height:1.5}
-.card-meta{display:flex;gap:8px;margin-top:10px}
-.card-meta span{padding:3px 10px;border-radius:12px;background:rgba(99,102,241,.08);color:var(--accent);font-size:11px;font-weight:500}
+/* sound btn */
+.sound-btn{position:absolute;bottom:32px;left:32px;z-index:20;display:flex;align-items:center;gap:8px;cursor:pointer;background:none;border:none;color:rgba(255,255,255,.5);font-size:12px;font-family:'Inter',sans-serif}
 
 /* sections */
-.sec{padding:80px 32px}.sec-inner{max-width:1100px;margin:0 auto}
-.sec-title{font-size:28px;font-weight:700;margin-bottom:24px;text-align:center}
-.sec-sub{color:var(--text2);text-align:center;margin-bottom:48px}
+.sec{padding:100px 32px;position:relative;z-index:1}.sec-inner{max-width:1100px;margin:0 auto}
+.sec-label{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;text-align:center}
+.sec-title{font-family:'Instrument Serif',serif;font-size:clamp(28px,5vw,48px);text-align:center;margin-bottom:12px}
+.sec-sub{color:var(--text2);font-size:16px;text-align:center;max-width:600px;margin:0 auto 56px}
 
-/* footer */
-footer{border-top:1px solid var(--border);padding:32px;text-align:center;color:var(--text2);font-size:12px}
-footer a{color:var(--accent);text-decoration:none}
+/* features */
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.feat-card{background:var(--surface);border:1px solid rgba(255,255,255,.05);border-radius:18px;padding:28px;transition:all .3s}
+.feat-card:hover{border-color:rgba(99,102,241,.2);transform:translateY(-2px)}
+.feat-card .icon{width:44px;height:44px;border-radius:12px;background:rgba(99,102,241,.1);display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:20px}
+.feat-card h3{font-size:17px;font-weight:700;margin-bottom:8px}
+.feat-card p{font-size:14px;color:var(--text2);line-height:1.7}
+
+/* compare */
+.compare{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:60px}
+.compare-card{text-align:center;padding:24px;background:var(--surface);border:1px solid rgba(255,255,255,.05);border-radius:16px}
+.compare-card .old{font-size:15px;color:#ef4444;text-decoration:line-through}
+.compare-card .new{font-size:24px;font-weight:700;color:var(--green)}
+.compare-card .label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+
+/* cta */
+.cta{text-align:center;padding:120px 32px}.cta h2{font-family:'Instrument Serif',serif;font-size:clamp(28px,5vw,48px);margin-bottom:16px}.cta p{color:var(--text2);margin-bottom:32px}.cta .trust{color:var(--text2);font-size:12px;margin-top:16px}
+
+footer{text-align:center;padding:40px;color:var(--text2);font-size:12px;border-top:1px solid rgba(255,255,255,.05)}
+footer a{color:#818cf8;text-decoration:none}
 
 @media(max-width:768px){
   .nav-links{display:none}
-  .grid{grid-template-columns:1fr}
-  .cats{padding:0 16px}
-  .fbar{padding:0 16px}
+  .compare{grid-template-columns:1fr}
 }
 
-/* animations */
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.anim{animation:fadeUp .5s ease-out both}.anim-d1{animation-delay:.1s}.anim-d2{animation-delay:.2s}.anim-d3{animation-delay:.3s}
+/* scroll reveal */
+.reveal{opacity:0;transform:translateY(30px);transition:all .6s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
 </style>
 </head>
 <body>
+
+<!-- stars bg -->
+<div style="position:fixed;inset:0;pointer-events:none;z-index:0">
+  <script>
+  for(let i=0;i<80;i++){
+    const d=document.createElement('div');
+    d.style.cssText=`position:absolute;width:${1+Math.random()*2}px;height:${1+Math.random()*2}px;background:#fff;border-radius:50%;left:${Math.random()*100}%;top:${Math.random()*100}%;opacity:${.15+Math.random()*.5};animation:twinkle ${2+Math.random()*5}s ease-in-out infinite ${Math.random()*4}s`;
+    document.currentScript.parentElement.appendChild(d);
+  }
+  </script>
+</div>
 
 <!-- nav -->
 <nav>
   <a href="/" class="nav-logo">PayFlash</a>
   <div class="nav-links">
-    <a href="/" class="active">Home</a>
-    <a href="/brand">Send</a>
-    <a href="/affiliate">Activity</a>
-    <a href="#">Docs</a>
-    <a href="#">Pricing</a>
+    <a href="/brand">Send</a><a href="#features">Features</a><a href="#compare">Compare</a><a href="#">Docs</a>
   </div>
   <a href="/brand" class="nav-cta">Launch App</a>
 </nav>
 
 <!-- hero -->
-<div class="hero">
-  <h1>Global Payments<br><span class="grad">at Internet Speed.</span></h1>
-  <p>Send USDC on Base L2 to anyone, anywhere — in 3 minutes, at a fraction of the cost.</p>
-  <div class="search-wrap">
-    <span class="search-icon">🔍</span>
-    <input type="text" placeholder="Search for a contact, transaction, or country...">
+<section class="hero">
+  <div class="hero-video">
+    <video autoplay loop muted playsinline>
+      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260613_180732_a54afbf6-b30d-470e-861f-669871f09f67.mp4" type="video/mp4">
+    </video>
   </div>
-  <div class="tags">
-    <span class="tag active">Popular</span>
-    <span class="tag">USDC Transfer</span>
-    <span class="tag">Cross-border</span>
-    <span class="tag">Commission</span>
-    <span class="tag">Base L2</span>
-    <span class="tag">Instant</span>
-    <span class="tag">On-chain</span>
-    <span class="tag">Web3</span>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1>Send money<br><em>in 3 minutes.</em></h1>
+    <p>Built on Base L2 and powered by USDC — instant, borderless, near-zero fees. No SWIFT, no banks, no waiting.</p>
+    <a href="/brand" class="hero-btn">🚀 Launch App</a>
   </div>
-</div>
+  <button class="sound-btn" id="soundBtn" onclick="toggleSound()">
+    <span style="width:10px;height:2px;background:rgba(255,255,255,.5);border-radius:2px"></span> Sound on
+  </button>
+  <script>
+  const v=document.querySelector('video');
+  function toggleSound(){v.muted=!v.muted;document.getElementById('soundBtn').textContent=v.muted?'🔇 Sound off':'🔊 Sound on'}
+  </script>
+</section>
 
-<!-- category tabs -->
-<div class="cats">
-  <button class="cat active"><span class="icon">💸</span> Send Money</button>
-  <button class="cat"><span class="icon">📊</span> Commission Settlement</button>
-  <button class="cat"><span class="icon">📥</span> Receive Payment</button>
-  <button class="cat"><span class="icon">💱</span> Currency Exchange</button>
-  <button class="cat"><span class="icon">📋</span> Transaction History</button>
-</div>
+<!-- features -->
+<section class="sec" id="features">
+  <div class="sec-inner">
+    <div class="sec-label">Why PayFlash</div>
+    <div class="sec-title">Global payments at internet speed.</div>
+    <div class="sec-sub">Stop waiting for bank wires. Send USDC on Base L2 — instant, cheap, verifiable.</div>
+    <div class="feat-grid">
+      <div class="feat-card reveal">
+        <div class="icon">⚡</div>
+        <h3>Lightning Fast</h3>
+        <p>Base L2 confirms in ~2 seconds. 7×24, no bank hours, no holidays.</p>
+      </div>
+      <div class="feat-card reveal">
+        <div class="icon">💸</div>
+        <h3>Near-Zero Fees</h3>
+        <p>~$0.003 gas per transaction. No SWIFT fees, no FX markup, no hidden costs.</p>
+      </div>
+      <div class="feat-card reveal">
+        <div class="icon">🌍</div>
+        <h3>Truly Global</h3>
+        <p>USDC is the same digital dollar everywhere. One currency, one network.</p>
+      </div>
+      <div class="feat-card reveal">
+        <div class="icon">🔒</div>
+        <h3>On-Chain Records</h3>
+        <p>Every transfer is public, immutable, verifiable. No disputes, no "lost payments".</p>
+      </div>
+      <div class="feat-card reveal">
+        <div class="icon">🛡️</div>
+        <h3>Compliant & Safe</h3>
+        <p>USDC is 1:1 backed, audited monthly by Circle. Regulated and transparent.</p>
+      </div>
+      <div class="feat-card reveal">
+        <div class="icon">🏗️</div>
+        <h3>Built on Base</h3>
+        <p>Coinbase's L2 — secure, scalable, and battle-tested with millions of users.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-<!-- filter bar -->
-<div class="fbar">
-  <div class="fbar-left">
-    <button class="fbar-btn">🔥 Popular</button>
-    <button class="fbar-btn">🕐 Recent</button>
-    <button class="fbar-btn">⚡ Fastest</button>
-    <button class="fbar-btn">💰 Lowest Fee</button>
+<!-- compare -->
+<section class="sec" id="compare" style="background:rgba(255,255,255,.01)">
+  <div class="sec-inner">
+    <div class="sec-label">The Difference</div>
+    <div class="sec-title">Why switch to PayFlash?</div>
+    <div class="compare">
+      <div class="compare-card reveal">
+        <div class="label">Settlement Time</div>
+        <div class="old">3-5 days</div>
+        <div style="color:var(--text2);margin:4px 0">→</div>
+        <div class="new">~3 min</div>
+      </div>
+      <div class="compare-card reveal">
+        <div class="label">Fees</div>
+        <div class="old">3-6%</div>
+        <div style="color:var(--text2);margin:4px 0">→</div>
+        <div class="new">< 0.1%</div>
+      </div>
+      <div class="compare-card reveal">
+        <div class="label">Record Keeping</div>
+        <div class="old">Email + bank</div>
+        <div style="color:var(--text2);margin:4px 0">→</div>
+        <div class="new">On-chain</div>
+      </div>
+    </div>
   </div>
-  <div class="fbar-right">12 Features</div>
-</div>
+</section>
 
-<!-- feature cards -->
-<div class="grid">
-  <div class="card anim">
-    <div class="card-preview" style="background:linear-gradient(135deg,#1a1040,#0d1a40)">
-      <span class="icon">⚡</span>
-    </div>
-    <div class="card-info">
-      <h3>Instant Transfer</h3>
-      <p>USDC settles on Base L2 in ~2 seconds — no bank delays, no weekends off.</p>
-      <div class="card-meta"><span>Base L2</span><span>~3 min</span></div>
-    </div>
-  </div>
-  <div class="card anim anim-d1">
-    <div class="card-preview" style="background:linear-gradient(135deg,#0d2a1a,#0a2a30)">
-      <span class="icon">💸</span>
-    </div>
-    <div class="card-info">
-      <h3>Near-Zero Fees</h3>
-      <p>Gas costs ~$0.003 per transaction. Compare to PayPal's 5% or SWIFT's $25.</p>
-      <div class="card-meta"><span>Base L2</span><span>< $0.01</span></div>
-    </div>
-  </div>
-  <div class="card anim anim-d2">
-    <div class="card-preview" style="background:linear-gradient(135deg,#201040,#1a1040)">
-      <span class="icon">🌍</span>
-    </div>
-    <div class="card-info">
-      <h3>Truly Global</h3>
-      <p>One digital dollar everywhere. Send to Brazil, Korea, Nigeria — same speed.</p>
-      <div class="card-meta"><span>USDC</span><span>Global</span></div>
-    </div>
-  </div>
-  <div class="card anim anim-d3">
-    <div class="card-preview" style="background:linear-gradient(135deg,#0d1a30,#102040)">
-      <span class="icon">🔒</span>
-    </div>
-    <div class="card-info">
-      <h3>On-Chain Records</h3>
-      <p>Every transfer leaves an immutable trail. No disputes, no "lost payments".</p>
-      <div class="card-meta"><span>Base L2</span><span>Verifiable</span></div>
-    </div>
-  </div>
-  <div class="card anim anim-d1">
-    <div class="card-preview" style="background:linear-gradient(135deg,#1a1020,#201030)">
-      <span class="icon">🛡️</span>
-    </div>
-    <div class="card-info">
-      <h3>Compliant & Safe</h3>
-      <p>USDC issued by Circle (US-regulated), 1:1 backed, audited monthly.</p>
-      <div class="card-meta"><span>Circle</span><span>Regulated</span></div>
-    </div>
-  </div>
-  <div class="card anim anim-d2">
-    <div class="card-preview" style="background:linear-gradient(135deg,#102040,#0d1a40)">
-      <span class="icon">⚙️</span>
-    </div>
-    <div class="card-info">
-      <h3>Smart Contract Automation</h3>
-      <p>Auto-calculate commissions, auto-settle to affiliates — no manual work.</p>
-      <div class="card-meta"><span>Solidity</span><span>Auto</span></div>
-    </div>
-  </div>
-</div>
-
-<!-- CTA -->
-<div style="text-align:center;padding:40px 32px 80px">
-  <h2 style="font-size:28px;font-weight:700;margin-bottom:12px">Ready to send money at internet speed?</h2>
-  <p style="color:var(--text2);margin-bottom:24px">Stop paying 5% to PayPal and waiting 3 days.</p>
-  <a href="/brand" class="nav-cta" style="padding:14px 36px;font-size:15px">🚀 Launch App</a>
-</div>
+<!-- cta -->
+<section class="cta">
+  <h2>Ready to send money at internet speed?</h2>
+  <p>Stop paying 5% to PayPal and waiting 3 days for a bank wire.</p>
+  <a href="/brand" class="hero-btn" style="font-size:18px">🚀 Try the Demo</a>
+  <div class="trust">Built on <strong>Base L2</strong> · Powered by <strong>Circle USDC</strong> · Open Source</div>
+</section>
 
 <footer>
-  <p>PayFlash · Built on Base L2 · Powered by Circle USDC · 2026</p>
+  <p>PayFlash · Send money globally on Base L2 · 2026</p>
   <p style="margin-top:4px"><a href="https://github.com/kaylee630-afk/affiliate-settlement-demo">GitHub</a> · <a href="/brand">App</a> · <a href="/affiliate">Affiliate</a></p>
 </footer>
 
 <script>
-// tag & cat interaction
-document.querySelectorAll('.tag').forEach(t=>t.onclick=function(){this.parentElement.querySelectorAll('.tag').forEach(e=>e.classList.remove('active'));this.classList.add('active')});
-document.querySelectorAll('.cat').forEach(c=>c.onclick=function(){this.parentElement.querySelectorAll('.cat').forEach(e=>e.classList.remove('active'));this.classList.add('active')});
-document.querySelectorAll('.fbar-btn').forEach(b=>b.onclick=function(){this.parentElement.querySelectorAll('.fbar-btn').forEach(e=>e.style.background='');this.style.background='var(--accent)';this.style.color='#fff';this.style.borderColor='var(--accent)'});
+// scroll reveal
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 </script>
 </body>
 </html>
