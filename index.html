@@ -14,124 +14,130 @@
 <link rel="manifest" href="/manifest.json">
 <script src="/sw-register.js"></script>
 <style>
-:root {
-  --bg: #010314; --surface: rgba(255,255,255,0.03); --text: #f5f5f7; --text2: #8b8fa3;
-  --accent: #6366f1; --green: #22c55e; --gold: #f5a623;
-}
+:root{--bg:#010314;--surface:rgba(255,255,255,.03);--text:#f5f5f7;--text2:#8b8fa3;--accent:#6366f1;--green:#22c55e;--gold:#f5a623}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
 
-/* liquid glass */
-.liquid-glass {
-  background: rgba(255,255,255,.01);
-  backdrop-filter: blur(4px);-webkit-backdrop-filter:blur(4px);
-  border: none;box-shadow:inset 0 1px 1px rgba(255,255,255,.1);
-  position:relative;overflow:hidden;
-}
-.liquid-glass::before {
-  content:'';position:absolute;inset:0;border-radius:inherit;padding:1.4px;
-  background:linear-gradient(180deg,rgba(255,255,255,.45)0%,rgba(255,255,255,.15)20%,transparent 40%,transparent 60%,rgba(255,255,255,.15)80%,rgba(255,255,255,.45)100%);
-  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
-  -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;
-}
-.text-glow{text-shadow:0 0 40px rgba(99,102,241,.4),0 0 80px rgba(99,102,241,.2)}
-.btn-glow{box-shadow:0 0 20px rgba(99,102,241,.3),0 0 40px rgba(99,102,241,.1)}
+/* ── Liquid Glass ── */
+.liquid-glass{background:rgba(255,255,255,.01);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:none;box-shadow:inset 0 1px 1px rgba(255,255,255,.08);position:relative;overflow:hidden}
+.liquid-glass::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1.4px;background:linear-gradient(180deg,rgba(255,255,255,.35)0%,rgba(255,255,255,.12)20%,transparent 40%,transparent 60%,rgba(255,255,255,.12)80%,rgba(255,255,255,.35)100%);-webkit-mask:linear-gradient(#fff 0 0)content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
 
-/* animations */
-@keyframes fadeRise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+/* ── Animations ── */
+@keyframes fadeRise{from{opacity:0;transform:translateY(28px);filter:blur(8px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes zoomOut{from{transform:scale(1.12)}to{transform:scale(1)}}
+@keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.8}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes jellyPop{0%{transform:scale(1)}30%{transform:scale(1.08,.94)}50%{transform:scale(.96,1.04)}70%{transform:scale(1.03,.98)}100%{transform:scale(1)}}
+@keyframes borderGlow{0%,100%{border-color:rgba(99,102,241,.1)}50%{border-color:rgba(99,102,241,.3)}}
+.jelly:hover{animation:jellyPop .5s cubic-bezier(.22,1,.36,1)}
+.jelly-tap:active{animation:jellyPop .35s cubic-bezier(.22,1,.36,1)}
+.glow-border{animation:borderGlow 3s ease-in-out infinite}
+
+/* ── Helpers ── */
+.text-glow{text-shadow:0 0 40px rgba(99,102,241,.4),0 0 80px rgba(99,102,241,.2)}
+.btn-glow{box-shadow:0 0 20px rgba(99,102,241,.25),0 0 50px rgba(99,102,241,.1)}
 .anim{animation-fill-mode:forwards;animation-timing-function:cubic-bezier(.16,1,.3,1)}
-.fade-rise{animation:fadeRise 1s}.fade-up{animation:fadeUp .8s}
+.fade-rise{animation:fadeRise 1.1s}.fade-up{animation:fadeUp .8s}
 .zoom-out{animation:zoomOut 1.8s cubic-bezier(.16,1,.3,1) forwards}
 
-@keyframes twinkle{0%,100%{opacity:.2}50%{opacity:1}}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-
-/* nav */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 32px}
-.nav-logo{font-family:'Instrument Serif',serif;font-size:28px;color:#fff;text-decoration:none;letter-spacing:-.5px}
-.nav-links{display:flex;gap:32px}
-.nav-links a{color:rgba(255,255,255,.7);text-decoration:none;font-size:14px;transition:color .3s}
+/* ── Nav ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 32px;transition:all .4s}
+nav.scrolled{background:rgba(1,3,20,.85);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,.06)}
+.nav-logo{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:800;color:#fff;text-decoration:none;letter-spacing:-.5px}
+.nav-logo img{width:28px;height:28px;border-radius:7px}
+.nav-links{display:flex;gap:28px}
+.nav-links a{color:rgba(255,255,255,.7);text-decoration:none;font-size:13px;font-weight:500;transition:color .2s}
 .nav-links a:hover{color:#fff}
-.nav-cta{background:#fff;color:#000;padding:10px 24px;border-radius:999px;font-size:14px;font-weight:600;text-decoration:none;transition:all .3s}
-.nav-cta:hover{transform:scale(1.03);box-shadow:0 4px 20px rgba(255,255,255,.15)}
+.nav-cta{padding:9px 22px;border-radius:999px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;text-decoration:none;transition:all .3s}
+.nav-cta:hover{transform:scale(1.04);box-shadow:0 4px 20px rgba(99,102,241,.4)}
 
-/* hero */
+/* ── Hero ── */
 .hero{position:relative;height:100dvh;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .hero-video{position:absolute;inset:0;z-index:0}
 .hero-video video{width:100%;height:100%;object-fit:cover}
-.hero-overlay{position:absolute;inset:0;background:rgba(1,3,20,.45);z-index:1}
+.hero-overlay{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 40%,rgba(1,3,20,.55)100%);z-index:1}
 .hero-content{position:relative;z-index:10;text-align:center;padding:0 24px}
-.hero h1{font-family:'Instrument Serif',serif;font-size:clamp(42px,8vw,110px);line-height:.9;color:#fff;text-glow}
-.hero h1 em{font-style:italic;color:rgba(255,255,255,.6)}
-.hero p{color:rgba(255,255,255,.6);font-size:16px;max-width:560px;margin:24px auto 0;line-height:1.6}
-.hero-btn{display:inline-block;margin-top:36px;background:#6366f1;color:#fff;padding:16px 48px;border-radius:999px;font-size:16px;font-weight:600;text-decoration:none;transition:all .3s}
-.hero-btn:hover{transform:scale(1.03);box-shadow:0 8px 30px rgba(99,102,241,.5)}
+.hero h1{font-family:'Instrument Serif',serif;font-size:clamp(44px,8vw,110px);line-height:.92;color:#fff}
+.hero h1 .dim{color:rgba(255,255,255,.45);font-style:italic}
+.hero p{color:rgba(255,255,255,.55);font-size:clamp(14px,2vw,17px);max-width:540px;margin:20px auto 0;line-height:1.6}
+.hero-btns{display:flex;gap:12px;justify-content:center;margin-top:32px;flex-wrap:wrap}
+.hero-btn{display:inline-block;padding:15px 40px;border-radius:999px;font-size:15px;font-weight:600;text-decoration:none;transition:all .35s}
+.hero-btn.primary{background:var(--accent);color:#fff}.hero-btn.primary:hover{transform:scale(1.04);box-shadow:0 8px 30px rgba(99,102,241,.45)}
+.hero-btn.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.2)}.hero-btn.ghost:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.35)}
 
-/* sound btn */
-.sound-btn{position:absolute;bottom:32px;left:32px;z-index:20;display:flex;align-items:center;gap:8px;cursor:pointer;background:none;border:none;color:rgba(255,255,255,.5);font-size:12px;font-family:'Inter',sans-serif}
+/* ── Sound ── */
+.sound-btn{position:absolute;bottom:28px;left:28px;z-index:20;display:flex;align-items:center;gap:8px;cursor:pointer;background:none;border:none;color:rgba(255,255,255,.45);font-size:12px;font-family:'Inter',sans-serif;transition:color .3s}
+.sound-btn:hover{color:rgba(255,255,255,.7)}
 
-/* sections */
+/* ── Sections ── */
 .sec{padding:100px 32px;position:relative;z-index:1}.sec-inner{max-width:1100px;margin:0 auto}
 .sec-label{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;text-align:center}
 .sec-title{font-family:'Instrument Serif',serif;font-size:clamp(28px,5vw,48px);text-align:center;margin-bottom:12px}
-.sec-sub{color:var(--text2);font-size:16px;text-align:center;max-width:600px;margin:0 auto 56px}
+.sec-sub{color:var(--text2);font-size:16px;text-align:center;max-width:580px;margin:0 auto 56px}
 
-/* features */
+/* ── Features ── */
 .feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
-.feat-card{background:var(--surface);border:1px solid rgba(255,255,255,.05);border-radius:18px;padding:28px;transition:all .3s}
-.feat-card:hover{border-color:rgba(99,102,241,.2);transform:translateY(-2px)}
-.feat-card .icon{width:44px;height:44px;border-radius:12px;background:rgba(99,102,241,.1);display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:20px}
-.feat-card h3{font-size:17px;font-weight:700;margin-bottom:8px}
+.feat-card{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:18px;padding:30px;transition:all .4s cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden}
+.feat-card::after{content:'';position:absolute;top:0;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,rgba(99,102,241,.25),transparent);opacity:0;transition:opacity .4s}
+.feat-card:hover{transform:translateY(-4px);border-color:rgba(99,102,241,.2);box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.feat-card:hover::after{opacity:1}
+.feat-icon{width:46px;height:46px;border-radius:13px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.12);display:flex;align-items:center;justify-content:center;margin-bottom:18px;font-size:20px;transition:all .4s}
+.feat-card:hover .feat-icon{background:rgba(99,102,241,.15);border-color:rgba(99,102,241,.25);transform:scale(1.06)}
+.feat-card h3{font-size:17px;font-weight:700;margin-bottom:8px;transition:color .3s}
+.feat-card:hover h3{color:var(--accent)}
 .feat-card p{font-size:14px;color:var(--text2);line-height:1.7}
 
-/* compare */
+/* ── Compare ── */
 .compare{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:60px}
-.compare-card{text-align:center;padding:24px;background:var(--surface);border:1px solid rgba(255,255,255,.05);border-radius:16px}
-.compare-card .old{font-size:15px;color:#ef4444;text-decoration:line-through}
-.compare-card .new{font-size:24px;font-weight:700;color:var(--green)}
-.compare-card .label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.compare-card{text-align:center;padding:28px 20px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:18px;transition:all .4s}
+.compare-card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.1)}
+.compare-arrow{color:var(--text2);margin:6px 0;font-size:18px}
+.compare-card .old{font-size:16px;color:#ef4444;text-decoration:line-through;text-decoration-color:rgba(239,68,68,.4)}
+.compare-card .new{font-size:26px;font-weight:700;color:var(--green)}
+.compare-card .label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;margin-top:6px;font-weight:600}
 
-/* cta */
-.cta{text-align:center;padding:120px 32px}.cta h2{font-family:'Instrument Serif',serif;font-size:clamp(28px,5vw,48px);margin-bottom:16px}.cta p{color:var(--text2);margin-bottom:32px}.cta .trust{color:var(--text2);font-size:12px;margin-top:16px}
+/* ── Stats Strip ── */
+.stats{display:flex;justify-content:center;gap:48px;flex-wrap:wrap;padding:60px 32px;border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);max-width:800px;margin:0 auto}
+.stat-item{text-align:center}.stat-item .val{font-size:28px;font-weight:800;letter-spacing:-1px}.stat-item .lbl{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-top:2px}
+
+/* ── CTA ── */
+.cta{text-align:center;padding:100px 32px}.cta h2{font-family:'Instrument Serif',serif;font-size:clamp(28px,5vw,48px);margin-bottom:16px}.cta p{color:var(--text2);margin-bottom:32px;font-size:16px}.cta .trust{color:var(--text2);font-size:12px;margin-top:16px}
 
 footer{text-align:center;padding:40px;color:var(--text2);font-size:12px;border-top:1px solid rgba(255,255,255,.05)}
-footer a{color:#818cf8;text-decoration:none}
+footer a{color:var(--accent);text-decoration:none}
 
-@media(max-width:768px){
-  .nav-links{display:none}
-  .compare{grid-template-columns:1fr}
-}
-
-/* scroll reveal */
-.reveal{opacity:0;transform:translateY(30px);transition:all .6s cubic-bezier(.16,1,.3,1)}
+/* ── Reveal ── */
+.reveal{opacity:0;transform:translateY(30px);transition:all .7s cubic-bezier(.16,1,.3,1)}
 .reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ── Orbs ── */
+.orb{position:fixed;border-radius:50%;filter:blur(140px);pointer-events:none;z-index:0;opacity:.06}
+.orb-1{width:600px;height:600px;background:radial-gradient(circle,#6366f1,transparent);top:-200px;right:-100px}
+.orb-2{width:500px;height:500px;background:radial-gradient(circle,#3b82f6,transparent);bottom:-150px;left:-80px}
+.orb-3{width:400px;height:400px;background:radial-gradient(circle,#a855f7,transparent);top:60%;left:60%;animation:float 8s ease-in-out infinite}
+
+@media(max-width:768px){.nav-links{display:none}.compare{grid-template-columns:1fr}.stats{gap:24px}}
+
+/* ── Grid Bg ── */
+.bg-grid{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(99,102,241,.02)1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,.02)1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 80% at 50% 0%,black 30%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse 80% 80% at 50% 0%,black 30%,transparent 70%)}
 </style>
 </head>
 <body>
 
-<!-- stars bg -->
-<div style="position:fixed;inset:0;pointer-events:none;z-index:0">
-  <script>
-  for(let i=0;i<80;i++){
-    const d=document.createElement('div');
-    d.style.cssText=`position:absolute;width:${1+Math.random()*2}px;height:${1+Math.random()*2}px;background:#fff;border-radius:50%;left:${Math.random()*100}%;top:${Math.random()*100}%;opacity:${.15+Math.random()*.5};animation:twinkle ${2+Math.random()*5}s ease-in-out infinite ${Math.random()*4}s`;
-    document.currentScript.parentElement.appendChild(d);
-  }
-  </script>
-</div>
+<div class="bg-grid"></div>
+<div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
 
-<!-- nav -->
-<nav>
-  <a href="/" class="nav-logo">PayFlash</a>
+<!-- ═══ Nav ═══ -->
+<nav id="navbar">
+  <a href="/" class="nav-logo"><img src="/favicon.png" alt="">PayFlash</a>
   <div class="nav-links">
     <a href="/brand">Send</a><a href="#features">Features</a><a href="#compare">Compare</a><a href="#">Docs</a>
   </div>
-  <a href="/brand" class="nav-cta">Launch App</a>
+  <a href="/brand" class="nav-cta jelly">Launch App</a>
 </nav>
 
-<!-- hero -->
+<!-- ═══ Hero ═══ -->
 <section class="hero">
   <div class="hero-video">
     <video autoplay loop muted playsinline>
@@ -140,95 +146,79 @@ footer a{color:#818cf8;text-decoration:none}
   </div>
   <div class="hero-overlay"></div>
   <div class="hero-content">
-    <h1>Send money<br><em>in 3 minutes.</em></h1>
+    <h1>Send money<br><span class="dim">in 3 minutes.</span></h1>
     <p>Built on Base L2 and powered by USDC — instant, borderless, near-zero fees. No SWIFT, no banks, no waiting.</p>
-    <a href="/brand" class="hero-btn">🚀 Launch App</a>
+    <div class="hero-btns">
+      <a href="/brand" class="hero-btn primary jelly">🚀 Launch App</a>
+      <a href="#features" class="hero-btn ghost">How It Works ↓</a>
+    </div>
   </div>
-  <button class="sound-btn" id="soundBtn" onclick="toggleSound()">
-    <span style="width:10px;height:2px;background:rgba(255,255,255,.5);border-radius:2px"></span> Sound on
-  </button>
-  <script>
-  const v=document.querySelector('video');
-  function toggleSound(){v.muted=!v.muted;document.getElementById('soundBtn').textContent=v.muted?'🔇 Sound off':'🔊 Sound on'}
-  </script>
+  <button class="sound-btn" onclick="toggleSound()" id="soundBtn">🔊 Sound on</button>
 </section>
 
-<!-- features -->
+<!-- ═══ Stats ═══ -->
+<div class="stats">
+  <div class="stat-item reveal"><div class="val" style="color:#ef4444">3 days</div><div class="lbl">Bank Wire</div></div>
+  <div class="stat-item reveal"><div class="val" style="color:var(--green)">~3 min</div><div class="lbl">PayFlash</div></div>
+  <div class="stat-item reveal"><div class="val" style="color:#ef4444">5%+</div><div class="lbl">PayPal</div></div>
+  <div class="stat-item reveal"><div class="val" style="color:var(--green)">< 1¢</div><div class="lbl">PayFlash</div></div>
+</div>
+
+<!-- ═══ Features ═══ -->
 <section class="sec" id="features">
   <div class="sec-inner">
     <div class="sec-label">Why PayFlash</div>
     <div class="sec-title">Global payments at internet speed.</div>
     <div class="sec-sub">Stop waiting for bank wires. Send USDC on Base L2 — instant, cheap, verifiable.</div>
     <div class="feat-grid">
-      <div class="feat-card reveal">
-        <div class="icon">⚡</div>
-        <h3>Lightning Fast</h3>
-        <p>Base L2 confirms in ~2 seconds. 7×24, no bank hours, no holidays.</p>
+      <div class="feat-card jelly reveal">
+        <div class="feat-icon">⚡</div><h3>Lightning Fast</h3><p>Base L2 confirms in ~2 seconds. 7×24, no bank hours, no holidays.</p>
       </div>
-      <div class="feat-card reveal">
-        <div class="icon">💸</div>
-        <h3>Near-Zero Fees</h3>
-        <p>~$0.003 gas per transaction. No SWIFT fees, no FX markup, no hidden costs.</p>
+      <div class="feat-card jelly reveal">
+        <div class="feat-icon">💸</div><h3>Near-Zero Fees</h3><p>~$0.003 gas per transaction. No SWIFT fees, no FX markup.</p>
       </div>
-      <div class="feat-card reveal">
-        <div class="icon">🌍</div>
-        <h3>Truly Global</h3>
-        <p>USDC is the same digital dollar everywhere. One currency, one network.</p>
+      <div class="feat-card jelly reveal">
+        <div class="feat-icon">🌍</div><h3>Truly Global</h3><p>USDC is the same digital dollar everywhere. One currency, one network.</p>
       </div>
-      <div class="feat-card reveal">
-        <div class="icon">🔒</div>
-        <h3>On-Chain Records</h3>
-        <p>Every transfer is public, immutable, verifiable. No disputes, no "lost payments".</p>
+      <div class="feat-card jelly reveal">
+        <div class="feat-icon">🔒</div><h3>On-Chain Records</h3><p>Every transfer is public, immutable, verifiable. No "lost payments".</p>
       </div>
-      <div class="feat-card reveal">
-        <div class="icon">🛡️</div>
-        <h3>Compliant & Safe</h3>
-        <p>USDC is 1:1 backed, audited monthly by Circle. Regulated and transparent.</p>
+      <div class="feat-card jelly reveal">
+        <div class="feat-icon">🛡️</div><h3>Compliant & Safe</h3><p>USDC 1:1 backed, audited monthly by Circle. Regulated and transparent.</p>
       </div>
-      <div class="feat-card reveal">
-        <div class="icon">🏗️</div>
-        <h3>Built on Base</h3>
-        <p>Coinbase's L2 — secure, scalable, and battle-tested with millions of users.</p>
+      <div class="feat-card jelly reveal">
+        <div class="feat-icon">🏗️</div><h3>Built on Base</h3><p>Coinbase's L2 — secure, scalable, battle-tested with millions of users.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- compare -->
+<!-- ═══ Compare ═══ -->
 <section class="sec" id="compare" style="background:rgba(255,255,255,.01)">
   <div class="sec-inner">
     <div class="sec-label">The Difference</div>
     <div class="sec-title">Why switch to PayFlash?</div>
     <div class="compare">
-      <div class="compare-card reveal">
-        <div class="label">Settlement Time</div>
-        <div class="old">3-5 days</div>
-        <div style="color:var(--text2);margin:4px 0">→</div>
-        <div class="new">~3 min</div>
+      <div class="compare-card jelly reveal">
+        <div class="label">Settlement</div><div class="old">3-5 days</div><div class="compare-arrow">→</div><div class="new">~3 min</div>
       </div>
-      <div class="compare-card reveal">
-        <div class="label">Fees</div>
-        <div class="old">3-6%</div>
-        <div style="color:var(--text2);margin:4px 0">→</div>
-        <div class="new">< 0.1%</div>
+      <div class="compare-card jelly reveal">
+        <div class="label">Fees</div><div class="old">3-6%</div><div class="compare-arrow">→</div><div class="new">< 0.1%</div>
       </div>
-      <div class="compare-card reveal">
-        <div class="label">Record Keeping</div>
-        <div class="old">Email + bank</div>
-        <div style="color:var(--text2);margin:4px 0">→</div>
-        <div class="new">On-chain</div>
+      <div class="compare-card jelly reveal">
+        <div class="label">Records</div><div class="old">Email + bank</div><div class="compare-arrow">→</div><div class="new">On-chain</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- cta -->
-<section class="cta">
+<!-- ═══ CTA ═══ -->
+<div class="cta">
   <h2>Ready to send money at internet speed?</h2>
   <p>Stop paying 5% to PayPal and waiting 3 days for a bank wire.</p>
-  <a href="/brand" class="hero-btn" style="font-size:18px">🚀 Try the Demo</a>
+  <a href="/brand" class="hero-btn primary jelly" style="font-size:18px">🚀 Try the Demo</a>
   <div class="trust">Built on <strong>Base L2</strong> · Powered by <strong>Circle USDC</strong> · Open Source</div>
-</section>
+</div>
 
 <footer>
   <p>PayFlash · Send money globally on Base L2 · 2026</p>
@@ -236,9 +226,14 @@ footer a{color:#818cf8;text-decoration:none}
 </footer>
 
 <script>
-// scroll reveal
+// scroll nav
+window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>60));
+// reveal
 const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})});
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+// sound
+const v=document.querySelector('video');
+function toggleSound(){v.muted=!v.muted;document.getElementById('soundBtn').textContent=v.muted?'🔇 Sound off':'🔊 Sound on'}
 </script>
 </body>
 </html>
