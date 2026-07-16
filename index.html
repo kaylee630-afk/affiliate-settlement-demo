@@ -132,7 +132,7 @@ document.querySelectorAll('.jelly-target').forEach((el,i)=>{
   const mat=new THREE.MeshPhysicalMaterial({
     color:new THREE.Color().setHSL(.6+i*.04,.3,.45),
     metalness:0,roughness:.3,clearcoat:.8,clearcoatRoughness:.3,
-    transparent:true,opacity:0,
+    transparent:true,opacity:.12,
     specularIntensity:1,specularColor:new THREE.Color('#aaccff'),
     sheen:1,sheenRoughness:.35,sheenColor:new THREE.Color('#8899ff'),
     depthWrite:false
@@ -192,11 +192,6 @@ function animate(){
     c.mesh.scale.x+=(c.tsx-c.mesh.scale.x)*.15;
     c.mesh.scale.y+=(c.tsy-c.mesh.scale.y)*.15;
 
-    // Visible?
-    const r=c.el.getBoundingClientRect();
-    const visible=r.bottom>0&&r.top<innerHeight;
-    if(!visible){c.mesh.material.opacity+=(0-c.mesh.material.opacity)*.2;return;}
-
     // Mouse influence
     const mx=mouse.x*8,my=mouse.y*8;
     const dx=mx-c.mesh.position.x,dy=my-c.mesh.position.y;
@@ -216,17 +211,18 @@ function animate(){
       const mdx=ox-(mx-c.mesh.position.x)*.25;
       const mdy=oy-(my-c.mesh.position.y)*.25;
       const md2=mdx*mdx+mdy*mdy;
-      const wave=Math.sin(d2*3.5-t*5)*j*.04;
+      const wave=Math.sin(d2*3.5-t*5)*.015; // always active
       const bulge=Math.exp(-md2*3)*j*.05;
-      const ripple=Math.sin(ox*10+t*4)*Math.cos(oy*9+t*3.5)*j*.015;
+      const ripple=Math.sin(ox*10+t*4)*Math.cos(oy*9+t*3.5)*.01; // always active
       pos[i]=ox+wave*ox+bulge*mdx+ripple;
       pos[i+1]=oy+wave*oy+bulge*mdy+ripple;
       pos[i+2]=(wave+bulge)*.35;
     }
     c.geo.attributes.position.needsUpdate=true;
 
-    // Material response
-    c.mesh.material.opacity+=(.03+j*.22-c.mesh.material.opacity)*.15;
+    // Material response — always visible, enhanced by mouse
+    const targetOpacity=.12+j*.25;
+    c.mesh.material.opacity+=(targetOpacity-c.mesh.material.opacity)*.12;
     c.mesh.material.clearcoat=.8+j*.15;
     c.mesh.material.roughness=.3-j*.15;
   });
