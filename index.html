@@ -124,15 +124,15 @@ void main(){
   col+=vec3(.3,.5,1.)*wobble;      // jelly wobble highlight
   col+=vec3(.6,.7,1.)*uShock*.3;   // shockwave flash
 
-  float alpha=0.;
-  alpha+=edge*.06;                   // base glass
-  alpha+=glow*.25;                   // mouse reveal
-  alpha+=spec*.2;
-  alpha+=uJelly*.04;
-  alpha+=uShock*.2;
-  alpha*=corner;                     // rounded corners
+  float alpha=.08;                   // ALWAYS visible base
+  alpha+=edge*.08;
+  alpha+=glow*.3;
+  alpha+=spec*.25;
+  alpha+=uJelly*.06;
+  alpha+=uShock*.25;
+  alpha*=corner;
 
-  gl_FragColor=vec4(col,clamp(alpha,0.,.45));
+  gl_FragColor=vec4(col,clamp(alpha,0.,.6));
 }`;
 
 /* ═══════════════════════ Setup ═══════════════════════ */
@@ -142,6 +142,10 @@ renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 renderer.setSize(innerWidth,innerHeight);
 
 const scene=new THREE.Scene();
+// Test: visible green rect to verify WebGL renders
+const testGeo=new THREE.PlaneGeometry(.5,.3);
+const testMat=new THREE.MeshBasicMaterial({color:'#00ff00',transparent:true,opacity:.5,depthTest:false,depthWrite:false});
+const testMesh=new THREE.Mesh(testGeo,testMat);testMesh.position.set(0,0,0);testMesh.renderOrder=1000;scene.add(testMesh);
 const camera=new THREE.OrthographicCamera(-1,1,1,-1,.1,10);
 camera.position.z=5;
 
@@ -164,7 +168,7 @@ document.querySelectorAll('.feat-card').forEach((el,i)=>{
       uTime:{value:0},uJelly:{value:0},uHover:{value:0},
       uMouse:{value:new THREE.Vector2(.5,.5)},uShock:{value:0}
     },
-    transparent:true,depthWrite:false,depthTest:false,blending:THREE.AdditiveBlending
+    transparent:true,depthWrite:false,depthTest:false
   });
   const mesh=new THREE.Mesh(geo,mat);mesh.renderOrder=999;scene.add(mesh);
   jellyItems.push({el,mesh,jelly:0,vel:0,shock:0,sVel:0});
