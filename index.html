@@ -125,16 +125,42 @@ const d1=new THREE.DirectionalLight('#8899ff',2.5);d1.position.set(5,3,5);scene.
 const d2=new THREE.DirectionalLight('#ff88aa',.8);d2.position.set(-5,-2,3);scene.add(d2);
 const d3=new THREE.DirectionalLight('#88ffcc',.5);d3.position.set(0,5,-2);scene.add(d3);
 
-// Floating light orbs
-const orbs=[];
-for(let i=0;i<5;i++){
-  const geo=new THREE.SphereGeometry(.15+Math.random()*.3,16,16);
-  const mat=new THREE.MeshBasicMaterial({color:new THREE.Color().setHSL(.6+Math.random()*.1,.5,.6),transparent:true,opacity:.2,blending:THREE.AdditiveBlending,depthWrite:false});
-  const orb=new THREE.Mesh(geo,mat);
-  orb.position.set((Math.random()-.5)*14,(Math.random()-.5)*10,-1);
-  orb.userData={vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,baseY:orb.position.y};
-  scene.add(orb);orbs.push(orb);
+// ====== JELLY CARD OVERLAYS ======
+const cards=[];
+document.querySelectorAll('.jelly-target').forEach((el,i)=>{
+  const geo=new THREE.PlaneGeometry(1,1,40,40);
+  const mat=new THREE.MeshPhysicalMaterial({
+    color:new THREE.Color().setHSL(.6+i*.04,.3,.45),
+    metalness:0,roughness:.3,clearcoat:.8,clearcoatRoughness:.3,
+    transparent:true,opacity:0,
+    specularIntensity:1,specularColor:new THREE.Color('#aaccff'),
+    sheen:1,sheenRoughness:.35,sheenColor:new THREE.Color('#8899ff'),
+    depthWrite:false
+  });
+  const mesh=new THREE.Mesh(geo,mat);
+  mesh.renderOrder=1;mesh.material.depthTest=true;mesh.material.depthWrite=false;
+  scene.add(mesh);
+  cards.push({el,mesh,geo,
+    tx:0,ty:0,tsx:1,tsy:1, // target position & scale
+    jelly:0,jellyVel:0,
+    orig:new Float32Array(geo.attributes.position.array)
+  });
+});
+
+function updateCardPositions(){
+  cards.forEach(c=>{
+    const r=c.el.getBoundingClientRect();
+    const visible=r.bottom>0&&r.top<innerHeight;
+    if(!visible){c.mesh.material.opacity=0;return;}
+    c.tsx=r.width/innerWidth*14;
+    c.tsy=r.height/innerHeight*9;
+    c.tx=(r.left+r.width/2-innerWidth/2)/innerWidth*16;
+    c.ty=-(r.top+r.height/2-innerHeight/2)/innerHeight*11;
+  });
 }
+updateCardPositions();
+window.addEventListener('scroll',updateCardPositions);
+window.addEventListener('resize',updateCardPositions);
 
 // Mouse
 const mouse={x:0,y:0,tx:0,ty:0,vx:0,vy:0};
@@ -157,27 +183,58 @@ function animate(){
   mouse.vx+=(mouse.tx-mouse.x)*10*dt;mouse.vy+=(mouse.ty-mouse.y)*10*dt;
   mouse.vx*=.82;mouse.vy*=.82;mouse.x+=mouse.vx*dt*3;mouse.y+=mouse.vy*dt*3;
 
-  // Animate orbs
-  orbs.forEach(o=>{
-    o.position.x+=o.userData.vx*dt;
-    o.position.y+=o.userData.vy*dt;
-    if(Math.abs(o.position.x)>7)o.userData.vx*=-1;
-    if(Math.abs(o.position.y)>5)o.userData.vy*=-1;
-    // Pulse
-    const pulse=Math.sin(t*2+o.position.x)*.5+.5;
-    o.material.opacity=.15+pulse*.15;
-    o.scale.setScalar(.8+pulse*.4);
+  // ====== JELLY CARDS ANIMATION ======
+  cards.forEach(c=>{
+    // Smooth position/scale follow
+    c.mesh.position.x+=(c.tx-c.mesh.position.x)*.15;
+    c.mesh.position.y+=(c.ty-c.mesh.position.y)*.15;
+    c.mesh.position.z=-2;
+    c.mesh.scale.x+=(c.tsx-c.mesh.scale.x)*.15;
+    c.mesh.scale.y+=(c.tsy-c.mesh.scale.y)*.15;
+
+    // Visible?
+    const r=c.el.getBoundingClientRect();
+    const visible=r.bottom>0&&r.top<innerHeight;
+    if(!visible){c.mesh.material.opacity+=(0-c.mesh.material.opacity)*.2;return;}
+
+    // Mouse influence
+    const mx=mouse.x*8,my=mouse.y*8;
+    const dx=mx-c.mesh.position.x,dy=my-c.mesh.position.y;
+    const dist=Math.sqrt(dx*dx+dy*dy);
+    const influence=Math.max(0,1-dist/7);
+
+    // Jelly spring
+    c.jellyVel+=(influence-c.jelly)*14*dt;c.jellyVel*=.65;
+    c.jelly+=c.jellyVel*dt;
+    const j=Math.max(0,c.jelly);
+
+    // Vertex displacement — soft body
+    const pos=c.geo.attributes.position.array,o=c.orig;
+    for(let i=0;i<pos.length;i+=3){
+      const ox=o[i],oy=o[i+1];
+      const d2=ox*ox+oy*oy;
+      const mdx=ox-(mx-c.mesh.position.x)*.25;
+      const mdy=oy-(my-c.mesh.position.y)*.25;
+      const md2=mdx*mdx+mdy*mdy;
+      const wave=Math.sin(d2*3.5-t*5)*j*.04;
+      const bulge=Math.exp(-md2*3)*j*.05;
+      const ripple=Math.sin(ox*10+t*4)*Math.cos(oy*9+t*3.5)*j*.015;
+      pos[i]=ox+wave*ox+bulge*mdx+ripple;
+      pos[i+1]=oy+wave*oy+bulge*mdy+ripple;
+      pos[i+2]=(wave+bulge)*.35;
+    }
+    c.geo.attributes.position.needsUpdate=true;
+
+    // Material response
+    c.mesh.material.opacity+=(.03+j*.22-c.mesh.material.opacity)*.15;
+    c.mesh.material.clearcoat=.8+j*.15;
+    c.mesh.material.roughness=.3-j*.15;
   });
 
-  // Shockwaves become subtle flashes on orbs
+  // Shockwaves ripple cards
   for(let i=shockwaves.length-1;i>=0;i--){
     const s=shockwaves[i];s.t+=dt;s.intensity*=Math.exp(-dt*5);
-    if(s.intensity<.01){shockwaves.splice(i,1);continue;}
-    orbs.forEach(o=>{
-      const d2=(o.position.x-s.x)*(o.position.x-s.x)+(o.position.y-s.y)*(o.position.y-s.y);
-      const sw=Math.exp(-d2*3)*s.intensity;
-      o.material.opacity=Math.min(.5,o.material.opacity+sw*.3);
-    });
+    if(s.intensity<.01)shockwaves.splice(i,1);
   }
 
   // Particles
