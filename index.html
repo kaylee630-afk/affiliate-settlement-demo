@@ -127,23 +127,35 @@ const d3=new THREE.DirectionalLight('#88ffcc',.5);d3.position.set(0,5,-2);scene.
 
 // Jelly card overlays
 const cards=[];
+function positionCard(c){
+  const r=c.el.getBoundingClientRect();
+  if(r.bottom<0||r.top>innerHeight) return;
+  const w=r.width/innerWidth*14,h=r.height/innerHeight*9;
+  const cx=(r.left+r.width/2-innerWidth/2)/innerWidth*16;
+  const cy=-(r.top+r.height/2-innerHeight/2)/innerHeight*11;
+  c.mesh.scale.set(w/c.baseW,h/c.baseH,1);
+  c.mesh.position.x+=(cx-c.mesh.position.x)*.2;
+  c.mesh.position.y+=(cy-c.mesh.position.y)*.2;
+}
+
 document.querySelectorAll('.jelly-target').forEach((el,i)=>{
-  const r=el.getBoundingClientRect();
-  const w=r.width/innerWidth*12,h=r.height/innerHeight*8;
-  const x=(r.left+r.width/2-innerWidth/2)/innerWidth*14;
-  const y=-(r.top+r.height/2-innerHeight/2)/innerHeight*10;
-  const geo=new THREE.PlaneGeometry(w,h,40,40);
-  const hue=.6+i*.04;
+  const geo=new THREE.PlaneGeometry(3,2,50,50);
+  const hue=.58+i*.04;
   const mat=new THREE.MeshPhysicalMaterial({
-    color:new THREE.Color().setHSL(hue,.4,.35),
-    metalness:0,roughness:.3,clearcoat:.6,clearcoatRoughness:.4,
-    transparent:true,opacity:.15,envMapIntensity:.5,
-    specularIntensity:.8,specularColor:new THREE.Color('#8899ff')
+    color:new THREE.Color().setHSL(hue,.35,.4),
+    metalness:.05,roughness:.25,clearcoat:.7,clearcoatRoughness:.35,
+    transparent:true,opacity:.08,
+    specularIntensity:.9,specularColor:new THREE.Color('#aabbff'),
+    sheen:1,sheenRoughness:.4,sheenColor:new THREE.Color('#8899ff')
   });
   const mesh=new THREE.Mesh(geo,mat);
-  mesh.position.set(x,y,-1);scene.add(mesh);
-  cards.push({el,mesh,geo,baseY:y,baseX:x,velX:0,velY:0,jelly:0,jellyVel:0,
-    orig:new Float32Array(geo.attributes.position.array)});
+  mesh.position.set(0,0,-2);scene.add(mesh);
+  cards.push({
+    el,mesh,geo,baseW:3,baseH:2,velX:0,velY:0,
+    jelly:0,jellyVel:0,mouseInfluence:0,
+    orig:new Float32Array(geo.attributes.position.array)
+  });
+  positionCard(cards[cards.length-1]);
 });
 
 // Mouse
@@ -168,51 +180,64 @@ function animate(){
   mouse.vx*=.82;mouse.vy*=.82;mouse.x+=mouse.vx*dt*3;mouse.y+=mouse.vy*dt*3;
 
   cards.forEach(c=>{
+    positionCard(c);
     const r=c.el.getBoundingClientRect();
-    if(r.bottom<0||r.top>innerHeight)return;
-    const cx=(r.left+r.width/2-innerWidth/2)/innerWidth*14;
-    const cy=-(r.top+r.height/2-innerHeight/2)/innerHeight*10;
+    if(r.bottom<0||r.top>innerHeight) return;
 
-    // Spring position
-    c.velX+=(cx-c.mesh.position.x)*8*dt;c.velX*=.85;
-    c.velY+=(cy-c.mesh.position.y)*8*dt;c.velY*=.85;
-    c.mesh.position.x+=c.velX*dt;c.mesh.position.y+=c.velY*dt;
-
-    // Mouse influence
-    const dx=mouse.x*7-c.mesh.position.x,dy=mouse.y*7-c.mesh.position.y;
+    // Mouse influence per card
+    const dx=mouse.x*8-c.mesh.position.x,dy=mouse.y*8-c.mesh.position.y;
     const dist=Math.sqrt(dx*dx+dy*dy);
-    const influence=Math.max(0,1-dist/5);
-    c.jellyVel+=(influence-c.jelly)*12*dt;c.jellyVel*=.75;
+    c.mouseInfluence+=(Math.max(0,1-dist/6)-c.mouseInfluence)*8*dt;
+
+    // Jelly wobble
+    c.jellyVel+=(c.mouseInfluence-c.jelly)*14*dt;c.jellyVel*=.7;
     c.jelly+=c.jellyVel*dt;
 
-    // Jelly distortion on vertices
+    const influence=Math.max(0,c.jelly);
     const pos=c.geo.attributes.position.array,o=c.orig;
+    const mx=mouse.x*8,my=mouse.y*8;
+
     for(let i=0;i<pos.length;i+=3){
       const ox=o[i],oy=o[i+1];
       const d2=ox*ox+oy*oy;
-      const md2=(ox-mouse.x*.4)*(ox-mouse.x*.4)+(oy-mouse.y*.4)*(oy-mouse.y*.4);
-      const wave=Math.sin(d2*3.5-t*5)*influence*.05;
-      const mouseBulge=Math.exp(-md2*1.8)*influence*.07;
-      pos[i]=ox+ox*wave+mouseBulge*ox;
-      pos[i+1]=oy+oy*wave+mouseBulge*oy;
-      pos[i+2]=wave*.5+mouseBulge*.25;
+      // Distance from mouse (in card-local space)
+      const mdx=ox-(mx-c.mesh.position.x)*.3;
+      const mdy=oy-(my-c.mesh.position.y)*.3;
+      const md2=mdx*mdx+mdy*mdy;
+
+      const wave=Math.sin(d2*4-t*6)*influence*.04;
+      const mouseBulge=Math.exp(-md2*2.5)*influence*.06;
+      const edgeWave=Math.sin(ox*8+t*3)*Math.cos(oy*7+t*2.5)*influence*.02;
+
+      pos[i]=ox+wave*ox+mouseBulge*mdx+edgeWave;
+      pos[i+1]=oy+wave*oy+mouseBulge*mdy+edgeWave;
+      pos[i+2]=(wave+mouseBulge)*.4;
     }
     c.geo.attributes.position.needsUpdate=true;
 
-    // Material responds to mouse
-    c.mesh.material.opacity=.12+influence*.2;
-    c.mesh.material.clearcoat=.6+influence*.3;
+    // Material response
+    c.mesh.material.opacity=.06+influence*.22;
+    c.mesh.material.clearcoat=.7+influence*.25;
+    c.mesh.material.roughness=.25-influence*.15;
   });
 
   // Shockwaves
   for(let i=shockwaves.length-1;i>=0;i--){
-    shockwaves[i].t+=dt;shockwaves[i].intensity*=Math.exp(-dt*5);
-    if(shockwaves[i].intensity<.01){shockwaves.splice(i,1);continue;}
+    const s=shockwaves[i];s.t+=dt;s.intensity*=Math.exp(-dt*5);
+    if(s.intensity<.01){shockwaves.splice(i,1);continue;}
     cards.forEach(c=>{
-      const d2=(c.mesh.position.x-shockwaves[i].x)*(c.mesh.position.x-shockwaves[i].x)+(c.mesh.position.y-shockwaves[i].y)*(c.mesh.position.y-shockwaves[i].y);
-      const sw=Math.exp(-d2*3)*shockwaves[i].intensity;
-      c.mesh.material.opacity+=sw*.3;
-      c.mesh.material.clearcoat+=sw*.4;
+      const d2=(c.mesh.position.x-s.x)*(c.mesh.position.x-s.x)+(c.mesh.position.y-s.y)*(c.mesh.position.y-s.y);
+      const sw=Math.exp(-d2*3)*s.intensity;
+      c.mesh.material.opacity=Math.min(.35,c.mesh.material.opacity+sw*.25);
+      // Shockwave ripple on vertices
+      const pos=c.geo.attributes.position.array,o=c.orig;
+      for(let j=0;j<pos.length;j+=3){
+        const pdx=o[j]-s.x+c.mesh.position.x,pdy=o[j+1]-s.y+c.mesh.position.y;
+        const sd=Math.sqrt(pdx*pdx+pdy*pdy);
+        const rip=Math.exp(-Math.abs(sd-s.t*8)*2)*sw*.08;
+        pos[j+2]=rip;
+      }
+      c.geo.attributes.position.needsUpdate=true;
     });
   }
 
