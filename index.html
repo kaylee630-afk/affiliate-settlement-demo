@@ -3,388 +3,374 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>PayFlash — Send Money in 3 Minutes</title>
+<title>PayFlash — Global Payments</title>
 <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="manifest" href="/manifest.json">
 <script src="/sw-register.js"></script>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.157.0/build/three.module.js"}}</script>
 <style>
-:root{--bg:#010314;--text:#f5f5f7;--text2:#8b8fa3;--accent:#6366f1;--green:#22c55e}
+:root{--text:#f5f5f7;--text2:#8b8fa3;--accent:#6366f1;--green:#22c55e}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body{font-family:'Inter',sans-serif;background:#010314;color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
 
-/* ══════════════════════════════════════════
-   Glass Jelly System — iOS Liquid Glass
-   ══════════════════════════════════════════ */
+/* Canvas layer */
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+#gl-canvas{position:fixed;inset:0;z-index:0;pointer-events:auto}
 
-/* ── Jelly card base ── */
-.glass-jelly {
-  position: relative;
-  background: rgba(255,255,255,.03);
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 20px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.06),
-    0 2px 8px rgba(0,0,0,.2);
-  transition:
-    transform .6s cubic-bezier(.22,.6,.3,1.1),
-    border-color .4s ease,
-    box-shadow .4s ease;
-  will-change: transform;
-  overflow: hidden;
-  cursor: pointer;
-}
+/* Content layer */
+.content{position:relative;z-index:1}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 32px;transition:all .4s}
+nav.scrolled{background:rgba(1,3,20,.8);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,.06)}
+.nav-logo{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:800;color:#fff;text-decoration:none}
+.nav-logo img{width:28px;height:28px;border-radius:7px}
+.nav-links{display:flex;gap:28px}
+.nav-links a{color:rgba(255,255,255,.7);text-decoration:none;font-size:13px;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:#fff}
+.nav-cta{padding:9px 22px;border-radius:999px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;text-decoration:none}
+.hero{height:100dvh;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 24px}
+.hero h1{font-family:'Instrument Serif',serif;font-size:clamp(44px,8vw,110px);line-height:.92;color:#fff}.hero h1 .dim{color:rgba(255,255,255,.45);font-style:italic}
+.hero p{color:rgba(255,255,255,.55);font-size:clamp(14px,2vw,17px);max-width:540px;margin:20px auto 0}
+.hero-btns{display:flex;gap:12px;justify-content:center;margin-top:32px;flex-wrap:wrap}
+.btn{padding:14px 36px;border-radius:999px;font-size:15px;font-weight:600;text-decoration:none;cursor:pointer;transition:transform .3s,box-shadow .3s;border:none}
+.btn.primary{background:var(--accent);color:#fff}.btn.ghost{background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.15)}
+.btn:hover{transform:translateY(-2px)}
+.btn.primary:hover{box-shadow:0 8px 30px rgba(99,102,241,.45)}
+.sec{padding:100px 32px;position:relative;z-index:1}.sec-inner{max-width:1100px;margin:0 auto}
+.sec-label{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;text-align:center}
+.sec-title{font-family:'Instrument Serif',serif;font-size:clamp(28px,5vw,48px);text-align:center;margin-bottom:12px}
+.sec-sub{color:var(--text2);font-size:16px;text-align:center;max-width:580px;margin:0 auto 48px}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.feat-card{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:20px;padding:30px;position:relative;overflow:hidden;cursor:pointer;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.feat-icon{width:46px;height:46px;border-radius:13px;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.15);display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:20px}
+.feat-card h3{font-size:17px;font-weight:700;margin-bottom:8px}
+.feat-card p{font-size:14px;color:var(--text2);line-height:1.7}
+.compare{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:60px}
+.c-card{text-align:center;padding:28px 20px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:20px}
+.c-card .old{font-size:16px;color:#ef4444;text-decoration:line-through}.c-card .new{font-size:26px;font-weight:700;color:var(--green)}.c-card .arr{color:var(--text2);margin:6px 0;font-size:18px}
+.c-card .lbl{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;margin-top:6px;font-weight:600}
+.stats{display:flex;justify-content:center;gap:48px;flex-wrap:wrap;padding:60px 32px;border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);max-width:800px;margin:0 auto}
+.s-item{text-align:center}.s-item .val{font-size:28px;font-weight:800;letter-spacing:-1px}.s-item .lbl{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-top:2px}
+.cta{text-align:center;padding:100px 32px}.cta h2{font-family:'Instrument Serif',serif;font-size:clamp(28px,5vw,48px);margin-bottom:16px}.cta p{color:var(--text2);margin-bottom:32px}
+footer{text-align:center;padding:40px;color:var(--text2);font-size:12px;border-top:1px solid rgba(255,255,255,.05)}footer a{color:var(--accent);text-decoration:none}
 
-/* ── Inner highlight gradient ── */
-.glass-jelly::before {
-  content: '';
-  position: absolute;
-  inset: 0; border-radius: inherit;
-  background: linear-gradient(135deg,
-    rgba(255,255,255,.08) 0%,
-    rgba(255,255,255,.02) 30%,
-    transparent 50%,
-    rgba(255,255,255,0) 70%,
-    rgba(255,255,255,.03) 100%);
-  pointer-events: none; z-index: 2;
-}
+/* Reveal */
+.reveal{opacity:0;transform:translateY(40px);filter:blur(12px);transition:all .8s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0);filter:blur(0)}
 
-/* ── Top edge glow ── */
-.glass-jelly::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 12%; right: 12%; height: 1px;
-  background: linear-gradient(90deg,
-    transparent,
-    rgba(255,255,255,.25),
-    transparent);
-  opacity: 0; transition: opacity .4s;
-  pointer-events: none; z-index: 3;
-}
-
-/* ── Hover: elastic deform = scale + slight skew + lift ── */
-.glass-jelly:hover {
-  transform: translateY(-6px) scale(1.03) skewX(-0.3deg);
-  border-color: rgba(99,102,241,.25);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.1),
-    0 8px 32px rgba(99,102,241,.1),
-    0 2px 4px rgba(0,0,0,.3);
-}
-.glass-jelly:hover::after { opacity: 1; }
-
-/* ── Active press: squish down ── */
-.glass-jelly:active {
-  transform: scale(.97);
-  transition: transform .15s cubic-bezier(.22,1,.36,1);
-}
-
-/* ── Gentle float animation ── */
-@keyframes jellyFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-}
-.float { animation: jellyFloat 5s ease-in-out infinite; }
-
-/* ── Ripple on click ── */
-@keyframes ripple {
-  0% { transform: scale(0); opacity: .4; }
-  100% { transform: scale(4); opacity: 0; }
-}
-.ripple-effect {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(99,102,241,.25);
-  pointer-events: none;
-  animation: ripple .8s ease-out forwards;
-}
-
-/* ── Glow button ── */
-.btn-glass {
-  display: inline-block;
-  padding: 14px 36px;
-  border-radius: 999px;
-  font-size: 15px; font-weight: 600;
-  text-decoration: none; cursor: pointer;
-  background: rgba(99,102,241,.15);
-  border: 1px solid rgba(99,102,241,.25);
-  color: #fff;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.1),
-    0 0 16px rgba(99,102,241,.15);
-  transition:
-    transform .5s cubic-bezier(.22,.6,.3,1.1),
-    box-shadow .4s ease,
-    background .3s ease;
-  will-change: transform;
-  position: relative; overflow: hidden;
-}
-.btn-glass:hover {
-  transform: translateY(-2px) scale(1.05);
-  background: rgba(99,102,241,.25);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.15),
-    0 0 28px rgba(99,102,241,.3),
-    0 4px 16px rgba(99,102,241,.1);
-}
-.btn-glass:active {
-  transform: scale(.94);
-  transition: transform .12s cubic-bezier(.22,1,.36,1);
-}
-.btn-glass.primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  box-shadow: 0 0 24px rgba(99,102,241,.3);
-}
-.btn-glass.primary:hover {
-  box-shadow: 0 0 36px rgba(99,102,241,.5), 0 6px 20px rgba(99,102,241,.2);
-}
-
-/* ══════════════════════════════════════════
-   Layout
-   ══════════════════════════════════════════ */
-
-/* ── Nav ── */
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 32px; transition: all .4s;
-}
-nav.scrolled {
-  background: rgba(1,3,20,.8);
-  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-  border-bottom: 1px solid rgba(255,255,255,.06);
-}
-.nav-logo { display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 800; color: #fff; text-decoration: none; letter-spacing: -.5px; }
-.nav-logo img { width: 28px; height: 28px; border-radius: 7px; }
-.nav-links { display: flex; gap: 28px; }
-.nav-links a { color: rgba(255,255,255,.7); text-decoration: none; font-size: 13px; font-weight: 500; transition: color .2s; }
-.nav-links a:hover { color: #fff; }
-
-/* ── Hero ── */
-.hero { position: relative; height: 100dvh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-.hero-video { position: absolute; inset: 0; z-index: 0; }
-.hero-video video { width: 100%; height: 100%; object-fit: cover; }
-.hero-overlay { position: absolute; inset: 0; background: radial-gradient(ellipse at center,transparent 30%,rgba(1,3,20,.55) 100%); z-index: 1; }
-.hero-content { position: relative; z-index: 10; text-align: center; padding: 0 24px; }
-.hero h1 { font-family: 'Instrument Serif',serif; font-size: clamp(44px,8vw,110px); line-height: .92; color: #fff; }
-.hero h1 .dim { color: rgba(255,255,255,.45); font-style: italic; }
-.hero p { color: rgba(255,255,255,.55); font-size: clamp(14px,2vw,17px); max-width: 540px; margin: 20px auto 0; line-height: 1.6; }
-.hero-btns { display: flex; gap: 12px; justify-content: center; margin-top: 32px; flex-wrap: wrap; }
-
-/* ── Sound ── */
-.sound-btn { position: absolute; bottom: 28px; left: 28px; z-index: 20; background: none; border: none; color: rgba(255,255,255,.45); font-size: 12px; font-family: 'Inter',sans-serif; cursor: pointer; }
-
-/* ── Sections ── */
-.sec { padding: 100px 32px; position: relative; z-index: 1; }
-.sec-inner { max-width: 1100px; margin: 0 auto; }
-.sec-label { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; text-align: center; }
-.sec-title { font-family: 'Instrument Serif',serif; font-size: clamp(28px,5vw,48px); text-align: center; margin-bottom: 12px; }
-.sec-sub { color: var(--text2); font-size: 16px; text-align: center; max-width: 580px; margin: 0 auto 48px; }
-
-/* ── Feature Grid ── */
-.feat-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap: 16px; }
-.feat-card-inner { padding: 28px; position: relative; z-index: 1; }
-.feat-icon { width: 46px; height: 46px; border-radius: 13px; background: rgba(99,102,241,.1); border: 1px solid rgba(99,102,241,.15); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; font-size: 20px; transition: all .4s; }
-.glass-jelly:hover .feat-icon { background: rgba(99,102,241,.2); border-color: rgba(99,102,241,.3); transform: scale(1.08); }
-.feat-card-inner h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; transition: color .3s; }
-.glass-jelly:hover .feat-card-inner h3 { color: var(--accent); }
-.feat-card-inner p { font-size: 14px; color: var(--text2); line-height: 1.7; }
-
-/* ── Compare ── */
-.compare { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 60px; }
-.compare-card { text-align: center; padding: 28px 20px; }
-.compare-arrow { color: var(--text2); margin: 6px 0; font-size: 18px; }
-.compare-card .old { font-size: 16px; color: #ef4444; text-decoration: line-through; text-decoration-color: rgba(239,68,68,.4); }
-.compare-card .new { font-size: 26px; font-weight: 700; color: var(--green); }
-.compare-card .label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 6px; font-weight: 600; }
-
-/* ── Stats ── */
-.stats { display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; padding: 60px 32px; border-top: 1px solid rgba(255,255,255,.04); border-bottom: 1px solid rgba(255,255,255,.04); max-width: 800px; margin: 0 auto; }
-.stat-item { text-align: center; }
-.stat-item .val { font-size: 28px; font-weight: 800; letter-spacing: -1px; }
-.stat-item .lbl { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; margin-top: 2px; }
-
-/* ── CTA ── */
-.cta { text-align: center; padding: 100px 32px; }
-.cta h2 { font-family: 'Instrument Serif',serif; font-size: clamp(28px,5vw,48px); margin-bottom: 16px; }
-.cta p { color: var(--text2); margin-bottom: 32px; font-size: 16px; }
-
-footer { text-align: center; padding: 40px; color: var(--text2); font-size: 12px; border-top: 1px solid rgba(255,255,255,.05); }
-footer a { color: var(--accent); text-decoration: none; }
-
-/* ── Scroll reveal: blur → clear ── */
-.reveal { opacity: 0; transform: translateY(40px); filter: blur(12px); transition: all .8s cubic-bezier(.16,1,.3,1); }
-.reveal.visible { opacity: 1; transform: translateY(0); filter: blur(0); }
-
-/* ── Background ── */
-.bg-grid { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; pointer-events: none; background-image: linear-gradient(rgba(99,102,241,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,.015) 1px,transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse 80% 80% at 50% 0%,black 30%,transparent 70%); -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 0%,black 30%,transparent 70%); }
-.orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; z-index: 0; opacity: .06; }
-.orb-1 { width: 600px; height: 600px; background: radial-gradient(circle,#6366f1,transparent); top: -200px; right: -100px; }
-.orb-2 { width: 500px; height: 500px; background: radial-gradient(circle,#3b82f6,transparent); bottom: -150px; left: -80px; }
-.orb-3 { width: 400px; height: 400px; background: radial-gradient(circle,#a855f7,transparent); top: 60%; left: 60%; animation: float 8s ease-in-out infinite; }
-@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
-@keyframes twinkle { 0%,100% { opacity: .15; } 50% { opacity: .8; } }
-
-@media (max-width: 768px) {
-  .nav-links { display: none; }
-  .compare { grid-template-columns: 1fr; }
-  .stats { gap: 24px; }
-}
+@media(max-width:768px){.nav-links{display:none}.compare{grid-template-columns:1fr}.stats{gap:24px}}
 </style>
 </head>
 <body>
 
-<div class="bg-grid"></div>
-<div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
+<canvas id="gl-canvas"></canvas>
 
-<!-- ═══ Stars ═══ -->
-<div style="position:fixed;inset:0;pointer-events:none;z-index:0">
-  <script>
-  for(let i=0;i<80;i++){
-    const d=document.createElement('div');
-    d.style.cssText=`position:absolute;width:${1+Math.random()*2}px;height:${1+Math.random()*2}px;background:#fff;border-radius:50%;left:${Math.random()*100}%;top:${Math.random()*100}%;opacity:${.15+Math.random()*.5};animation:twinkle ${2+Math.random()*5}s ease-in-out infinite ${Math.random()*4}s`;
-    document.currentScript.parentElement.appendChild(d);
-  }
-  </script>
-</div>
-
-<!-- ═══ Nav ═══ -->
+<div class="content">
 <nav id="navbar">
-  <a href="/" class="nav-logo"><img src="/favicon.png" alt="">PayFlash</a>
-  <div class="nav-links">
-    <a href="/brand">Send</a><a href="#features">Features</a><a href="#compare">Compare</a><a href="#">Docs</a>
-  </div>
-  <a href="/brand" class="btn-glass">Launch App</a>
+  <a href="/" class="nav-logo"><img src="/favicon.png">PayFlash</a>
+  <div class="nav-links"><a href="/brand">Send</a><a href="#features">Features</a><a href="#compare">Compare</a><a href="#">Docs</a></div>
+  <a href="/brand" class="nav-cta">Launch App</a>
 </nav>
 
-<!-- ═══ Hero ═══ -->
 <section class="hero">
-  <div class="hero-video">
-    <video autoplay loop muted playsinline>
-      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260613_180732_a54afbf6-b30d-470e-861f-669871f09f67.mp4" type="video/mp4">
-    </video>
-  </div>
-  <div class="hero-overlay"></div>
-  <div class="hero-content">
+  <div>
     <h1>Send money<br><span class="dim">in 3 minutes.</span></h1>
     <p>Built on Base L2 and powered by USDC — instant, borderless, near-zero fees.</p>
-    <div class="hero-btns">
-      <a href="/brand" class="btn-glass primary">🚀 Launch App</a>
-      <a href="#features" class="btn-glass">How It Works ↓</a>
-    </div>
+    <div class="hero-btns"><a href="/brand" class="btn primary">🚀 Launch App</a><a href="#features" class="btn ghost">How It Works ↓</a></div>
   </div>
-  <button class="sound-btn" onclick="toggleSound()" id="soundBtn">🔊 Sound on</button>
 </section>
 
-<!-- ═══ Stats ═══ -->
-<div class="stats">
-  <div class="stat-item reveal"><div class="val" style="color:#ef4444">3 days</div><div class="lbl">Bank Wire</div></div>
-  <div class="stat-item reveal"><div class="val" style="color:var(--green)">~3 min</div><div class="lbl">PayFlash</div></div>
-  <div class="stat-item reveal"><div class="val" style="color:#ef4444">5%+</div><div class="lbl">PayPal</div></div>
-  <div class="stat-item reveal"><div class="val" style="color:var(--green)">< 1¢</div><div class="lbl">PayFlash</div></div>
+<div class="stats"><div class="s-item reveal"><div class="val" style="color:#ef4444">3 days</div><div class="lbl">Bank Wire</div></div><div class="s-item reveal"><div class="val" style="color:var(--green)">~3 min</div><div class="lbl">PayFlash</div></div><div class="s-item reveal"><div class="val" style="color:#ef4444">5%+</div><div class="lbl">PayPal</div></div><div class="s-item reveal"><div class="val" style="color:var(--green)">< 1¢</div><div class="lbl">PayFlash</div></div></div>
+
+<section class="sec" id="features"><div class="sec-inner">
+<div class="sec-label">Why PayFlash</div>
+<div class="sec-title">Global payments at internet speed.</div>
+<div class="sec-sub">Stop waiting for bank wires. Send USDC on Base L2 — instant, cheap, verifiable.</div>
+<div class="feat-grid">
+<div class="feat-card jelly-target reveal" style="transition-delay:0s"><div class="feat-icon">⚡</div><h3>Lightning Fast</h3><p>Base L2 confirms in ~2 seconds. 7×24, no bank hours, no holidays.</p></div>
+<div class="feat-card jelly-target reveal" style="transition-delay:.1s"><div class="feat-icon">💸</div><h3>Near-Zero Fees</h3><p>~$0.003 gas per transaction. No SWIFT fees, no FX markup.</p></div>
+<div class="feat-card jelly-target reveal" style="transition-delay:.2s"><div class="feat-icon">🌍</div><h3>Truly Global</h3><p>One digital dollar everywhere. Same speed, same cost.</p></div>
+<div class="feat-card jelly-target reveal" style="transition-delay:.15s"><div class="feat-icon">🔒</div><h3>On-Chain Records</h3><p>Immutable, public, verifiable. No "lost payments".</p></div>
+<div class="feat-card jelly-target reveal" style="transition-delay:.25s"><div class="feat-icon">🛡️</div><h3>Compliant & Safe</h3><p>USDC 1:1 backed, audited monthly by Circle.</p></div>
+<div class="feat-card jelly-target reveal" style="transition-delay:.35s"><div class="feat-icon">🏗️</div><h3>Built on Base</h3><p>Coinbase's L2 — secure, scalable, battle-tested.</p></div>
+</div></div></section>
+
+<section class="sec" id="compare"><div class="sec-inner">
+<div class="sec-label">The Difference</div><div class="sec-title">Why switch to PayFlash?</div>
+<div class="compare">
+<div class="c-card reveal" style="transition-delay:0s"><div class="lbl">Settlement</div><div class="old">3-5 days</div><div class="arr">→</div><div class="new">~3 min</div></div>
+<div class="c-card reveal" style="transition-delay:.15s"><div class="lbl">Fees</div><div class="old">3-6%</div><div class="arr">→</div><div class="new">< 0.1%</div></div>
+<div class="c-card reveal" style="transition-delay:.3s"><div class="lbl">Records</div><div class="old">Email + bank</div><div class="arr">→</div><div class="new">On-chain</div></div>
+</div></div></section>
+
+<div class="cta"><h2>Ready to send money at internet speed?</h2><p>Stop paying 5% and waiting 3 days.</p><a href="/brand" class="btn primary">🚀 Try the Demo</a></div>
+<footer><p>PayFlash · Global Payments on Base L2 · 2026</p><p style="margin-top:4px"><a href="https://github.com/kaylee630-afk/affiliate-settlement-demo">GitHub</a> · <a href="/brand">App</a></p></footer>
 </div>
 
-<!-- ═══ Features ═══ -->
-<section class="sec" id="features">
-  <div class="sec-inner">
-    <div class="sec-label">Why PayFlash</div>
-    <div class="sec-title">Global payments at internet speed.</div>
-    <div class="sec-sub">Stop waiting for bank wires. Send USDC on Base L2 — instant, cheap, verifiable.</div>
-    <div class="feat-grid">
-      <div class="glass-jelly reveal" style="transition-delay:0s">
-        <div class="feat-card-inner"><div class="feat-icon">⚡</div><h3>Lightning Fast</h3><p>Base L2 confirms in ~2 seconds. 7×24, no bank hours.</p></div>
-      </div>
-      <div class="glass-jelly reveal" style="transition-delay:.1s">
-        <div class="feat-card-inner"><div class="feat-icon">💸</div><h3>Near-Zero Fees</h3><p>~$0.003 gas per transaction. No SWIFT fees, no FX markup.</p></div>
-      </div>
-      <div class="glass-jelly reveal" style="transition-delay:.2s">
-        <div class="feat-card-inner"><div class="feat-icon">🌍</div><h3>Truly Global</h3><p>One digital dollar everywhere. Same speed, same cost.</p></div>
-      </div>
-      <div class="glass-jelly reveal" style="transition-delay:.15s">
-        <div class="feat-card-inner"><div class="feat-icon">🔒</div><h3>On-Chain Records</h3><p>Immutable, public, verifiable. No "lost payments".</p></div>
-      </div>
-      <div class="glass-jelly reveal" style="transition-delay:.25s">
-        <div class="feat-card-inner"><div class="feat-icon">🛡️</div><h3>Compliant & Safe</h3><p>USDC 1:1 backed, audited monthly by Circle.</p></div>
-      </div>
-      <div class="glass-jelly reveal" style="transition-delay:.35s">
-        <div class="feat-card-inner"><div class="feat-icon">🏗️</div><h3>Built on Base</h3><p>Coinbase's L2 — secure, scalable, battle-tested.</p></div>
-      </div>
-    </div>
-  </div>
-</section>
+<script type="module">
+import * as THREE from 'three';
 
-<!-- ═══ Compare ═══ -->
-<section class="sec" id="compare" style="background:rgba(255,255,255,.01)">
-  <div class="sec-inner">
-    <div class="sec-label">The Difference</div>
-    <div class="sec-title">Why switch to PayFlash?</div>
-    <div class="compare">
-      <div class="glass-jelly compare-card reveal" style="transition-delay:0s">
-        <div class="label">Settlement</div><div class="old">3-5 days</div><div class="compare-arrow">→</div><div class="new">~3 min</div>
-      </div>
-      <div class="glass-jelly compare-card reveal" style="transition-delay:.15s">
-        <div class="label">Fees</div><div class="old">3-6%</div><div class="compare-arrow">→</div><div class="new">< 0.1%</div>
-      </div>
-      <div class="glass-jelly compare-card reveal" style="transition-delay:.3s">
-        <div class="label">Records</div><div class="old">Email + bank</div><div class="compare-arrow">→</div><div class="new">On-chain</div>
-      </div>
-    </div>
-  </div>
-</section>
+/* ═══════════════════════════════════════
+   Jelly Shader Material
+   ═══════════════════════════════════════ */
+const jellyVert = /*glsl*/`
+varying vec3 vPos; varying vec3 vNorm; varying vec3 vView;
+void main() {
+  vec4 mv = modelViewMatrix * vec4(position, 1.0);
+  vPos = mv.xyz;
+  vNorm = normalize(normalMatrix * normal);
+  vView = normalize(-mv.xyz);
+  gl_Position = projectionMatrix * mv;
+}`;
 
-<!-- ═══ CTA ═══ -->
-<div class="cta">
-  <h2>Ready to send money at internet speed?</h2>
-  <p>Stop paying 5% to PayPal and waiting 3 days.</p>
-  <a href="/brand" class="btn-glass primary">🚀 Try the Demo</a>
-  <p style="color:var(--text2);font-size:12px;margin-top:16px">Built on <strong>Base L2</strong> · Powered by <strong>Circle USDC</strong></p>
-</div>
+const jellyFrag = /*glsl*/`
+varying vec3 vPos; varying vec3 vNorm; varying vec3 vView;
+uniform vec3 uColor; uniform float uTime; uniform float uJelly;
+uniform vec2 uMouse; uniform vec3 uCardCenter; uniform float uHover;
 
-<footer>
-  <p>PayFlash · Send money globally · 2026</p>
-  <p style="margin-top:4px"><a href="https://github.com/kaylee630-afk/affiliate-settlement-demo">GitHub</a> · <a href="/brand">App</a></p>
-</footer>
+void main() {
+  vec3 N = normalize(vNorm); vec3 V = normalize(vView);
 
-<script>
-// ── Ripple effect ──
-document.querySelectorAll('.glass-jelly').forEach(el => {
-  el.addEventListener('click', function(e) {
-    const ripple = document.createElement('span');
-    const rect = el.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height);
-    ripple.className = 'ripple-effect';
-    ripple.style.width = ripple.style.height = size + 'px';
-    ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
-    ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
-    el.appendChild(ripple);
-    ripple.addEventListener('animationend', () => ripple.remove());
+  // Fresnel —边缘发光
+  float fresnel = 1.0 - abs(dot(N, V));
+  fresnel = pow(fresnel, 2.5);
+
+  // 内部散射模拟
+  float scatter = pow(1.0 - abs(dot(N, V)), 4.0) * 0.3;
+
+  // 高光点
+  vec3 H = normalize(V + vec3(0.4, 0.6, 0.8));
+  float spec = pow(max(dot(N, H), 0.0), 80.0) * 0.5;
+  float spec2 = pow(max(dot(N, H), 0.0), 8.0) * 0.15;
+
+  // 彩虹色散
+  float R = pow(fresnel, 4.0) * 0.25;
+  float G = pow(fresnel, 4.5) * 0.2;
+  float B = pow(fresnel, 3.8) * 0.3;
+
+  // 鼠标交互 — 光线跟随
+  vec3 mouseDir = normalize(vec3(uMouse.x - vPos.x, uMouse.y - vPos.y, 1.5));
+  float mouseGlow = max(dot(N, mouseDir), 0.0);
+  mouseGlow = pow(mouseGlow, 6.0) * uHover * 0.4;
+
+  // 果冻变形导致的光线变化
+  float jellyGlow = uJelly * 0.2;
+
+  // 基底颜色 + 各层叠加
+  vec3 color = uColor * (0.5 + scatter + jellyGlow);
+  color += vec3(R, G, B) * (0.5 + uJelly * 0.5);
+  color += vec3(0.6, 0.7, 1.0) * (spec + spec2);
+  color += vec3(0.8, 0.9, 1.0) * mouseGlow;
+  color += vec3(0.3, 0.5, 1.0) * fresnel * 0.2;
+
+  // 表面湿润高光
+  float wetSpec = pow(fresnel, 8.0) * 0.3;
+  color += vec3(0.7, 0.8, 1.0) * wetSpec;
+
+  // 透明度 — 果冻半透明
+  float alpha = 0.15 + fresnel * 0.25 + scatter * 0.2 + uHover * 0.1;
+
+  gl_FragColor = vec4(color, alpha);
+}`;
+
+/* ═══════════════════════════════════════
+   Three.js Scene
+   ═══════════════════════════════════════ */
+const canvas = document.getElementById('gl-canvas');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 50);
+camera.position.z = 10;
+
+// Cards tracking
+const cards = [];
+const cardMeshes = [];
+const jellyUniforms = [];
+
+document.querySelectorAll('.jelly-target').forEach((el, i) => {
+  const rect = el.getBoundingClientRect();
+  const w = rect.width / innerWidth * 12;
+  const h = rect.height / innerHeight * 8;
+  const x = (rect.left + rect.width/2 - innerWidth/2) / innerWidth * 14;
+  const y = -(rect.top + rect.height/2 - innerHeight/2) / innerHeight * 10;
+
+  const geo = new THREE.PlaneGeometry(w, h, 32, 32);
+  const uni = {
+    uColor: {value: new THREE.Color().setHSL(0.62 + i*0.03, 0.6, 0.4 + i*0.03)},
+    uTime: {value: 0},
+    uJelly: {value: 0},
+    uMouse: {value: new THREE.Vector2()},
+    uCardCenter: {value: new THREE.Vector3(x, y, 0)},
+    uHover: {value: 0},
+  };
+  const mat = new THREE.ShaderMaterial({
+    vertexShader: jellyVert,
+    fragmentShader: jellyFrag,
+    uniforms: uni,
+    transparent: true,
+    depthWrite: false,
   });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.set(x, y, 0);
+  scene.add(mesh);
+
+  cartMeshes.push({mesh, el, uni, geo, baseY: y, baseX: x,
+    velY: 0, velX: 0, targetY: y, targetX: x,
+    jellyAmount: 0, jellyVel: 0});
 });
 
-// ── Scroll nav ──
-window.addEventListener('scroll', () => {
-  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+// Lights for reflection
+scene.add(new THREE.AmbientLight(0x334466, 0.4));
+const d1 = new THREE.DirectionalLight(0x8899ff, 2); d1.position.set(5,3,5); scene.add(d1);
+const d2 = new THREE.DirectionalLight(0xff99aa, 0.5); d2.position.set(-5,-2,3); scene.add(d2);
+
+// Mouse tracking with spring physics
+const mouse = {x: 0, y: 0, tx: 0, ty: 0, vx: 0, vy: 0, down: false};
+window.addEventListener('mousemove', e => {
+  mouse.tx = (e.clientX / innerWidth) * 2 - 1;
+  mouse.ty = -(e.clientY / innerHeight) * 2 + 1;
+});
+window.addEventListener('mousedown', () => { mouse.down = true; });
+window.addEventListener('mouseup', () => { mouse.down = false; });
+
+// Touch
+window.addEventListener('touchmove', e => {
+  mouse.tx = (e.touches[0].clientX / innerWidth) * 2 - 1;
+  mouse.ty = -(e.touches[0].clientY / innerHeight) * 2 + 1;
+}, {passive: true});
+window.addEventListener('touchstart', () => { mouse.down = true; });
+window.addEventListener('touchend', () => { mouse.down = false; });
+
+// Particle system for sparkles
+const pGeo = new THREE.BufferGeometry();
+const pCount = 200;
+const pPos = new Float32Array(pCount * 3);
+const pVel = [];
+for (let i = 0; i < pCount; i++) {
+  pPos[i*3] = (Math.random() - 0.5) * 20;
+  pPos[i*3+1] = (Math.random() - 0.5) * 16;
+  pPos[i*3+2] = (Math.random() - 0.5) * 5;
+  pVel.push({x:(Math.random()-.5)*0.01, y:(Math.random()-.5)*0.01, z:(Math.random()-.5)*0.005,
+    life:Math.random(), speed:0.3+Math.random()*0.7});
+}
+pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+const pMat = new THREE.PointsMaterial({color:0x8899ff, size:0.04, transparent:true, opacity:0.6,
+  blending:THREE.AdditiveBlending, depthWrite:false});
+const particles = new THREE.Points(pGeo, pMat);
+scene.add(particles);
+
+// Starfield
+const sGeo = new THREE.BufferGeometry();
+const sPos = new Float32Array(300*3);
+for(let i=0;i<300;i++){const th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1),r=20+Math.random()*15;sPos[i*3]=r*Math.sin(ph)*Math.cos(th);sPos[i*3+1]=r*Math.sin(ph)*Math.sin(th);sPos[i*3+2]=r*Math.cos(ph);}
+sGeo.setAttribute('position',new THREE.BufferAttribute(sPos,3));
+const stars=new THREE.Points(sGeo,new THREE.PointsMaterial({color:0xffffff,size:.04,transparent:true,opacity:.5,blending:THREE.AdditiveBlending,depthWrite:false}));
+scene.add(stars);
+
+// Animation loop
+const clock = new THREE.Clock();
+function animate() {
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), 0.1);
+  const t = performance.now() * 0.001;
+
+  // Mouse spring physics
+  mouse.vx += (mouse.tx - mouse.x) * 8 * dt;
+  mouse.vy += (mouse.ty - mouse.y) * 8 * dt;
+  mouse.vx *= 0.85; mouse.vy *= 0.85;
+  mouse.x += mouse.vx * dt * 3;
+  mouse.y += mouse.vy * dt * 3;
+
+  // Update cards
+  cardMeshes.forEach(c => {
+    const rect = c.el.getBoundingClientRect();
+    const inView = rect.top < innerHeight && rect.bottom > 0;
+
+    if (inView) {
+      const cx = (rect.left + rect.width/2 - innerWidth/2) / innerWidth * 14;
+      const cy = -(rect.top + rect.height/2 - innerHeight/2) / innerHeight * 10;
+
+      // Spring towards target position
+      c.velX += (cx - c.mesh.position.x) * 6 * dt;
+      c.velY += (cy - c.mesh.position.y) * 6 * dt;
+      c.velX *= 0.9; c.velY *= 0.9;
+      c.mesh.position.x += c.velX * dt;
+      c.mesh.position.y += c.velY * dt;
+
+      // Mouse proximity → jelly wobble
+      const dx = mouse.x * 7 - c.mesh.position.x;
+      const dy = mouse.y * 7 - c.mesh.position.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      const influence = Math.max(0, 1 - dist / 5);
+
+      // Jelly wobble spring
+      c.jellyVel += (influence - c.jellyAmount) * 10 * dt;
+      c.jellyVel *= 0.8;
+      c.jellyAmount += c.jellyVel * dt;
+      c.jellyAmount = Math.max(0, Math.min(1, c.jellyAmount));
+
+      // Apply jelly to shader
+      c.uni.uJelly.value += (c.jellyAmount - c.uni.uJelly.value) * 8 * dt;
+      c.uni.uHover.value += (influence - c.uni.uHover.value) * 5 * dt;
+      c.uni.uMouse.value.set(mouse.x * 7, mouse.y * 7);
+      c.uni.uTime.value = t;
+
+      // Distort geometry on jelly
+      const posArr = c.geo.attributes.position.array;
+      const orig = c.geo.userData.origPositions;
+      if (!orig) {
+        c.geo.userData.origPositions = new Float32Array(posArr);
+        for (let i = 0; i < posArr.length; i++) c.geo.userData.origPositions[i] = posArr[i];
+      }
+      const o = c.geo.userData.origPositions;
+      for (let i = 0; i < posArr.length; i += 3) {
+        const ox = o[i], oy = o[i+1];
+        const d2 = (ox - mouse.x*0.3)*(ox - mouse.x*0.3) + (oy - mouse.y*0.3)*(oy - mouse.y*0.3);
+        const wave = Math.sin(d2 * 3 - t * 4) * influence * 0.08;
+        const bulge = (1 - Math.min(d2/4, 1)) * influence * 0.05;
+        posArr[i] = ox + ox * bulge + wave * ox;
+        posArr[i+1] = oy + oy * bulge + wave * oy;
+        posArr[i+2] = wave * 0.5;
+      }
+      c.geo.attributes.position.needsUpdate = true;
+    }
+  });
+
+  // Particles
+  for(let i=0;i<pCount;i++){
+    const pv=pVel[i];pv.life+=pv.speed*dt;
+    const l=pv.life;const a=l*Math.PI*2;
+    pPos[i*3]+=Math.cos(a)*dt*0.3+pv.x; pPos[i*3+1]+=Math.sin(a)*dt*0.3+pv.y; pPos[i*3+2]+=pv.z;
+    if(l>1){pv.life=0; pPos[i*3]=(Math.random()-.5)*16; pPos[i*3+1]=(Math.random()-.5)*12; pPos[i*3+2]=(Math.random()-.5)*4;}
+  }
+  pGeo.attributes.position.needsUpdate=true;
+
+  // Stars rotate slowly
+  stars.rotation.y += dt * 0.03;
+  stars.rotation.x += dt * 0.01;
+
+  renderer.render(scene, camera);
+}
+requestAnimationFrame(animate);
+
+// Resize
+window.addEventListener('resize', () => {
+  renderer.setSize(innerWidth, innerHeight);
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
 });
 
-// ── Blur→clear reveal ──
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-}, { rootMargin: '0px 0px -60px 0px', threshold: 0.1 });
+// Reveal observer
+const obs = new IntersectionObserver(es => { es.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }); },
+  {rootMargin:'0px 0px -60px 0px', threshold:0.1});
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
-// ── Sound toggle ──
-const v = document.querySelector('video');
-function toggleSound() {
-  v.muted = !v.muted;
-  document.getElementById('soundBtn').textContent = v.muted ? '🔇 Sound off' : '🔊 Sound on';
-}
+// Nav scroll
+window.addEventListener('scroll', () => document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60));
 </script>
 </body>
 </html>
