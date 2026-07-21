@@ -54,9 +54,14 @@ nav.scrolled{background:rgba(1,3,20,.8);backdrop-filter:blur(24px);-webkit-backd
 
 .feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
 .compare{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:60px}
-.c-card{text-align:center;padding:28px 20px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:20px;transition:all .4s}
-.c-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.12)}
-.c-card .old{font-size:16px;color:#ef4444;text-decoration:line-through}.c-card .new{font-size:26px;font-weight:700;color:var(--green)}.c-card .arr{color:var(--text2);margin:6px 0;font-size:18px}.c-card .lbl{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;margin-top:6px;font-weight:600}
+.c-card{text-align:center;padding:28px 20px;border-radius:20px;cursor:default;border:1px solid rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 2px 12px rgba(0,0,0,.2);background:rgba(255,255,255,.03);backdrop-filter:blur(40px) saturate(1.5);-webkit-backdrop-filter:blur(40px) saturate(1.5);overflow:hidden;will-change:transform,border-color,box-shadow;position:relative;transition:border-color .4s,box-shadow .4s}
+.c-card::before{content:'';position:absolute;inset:0;border-radius:inherit;background:radial-gradient(ellipse at var(--mx,50%) var(--my,50%),rgba(99,102,241,.25)0%,rgba(99,102,241,.1)25%,rgba(99,102,241,.03)50%,transparent 70%);opacity:0;transition:opacity .5s ease;pointer-events:none;z-index:0}
+.c-card:hover::before,.c-card.active::before{opacity:1}
+.c-card::after{content:'';position:absolute;top:0;left:12%;right:12%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);opacity:0;transition:opacity .4s;pointer-events:none;z-index:1}
+.c-card:hover::after,.c-card.active::after{opacity:1}
+.c-card .old{font-size:16px;color:#ef4444;text-decoration:line-through}.c-card .new{font-size:26px;font-weight:700;color:var(--green)}.c-card .arr{color:var(--text2);margin:6px 0;font-size:18px}.c-card .lbl{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;margin-top:6px;font-weight:600;position:relative;z-index:2}
+.c-card .inner-c{position:relative;z-index:3}
+.c-card:hover .lbl{color:var(--accent)}
 .stats{display:flex;justify-content:center;gap:48px;flex-wrap:wrap;padding:60px 32px;border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);max-width:800px;margin:0 auto}
 .s-item{text-align:center}.s-item .val{font-size:28px;font-weight:800}.s-item .lbl{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-top:2px}
 
@@ -150,9 +155,9 @@ footer{text-align:center;padding:40px;color:var(--text2);font-size:12px;border-t
 <div class="sec-label">The Difference</div>
 <div class="sec-title">Why switch to PayFlash?</div>
 <div class="compare">
-<div class="c-card reveal"><div class="lbl">Settlement</div><div class="old">3-5 days</div><div class="arr">→</div><div class="new">~3 min</div></div>
-<div class="c-card reveal" data-delay="0.15"><div class="lbl">Fees</div><div class="old">3-6%</div><div class="arr">→</div><div class="new">< 0.1%</div></div>
-<div class="c-card reveal" data-delay="0.3"><div class="lbl">Records</div><div class="old">Email + bank</div><div class="arr">→</div><div class="new">On-chain</div></div>
+<div class="c-card reveal"><div class="spec"></div><div class="inner-c"><div class="lbl">Settlement</div><div class="old">3-5 days</div><div class="arr">→</div><div class="new">~3 min</div></div></div>
+<div class="c-card reveal" data-delay="0.15"><div class="spec"></div><div class="inner-c"><div class="lbl">Fees</div><div class="old">3-6%</div><div class="arr">→</div><div class="new">< 0.1%</div></div></div>
+<div class="c-card reveal" data-delay="0.3"><div class="spec"></div><div class="inner-c"><div class="lbl">Records</div><div class="old">Email + bank</div><div class="arr">→</div><div class="new">On-chain</div></div></div>
 </div></div></section>
 
 <!-- FAQ -->
@@ -177,7 +182,7 @@ for(let i=0;i<200;i++)stars.push({x:Math.random()*2000,y:Math.random()*2000,r:.3
 const ms={x:innerWidth/2,y:innerHeight/2,tx:innerWidth/2,ty:innerHeight/2,vx:0,vy:0};
 window.addEventListener('mousemove',e=>{ms.tx=e.clientX;ms.ty=e.clientY});
 const cards=[];
-document.querySelectorAll('.jelly-card').forEach(el=>{el.insertAdjacentHTML('afterbegin','<span class="spec"></span>');const c={el,jelly:0,vel:0,sx:50,sy:50,svx:0,svy:0,hover:0,htarget:0};el.addEventListener('mouseenter',()=>c.htarget=1);el.addEventListener('mouseleave',()=>c.htarget=0);cards.push(c)});
+document.querySelectorAll('.jelly-card,.c-card').forEach(el=>{el.insertAdjacentHTML('afterbegin','<span class="spec"></span>');const c={el,jelly:0,vel:0,sx:50,sy:50,svx:0,svy:0,hover:0,htarget:0};el.addEventListener('mouseenter',()=>c.htarget=1);el.addEventListener('mouseleave',()=>c.htarget=0);cards.push(c)});
 window.addEventListener('click',e=>{cards.forEach(c=>{const r=c.el.getBoundingClientRect();if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom){c.vel=.8;c.el.style.transition='transform .6s cubic-bezier(.22,.6,.3,1.1)';setTimeout(()=>c.el.style.transition='transform .15s ease-out',600)}})});
 function loop(ts){requestAnimationFrame(loop);const dt=Math.min((ts-(loop._lt||ts))/1000,.1);loop._lt=ts;sx.fillStyle='#010314';sx.fillRect(0,0,sc.width,sc.height);stars.forEach(s=>{s.y-=s.s;if(s.y<0){s.y=sc.height;s.x=Math.random()*sc.width}sx.beginPath();sx.arc(s.x,s.y,s.r,0,Math.PI*2);sx.fillStyle=`rgba(255,255,255,${s.o})`;sx.fill()});ms.vx+=(ms.tx-ms.x)*10*dt;ms.vy+=(ms.ty-ms.y)*10*dt;ms.vx*=.8;ms.vy*=.8;ms.x+=ms.vx*dt*3;ms.y+=ms.vy*dt*3;cards.forEach(c=>{const r=c.el.getBoundingClientRect();const cx=r.left+r.width/2,cy=r.top+r.height/2;const dx=ms.x-cx,dy=ms.y-cy,dist=Math.sqrt(dx*dx+dy*dy);const influence=Math.max(0,1-dist/(Math.max(r.width,r.height)*1.4));c.vel+=(influence-c.jelly)*10*dt;c.vel*=.55;c.jelly+=c.vel*dt;const j=c.jelly;const mxPct=((ms.x-r.left)/r.width*100);const myPct=((ms.y-r.top)/r.height*100);c.el.style.setProperty('--mx',mxPct+'%');c.el.style.setProperty('--my',myPct+'%');c.svx+=(mxPct-c.sx)*8*dt;c.svx*=.7;c.sx+=c.svx*dt;c.svy+=(myPct-c.sy)*8*dt;c.svy*=.7;c.sy+=c.svy*dt;c.el.style.setProperty('--sx',c.sx+'%');c.el.style.setProperty('--sy',c.sy+'%');c.hover+=(c.htarget-c.hover)*6*dt;const lift=-c.hover*8;const sx_=1+j*.04,sy_=1-j*.03,sk=j*.015,yOff=lift-j*6;c.el.style.transform=`translateY(${yOff}px) scaleX(${sx_}) scaleY(${sy_}) skewX(${sk}deg)`;c.el.style.borderColor=j>.08?`rgba(99,102,241,${.12+j*.3})`:'rgba(255,255,255,.08)';c.el.style.boxShadow=j>.08?`inset 0 1px 0 rgba(255,255,255,${.04+j*.08}),0 ${j*40}px ${j*80}px rgba(99,102,241,${.08+j*.2}),0 2px 12px rgba(0,0,0,.2)`:'inset 0 1px 0 rgba(255,255,255,.04),0 2px 12px rgba(0,0,0,.2)';c.el.classList.toggle('active',j>.05)})}loop(0);
 const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{rootMargin:'0px 0px -60px 0px',threshold:.1});document.querySelectorAll('.reveal').forEach(el=>{el.style.transitionDelay=(el.dataset.delay||'0')+'s';obs.observe(el)});
