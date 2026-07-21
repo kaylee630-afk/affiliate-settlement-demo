@@ -58,6 +58,7 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,.02);border-radius:10px;margin-top:8px;cursor:pointer;transition:all .2s}.toggle-row:hover{background:rgba(99,102,241,.04)}.toggle{width:44px;height:24px;border-radius:12px;background:rgba(255,255,255,.1);position:relative;transition:all .3s}.toggle.on{background:var(--accent)}.toggle::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:all .3s}.toggle.on::after{left:22px}
 
 /* Commission */
+.expandable{overflow:hidden;transition:max-height .4s cubic-bezier(.22,1,.36,1),opacity .3s;max-height:0;opacity:0}.expandable.open{max-height:200px;opacity:1}
 .comm-row{display:flex;gap:6px;margin-top:12px}.comm-btn{flex:1;padding:12px 8px;border-radius:12px;font-size:13px;font-weight:500;cursor:pointer;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);color:var(--text2);font-family:'Inter',sans-serif;text-align:center;transition:all .2s}.comm-btn:hover,.comm-btn.sel{border-color:var(--accent);background:rgba(99,102,241,.12);color:var(--text)}.comm-btn .pct{font-size:20px;font-weight:700;display:block}.comm-btn .tag{font-size:10px;opacity:.6}
 
 /* Receipt */
@@ -139,9 +140,9 @@ function render(){
     <div class="option-row"><input class="memo-input" placeholder="📝 Add a note..." id="memo">
     ${chains.map(ch=>`<button class="opt-btn${selectedChain===ch.id?' sel':''}" onclick="pickChain('${ch.id}')">${ch.icon} ${ch.name}</button>`).join('')}</div>
     <div class="toggle-row" onclick="commissionMode=!commissionMode;render()"><span style="font-size:13px">📊 Commission Settlement</span><div class="toggle${commissionMode?' on':''}"></div></div>
-    ${commissionMode?`<div class="comm-row">${[5,10,15].map(r=>`<button class="comm-btn${rate===r?' sel':''}" onclick="setRate(${r})"><span class="pct">${r}%</span><span class="tag">${r===5?'Standard':r===10?'Premium':'VIP'}</span></button>`).join('')}</div>`:''}
+    <div class="expandable${commissionMode?' will-open':''}"><div class="comm-row">${[5,10,15].map(r=>`<button class="comm-btn${rate===r?' sel':''}" onclick="setRate(${r})"><span class="pct">${r}%</span><span class="tag">${r===5?'Standard':r===10?'Premium':'VIP'}</span></button>`).join('')}</div></div>
     <div class="toggle-row" onclick="scheduled=!scheduled;render()"><span style="font-size:13px">⏰ Schedule for later</span><div class="toggle${scheduled?' on':''}"></div></div>
-    ${scheduled?`<div style="margin-top:8px"><input type="datetime-local" class="memo-input" value="${scheduleDate||new Date(Date.now()+86400000).toISOString().slice(0,16)}" onchange="scheduleDate=this.value" style="width:100%"></div>`:''}
+    <div class="expandable${scheduled?' will-open':''}" style="margin-top:8px"><input type="datetime-local" class="memo-input" value="${scheduleDate||new Date(Date.now()+86400000).toISOString().slice(0,16)}" onchange="scheduleDate=this.value" style="width:100%"></div>
     <div style="display:flex;gap:6px;margin-top:8px;font-size:11px;color:var(--text2)">⛽ Gas: ${chains.find(c=>c.id===selectedChain)?.gas||'<$0.01'} · ⏱ ${chains.find(c=>c.id===selectedChain)?.time||'~2s'}</div></div></div>
   <button class="btn btn-primary" onclick="${commissionMode?'setStep(3)':'doSend()'}" ${amount<=0?'disabled':''}>${commissionMode?'Next →':'⚡ Send Now'}</button>`;
   else if(step===3){const comm=amount*rate/100;
@@ -158,7 +159,14 @@ function render(){
     <div class="risk safe"><span>🛡️</span><b>Score ${Math.floor(Math.random()*8+1)}</b> · Safe — No risk flags</div>
     <div class="btn-row"><button class="btn btn-ghost" onclick="setStep(2)">← Back</button><button class="btn btn-primary" onclick="doSend()">⚡ Confirm & Send</button></div></div></div>`}
   else v.innerHTML=`<div class="jelly"><div class="spec"></div><div class="inner"><div class="success"><div class="circle">✓</div><h2>Sent!</h2><p>$${commissionMode?(amount*rate/100).toFixed(2):amount.toFixed(2)} USDC → ${selA.name}</p><p style="font-size:12px;color:var(--text2);margin-top:4px">${scheduled?'Scheduled for '+scheduleDate:'Arrived on '+chains.find(c=>c.id===selectedChannel)?.name||'Base L2'}</p><button class="btn btn-primary" style="margin-top:16px" onclick="amount=0;commissionMode=false;scheduled=false;setStep(1)">Send Another</button></div></div></div>`;
-  initJelly();renderHistory()
+  initJelly();renderHistory();
+  // 平滑展开动画
+  requestAnimationFrame(()=>{
+    document.querySelectorAll('.expandable.will-open').forEach(el=>{
+      el.classList.remove('will-open');
+      requestAnimationFrame(()=>el.classList.add('open'));
+    });
+  });
 }
 
 function filterContacts(q){document.querySelectorAll('.contact').forEach(el=>{const n=el.querySelector('.name').textContent.toLowerCase();el.style.display=n.includes(q.toLowerCase())?'flex':'none'})}
