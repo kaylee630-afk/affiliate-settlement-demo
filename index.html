@@ -2,21 +2,17 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>PayFlash — Global Payments</title>
+<title>PayFlash — Send Money in 3 Minutes</title>
 <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="manifest" href="/manifest.json"><script src="/sw-register.js"></script>
 <style>
-:root{--text:#f5f5f7;--text2:#8b8fa3;--accent:#6366f1;--green:#22c55e}
+:root{--text:#f5f5f7;--text2:#8b8fa3;--accent:#6366f1;--green:#22c55e;--gold:#f5a623}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',sans-serif;background:#010314;color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
-
-/* Starfield canvas */
 #stars{position:fixed;inset:0;z-index:0;pointer-events:none}
 .content{position:relative;z-index:1}
-
-/* Nav */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 32px}
 nav.scrolled{background:rgba(1,3,20,.8);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,.06)}
 .nav-logo{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:800;color:#fff;text-decoration:none}
@@ -24,8 +20,8 @@ nav.scrolled{background:rgba(1,3,20,.8);backdrop-filter:blur(24px);-webkit-backd
 .nav-links{display:flex;gap:28px}
 .nav-links a{color:rgba(255,255,255,.7);text-decoration:none;font-size:13px;font-weight:500;transition:color .2s}
 .nav-links a:hover{color:#fff}
-.nav-cta{padding:9px 22px;border-radius:999px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;text-decoration:none;transition:all .3s;box-shadow:0 0 16px rgba(99,102,241,.25)}.nav-cta:hover{transform:translateY(-1px);box-shadow:0 4px 24px rgba(99,102,241,.45)}
-
+.nav-cta{padding:9px 22px;border-radius:999px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;text-decoration:none;transition:all .3s;box-shadow:0 0 16px rgba(99,102,241,.25)}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 4px 24px rgba(99,102,241,.45)}
 .hero{min-height:100dvh;display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 24px}
 .hero h1{font-family:'Instrument Serif',serif;font-size:clamp(44px,8vw,110px);line-height:.92;color:#fff;text-shadow:0 0 80px rgba(99,102,241,.3)}
 .hero h1 .dim{color:rgba(255,255,255,.45);font-style:italic}
@@ -36,56 +32,19 @@ nav.scrolled{background:rgba(1,3,20,.8);backdrop-filter:blur(24px);-webkit-backd
 .btn.primary:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 8px 32px rgba(99,102,241,.5)}
 .btn.ghost{background:rgba(255,255,255,.04);color:#fff;border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .btn.ghost:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.3);transform:translateY(-2px)}
-
 .sec{padding:100px 32px;position:relative;z-index:1}.sec-inner{max-width:1100px;margin:0 auto}
 .sec-label{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;text-align:center}
 .sec-title{font-family:'Instrument Serif',serif;font-size:clamp(28px,5vw,48px);text-align:center;margin-bottom:12px}
 .sec-sub{color:var(--text2);font-size:16px;text-align:center;max-width:580px;margin:0 auto 48px}
-.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
 
-/* ═══════════════════════════════════════
-   LIQUID GLASS JELLY CARD
-   ═══════════════════════════════════════ */
-.jelly-card{
-  position:relative;padding:30px;border-radius:20px;cursor:default;
-  border:1px solid rgba(255,255,255,.1);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 2px 12px rgba(0,0,0,.2);
-  background:rgba(255,255,255,.03);
-  backdrop-filter:blur(40px) saturate(1.5);-webkit-backdrop-filter:blur(40px) saturate(1.5);
-  overflow:hidden;
-  will-change:transform,border-color,box-shadow;
-}
-/* Internal highlight — refractive gradient */
-.jelly-card::before{
-  content:'';position:absolute;inset:0;border-radius:inherit;
-  background:radial-gradient(ellipse at var(--mx,50%) var(--my,50%),
-    rgba(99,102,241,.25) 0%,
-    rgba(99,102,241,.1) 25%,
-    rgba(99,102,241,.03) 50%,
-    transparent 70%);
-  opacity:0;transition:opacity .5s ease;pointer-events:none;z-index:0;
-}
+/* Jelly card */
+.jelly-card{position:relative;padding:30px;border-radius:20px;cursor:default;border:1px solid rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 2px 12px rgba(0,0,0,.2);background:rgba(255,255,255,.03);backdrop-filter:blur(40px) saturate(1.5);-webkit-backdrop-filter:blur(40px) saturate(1.5);overflow:hidden;will-change:transform,border-color,box-shadow}
+.jelly-card::before{content:'';position:absolute;inset:0;border-radius:inherit;background:radial-gradient(ellipse at var(--mx,50%) var(--my,50%),rgba(99,102,241,.25)0%,rgba(99,102,241,.1)25%,rgba(99,102,241,.03)50%,transparent 70%);opacity:0;transition:opacity .5s ease;pointer-events:none;z-index:0}
 .jelly-card:hover::before,.jelly-card.active::before{opacity:1}
-/* Top edge Fresnel line */
-.jelly-card::after{
-  content:'';position:absolute;top:0;left:12%;right:12%;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);
-  opacity:0;transition:opacity .4s;pointer-events:none;z-index:1;
-}
+.jelly-card::after{content:'';position:absolute;top:0;left:12%;right:12%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);opacity:0;transition:opacity .4s;pointer-events:none;z-index:1}
 .jelly-card:hover::after,.jelly-card.active::after{opacity:1}
-/* Wet surface spec highlight */
-.jelly-card .spec{
-  position:absolute;border-radius:50%;pointer-events:none;z-index:2;
-  background:radial-gradient(circle,rgba(255,255,255,.06) 0%,transparent 60%);
-  width:60px;height:60px;
-  left:var(--sx,50%);top:var(--sy,50%);
-  transform:translate(-50%,-50%);
-  opacity:0;
-  transition:opacity .3s;
-}
+.jelly-card .spec{position:absolute;border-radius:50%;pointer-events:none;z-index:2;background:radial-gradient(circle,rgba(255,255,255,.06)0%,transparent 60%);width:60px;height:60px;left:var(--sx,50%);top:var(--sy,50%);transform:translate(-50%,-50%);opacity:0;transition:opacity .3s}
 .jelly-card:hover .spec,.jelly-card.active .spec{opacity:1}
-
-/* Content above effects */
 .jelly-card .inner{position:relative;z-index:3}
 .feat-icon{width:46px;height:46px;border-radius:13px;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.15);display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:20px;transition:all .4s}
 .jelly-card:hover .feat-icon{background:rgba(99,102,241,.2);border-color:rgba(99,102,241,.3);transform:scale(1.08)}
@@ -93,18 +52,32 @@ nav.scrolled{background:rgba(1,3,20,.8);backdrop-filter:blur(24px);-webkit-backd
 .jelly-card:hover h3{color:var(--accent)}
 .jelly-card p{font-size:14px;color:var(--text2);line-height:1.7}
 
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
 .compare{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:60px}
 .c-card{text-align:center;padding:28px 20px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:20px;transition:all .4s}
 .c-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.12)}
-.c-card .old{font-size:16px;color:#ef4444;text-decoration:line-through}.c-card .new{font-size:26px;font-weight:700;color:var(--green)}.c-card .arr{color:var(--text2);margin:6px 0;font-size:18px}
-.c-card .lbl{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;margin-top:6px;font-weight:600}
+.c-card .old{font-size:16px;color:#ef4444;text-decoration:line-through}.c-card .new{font-size:26px;font-weight:700;color:var(--green)}.c-card .arr{color:var(--text2);margin:6px 0;font-size:18px}.c-card .lbl{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;margin-top:6px;font-weight:600}
 .stats{display:flex;justify-content:center;gap:48px;flex-wrap:wrap;padding:60px 32px;border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);max-width:800px;margin:0 auto}
 .s-item{text-align:center}.s-item .val{font-size:28px;font-weight:800}.s-item .lbl{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-top:2px}
+
+/* How it works steps */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.step-card{text-align:center;padding:36px 24px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:20px;transition:all .4s}
+.step-card:hover{transform:translateY(-4px);border-color:rgba(99,102,241,.2)}
+.step-num{width:48px;height:48px;border-radius:50%;background:var(--accent);color:#fff;font-size:20px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.step-card h3{font-size:18px;font-weight:700;margin-bottom:8px}.step-card p{font-size:14px;color:var(--text2);line-height:1.6}
+
+/* Use cases */
+.use-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.use-card{padding:24px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:16px;transition:all .3s}
+.use-card:hover{border-color:rgba(255,255,255,.1)}.use-card .icon{font-size:28px;margin-bottom:12px}
+.use-card h3{font-size:16px;font-weight:700;margin-bottom:6px}.use-card p{font-size:13px;color:var(--text2);line-height:1.6}
+
 .cta{text-align:center;padding:100px 32px}.cta h2{font-family:'Instrument Serif',serif;font-size:clamp(28px,5vw,48px);margin-bottom:16px}.cta p{color:var(--text2);margin-bottom:32px}
 footer{text-align:center;padding:40px;color:var(--text2);font-size:12px;border-top:1px solid rgba(255,255,255,.05)}footer a{color:var(--accent);text-decoration:none}
 .reveal{opacity:0;transform:translateY(40px);filter:blur(12px);transition:all .8s cubic-bezier(.16,1,.3,1)}
 .reveal.visible{opacity:1;transform:translateY(0);filter:blur(0)}
-@media(max-width:768px){.nav-links{display:none}.compare{grid-template-columns:1fr}.stats{gap:24px}}
+@media(max-width:768px){.nav-links{display:none}.compare,.steps{grid-template-columns:1fr}.stats{gap:24px}}
 </style>
 </head>
 <body>
@@ -112,135 +85,102 @@ footer{text-align:center;padding:40px;color:var(--text2);font-size:12px;border-t
 <div class="content">
 <nav id="navbar">
   <a href="/" class="nav-logo"><img src="/favicon.png">PayFlash</a>
-  <div class="nav-links"><a href="/brand">Send</a><a href="#features">Features</a><a href="#compare">Compare</a><a href="#">Docs</a></div>
+  <div class="nav-links">
+    <a href="#features">Features</a><a href="#how">How It Works</a><a href="#usecases">Use Cases</a><a href="#compare">Compare</a><a href="/brand">Demo</a>
+  </div>
   <a href="/brand" class="nav-cta">Launch App</a>
 </nav>
+
+<!-- Hero -->
 <section class="hero"><div>
   <h1>Send money<br><span class="dim">in 3 minutes.</span></h1>
-  <p>Built on Base L2 and powered by USDC — instant, borderless, near-zero fees.</p>
+  <p>Built on Base L2 and powered by USDC — instant, borderless, near-zero fees. No SWIFT, no banks, no waiting.</p>
   <div class="hero-btns"><a href="/brand" class="btn primary">🚀 Launch App</a><a href="#features" class="btn ghost">How It Works ↓</a></div>
 </div></section>
-<div class="stats"><div class="s-item reveal"><div class="val" style="color:#ef4444">3 days</div><div class="lbl">Bank Wire</div></div><div class="s-item reveal"><div class="val" style="color:var(--green)">~3 min</div><div class="lbl">PayFlash</div></div><div class="s-item reveal"><div class="val" style="color:#ef4444">5%+</div><div class="lbl">PayPal</div></div><div class="s-item reveal"><div class="val" style="color:var(--green)">< 1¢</div><div class="lbl">PayFlash</div></div></div>
+
+<!-- Stats -->
+<div class="stats">
+  <div class="s-item reveal"><div class="val" style="color:#ef4444">3 days</div><div class="lbl">Bank Wire</div></div>
+  <div class="s-item reveal"><div class="val" style="color:var(--green)">~3 min</div><div class="lbl">PayFlash</div></div>
+  <div class="s-item reveal"><div class="val" style="color:#ef4444">5%+</div><div class="lbl">PayPal</div></div>
+  <div class="s-item reveal"><div class="val" style="color:var(--green)">< 1¢</div><div class="lbl">PayFlash</div></div>
+</div>
+
+<!-- Features -->
 <section class="sec" id="features"><div class="sec-inner">
-<div class="sec-label">Why PayFlash</div><div class="sec-title">Global payments at internet speed.</div><div class="sec-sub">Stop waiting for bank wires. Send USDC on Base L2 — instant, cheap, verifiable.</div>
+<div class="sec-label">Why PayFlash</div>
+<div class="sec-title">Global payments at internet speed.</div>
+<div class="sec-sub">Stop waiting for bank wires. Send USDC on Base L2 — instant, cheap, verifiable.</div>
 <div class="feat-grid">
-<div class="jelly-card reveal" data-delay="0">
-  <div class="spec"></div>
-  <div class="inner"><div class="feat-icon">⚡</div><h3>Lightning Fast</h3><p>Base L2 confirms in ~2 seconds. 7×24, no bank hours.</p></div>
-</div>
-<div class="jelly-card reveal" data-delay="0.1">
-  <div class="spec"></div>
-  <div class="inner"><div class="feat-icon">💸</div><h3>Near-Zero Fees</h3><p>~$0.003 gas per transaction. No SWIFT fees.</p></div>
-</div>
-<div class="jelly-card reveal" data-delay="0.2">
-  <div class="spec"></div>
-  <div class="inner"><div class="feat-icon">🌍</div><h3>Truly Global</h3><p>One digital dollar everywhere. Same speed, same cost.</p></div>
-</div>
-<div class="jelly-card reveal" data-delay="0.15">
-  <div class="spec"></div>
-  <div class="inner"><div class="feat-icon">🔒</div><h3>On-Chain Records</h3><p>Immutable, public, verifiable. No lost payments.</p></div>
-</div>
-<div class="jelly-card reveal" data-delay="0.25">
-  <div class="spec"></div>
-  <div class="inner"><div class="feat-icon">🛡️</div><h3>Compliant & Safe</h3><p>USDC 1:1 backed, audited monthly by Circle.</p></div>
-</div>
-<div class="jelly-card reveal" data-delay="0.35">
-  <div class="spec"></div>
-  <div class="inner"><div class="feat-icon">🏗️</div><h3>Built on Base</h3><p>Coinbase's L2 — secure, scalable, battle-tested.</p></div>
-</div>
+<div class="jelly-card reveal" data-delay="0"><div class="spec"></div><div class="inner"><div class="feat-icon">⚡</div><h3>Lightning Fast</h3><p>Base L2 confirms in ~2 seconds. 7×24, no bank hours, no holidays. Money arrives before your coffee gets cold.</p></div></div>
+<div class="jelly-card reveal" data-delay="0.1"><div class="spec"></div><div class="inner"><div class="feat-icon">💸</div><h3>Near-Zero Fees</h3><p>~$0.003 gas per transaction. Compare: PayPal takes 5% + FX markup, SWIFT charges $25-50. You keep what you earn.</p></div></div>
+<div class="jelly-card reveal" data-delay="0.2"><div class="spec"></div><div class="inner"><div class="feat-icon">🌍</div><h3>Truly Global</h3><p>One digital dollar everywhere. Send to Brazil, Korea, Nigeria — same speed, same cost, same USDC.</p></div></div>
+<div class="jelly-card reveal" data-delay="0.15"><div class="spec"></div><div class="inner"><div class="feat-icon">🔒</div><h3>On-Chain Records</h3><p>Every transfer leaves a permanent trail on Base L2. Public, immutable, verifiable. No more "I never received it."</p></div></div>
+<div class="jelly-card reveal" data-delay="0.25"><div class="spec"></div><div class="inner"><div class="feat-icon">🛡️</div><h3>Compliant & Safe</h3><p>USDC is 1:1 backed by Circle, audited monthly. Regulated under US law. Your funds are real dollars.</p></div></div>
+<div class="jelly-card reveal" data-delay="0.35"><div class="spec"></div><div class="inner"><div class="feat-icon">🏗️</div><h3>Built on Base</h3><p>Coinbase's Layer 2 network — secure, scalable, and battle-tested with millions of users and billions in volume.</p></div></div>
 </div></div></section>
+
+<!-- How It Works -->
+<section class="sec" id="how"><div class="sec-inner">
+<div class="sec-label">How It Works</div>
+<div class="sec-title">Three steps. Zero friction.</div>
+<div class="sec-sub">No blockchain knowledge required. If you can use email, you can use PayFlash.</div>
+<div class="steps">
+<div class="step-card reveal"><div class="step-num">1</div><h3>Connect Wallet</h3><p>Link your MetaMask or any Web3 wallet. Your first time? We'll walk you through it in under 2 minutes.</p></div>
+<div class="step-card reveal" data-delay="0.15"><div class="step-num">2</div><h3>Enter Payment</h3><p>Choose who to pay, enter the amount, set the commission rate. Gas fees shown upfront — no surprises.</p></div>
+<div class="step-card reveal" data-delay="0.3"><div class="step-num">3</div><h3>Confirm & Settle</h3><p>Sign with your wallet. USDC transfers on Base L2 in ~2 seconds. Both sides get on-chain confirmation.</p></div>
+</div></div></section>
+
+<!-- Use Cases -->
+<section class="sec" id="usecases"><div class="sec-inner">
+<div class="sec-label">Use Cases</div>
+<div class="sec-title">One platform, endless possibilities.</div>
+<div class="sec-sub">PayFlash adapts to how you do business. Here are the most common ways our users send money.</div>
+<div class="use-grid">
+<div class="use-card reveal"><div class="icon">🤝</div><h3>Affiliate Commissions</h3><p>Auto-calculate and settle commissions to overseas affiliates. Set your rate, link their wallet, done.</p></div>
+<div class="use-card reveal" data-delay="0.1"><div class="icon">📦</div><h3>Supplier Payments</h3><p>Pay overseas suppliers instantly. No wire transfer forms, no $50 SWIFT fees, no 3-day wait.</p></div>
+<div class="use-card reveal" data-delay="0.15"><div class="icon">💼</div><h3>Freelancer Payroll</h3><p>Pay global contractors in USDC. They get dollars at market rate — no currency conversion loss.</p></div>
+<div class="use-card reveal" data-delay="0.2"><div class="icon">🎁</div><h3>Personal Remittance</h3><p>Send money to family overseas. Arrives in minutes, not days. Costs less than a postage stamp.</p></div>
+<div class="use-card reveal" data-delay="0.25"><div class="icon">🏪</div><h3>Marketplace Payouts</h3><p>Batch-pay sellers, creators, or service providers. One click, dozens of wallets, instant settlement.</p></div>
+<div class="use-card reveal" data-delay="0.3"><div class="icon">🌐</div><h3>Cross-Border B2B</h3><p>Settle invoices with overseas partners in USDC. Transparent FX, no hidden bank spreads.</p></div>
+</div></div></section>
+
+<!-- Compare -->
 <section class="sec" id="compare"><div class="sec-inner">
-<div class="sec-label">The Difference</div><div class="sec-title">Why switch to PayFlash?</div>
+<div class="sec-label">The Difference</div>
+<div class="sec-title">Why switch to PayFlash?</div>
 <div class="compare">
-<div class="c-card reveal" data-delay="0"><div class="lbl">Settlement</div><div class="old">3-5 days</div><div class="arr">→</div><div class="new">~3 min</div></div>
+<div class="c-card reveal"><div class="lbl">Settlement</div><div class="old">3-5 days</div><div class="arr">→</div><div class="new">~3 min</div></div>
 <div class="c-card reveal" data-delay="0.15"><div class="lbl">Fees</div><div class="old">3-6%</div><div class="arr">→</div><div class="new">< 0.1%</div></div>
 <div class="c-card reveal" data-delay="0.3"><div class="lbl">Records</div><div class="old">Email + bank</div><div class="arr">→</div><div class="new">On-chain</div></div>
 </div></div></section>
-<div class="cta"><h2>Ready to send money at internet speed?</h2><p>Stop paying 5% and waiting 3 days.</p><a href="/brand" class="btn primary">🚀 Try the Demo</a></div>
-<footer><p>PayFlash · Global Payments on Base L2 · 2026</p><p style="margin-top:4px"><a href="https://github.com/kaylee630-afk/affiliate-settlement-demo">GitHub</a> · <a href="/brand">App</a></p></footer>
+
+<!-- FAQ -->
+<section class="sec"><div class="sec-inner">
+<div class="sec-label">FAQ</div><div class="sec-title">Questions you might have.</div>
+<div class="feat-grid">
+<div class="jelly-card reveal" data-delay="0"><div class="inner"><h3>💡 Do I need to know crypto?</h3><p>No. If you can use PayPal, you can use PayFlash. We handle the blockchain part — you just enter an amount and click send.</p></div></div>
+<div class="jelly-card reveal" data-delay="0.1"><div class="inner"><h3>🔐 Is my money safe?</h3><p>PayFlash never holds your money. Your wallet, your keys. Every transfer requires your signature. The smart contract is open-source and auditable.</p></div></div>
+<div class="jelly-card reveal" data-delay="0.2"><div class="inner"><h3>💱 How do I convert USDC to my currency?</h3><p>Use any exchange (Coinbase, Binance, OKX) to swap USDC to your local currency. Or keep it as USDC — it's 1:1 with the US dollar.</p></div></div>
+<div class="jelly-card reveal" data-delay="0.15"><div class="inner"><h3>💰 What does it cost?</h3><p>Base L2 gas is ~$0.003 per transaction. That's it. No monthly fees, no percentage cuts, no hidden FX markups.</p></div></div>
+</div></div></section>
+
+<!-- CTA -->
+<div class="cta"><h2>Ready to send money at internet speed?</h2><p>Stop paying 5% and waiting 3 days. Start settling in minutes.</p><a href="/brand" class="btn primary">🚀 Try the Demo</a></div>
+<footer><p>PayFlash · Global Payments on Base L2 · 2026</p><p style="margin-top:4px"><a href="https://github.com/kaylee630-afk/affiliate-settlement-demo">GitHub</a> · <a href="/brand">App</a> · <a href="/affiliate">Affiliate</a></p></footer>
 </div>
 
 <script>
-// ═══ Starfield ═══
 const sc=document.getElementById('stars'),sx=sc.getContext('2d');
 let stars=[];function rs(){sc.width=innerWidth;sc.height=innerHeight}rs();window.addEventListener('resize',rs);
 for(let i=0;i<200;i++)stars.push({x:Math.random()*2000,y:Math.random()*2000,r:.3+Math.random()*1.5,o:.2+Math.random()*.6,s:.1+Math.random()*.3});
-
-// ═══ Mouse spring ═══
 const ms={x:innerWidth/2,y:innerHeight/2,tx:innerWidth/2,ty:innerHeight/2,vx:0,vy:0};
 window.addEventListener('mousemove',e=>{ms.tx=e.clientX;ms.ty=e.clientY});
-
-// ═══ Jelly cards ═══
 const cards=[];
-document.querySelectorAll('.jelly-card').forEach(el=>{
-  el.insertAdjacentHTML('afterbegin','<span class="spec"></span>');
-  const c={el,jelly:0,vel:0,sx:50,sy:50,svx:0,svy:0,hover:0,htarget:0};
-  el.addEventListener('mouseenter',()=>c.htarget=1);
-  el.addEventListener('mouseleave',()=>c.htarget=0);
-  cards.push(c);
-});
-
-// ═══ Click shockwave ═══
-window.addEventListener('click',e=>{
-  cards.forEach(c=>{
-    const r=c.el.getBoundingClientRect();
-    if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom){
-      c.vel=.8;
-      c.el.style.transition='transform .6s cubic-bezier(.22,.6,.3,1.1)';
-      setTimeout(()=>c.el.style.transition='transform .15s ease-out',600);
-    }
-  });
-});
-
-// ═══ Loop ═══
-function loop(ts){
-  requestAnimationFrame(loop);
-  const dt=Math.min((ts-(loop._lt||ts))/1000,.1);loop._lt=ts;
-
-  // Stars
-  sx.fillStyle='#010314';sx.fillRect(0,0,sc.width,sc.height);
-  stars.forEach(s=>{s.y-=s.s;if(s.y<0){s.y=sc.height;s.x=Math.random()*sc.width}sx.beginPath();sx.arc(s.x,s.y,s.r,0,Math.PI*2);sx.fillStyle=`rgba(255,255,255,${s.o})`;sx.fill()});
-
-  // Mouse spring
-  ms.vx+=(ms.tx-ms.x)*10*dt;ms.vy+=(ms.ty-ms.y)*10*dt;ms.vx*=.8;ms.vy*=.8;ms.x+=ms.vx*dt*3;ms.y+=ms.vy*dt*3;
-
-  // Cards
-  cards.forEach(c=>{
-    const r=c.el.getBoundingClientRect();
-    const cx=r.left+r.width/2,cy=r.top+r.height/2;
-    const dx=ms.x-cx,dy=ms.y-cy,dist=Math.sqrt(dx*dx+dy*dy);
-    const influence=Math.max(0,1-dist/(Math.max(r.width,r.height)*1.4));
-
-    c.vel+=(influence-c.jelly)*10*dt;c.vel*=.55;c.jelly+=c.vel*dt;
-    const j=c.jelly;
-
-    // CSS custom properties → radial gradient follows mouse
-    const mxPct=((ms.x-r.left)/r.width*100);
-    const myPct=((ms.y-r.top)/r.height*100);
-    c.el.style.setProperty('--mx',mxPct+'%');
-    c.el.style.setProperty('--my',myPct+'%');
-    // Spec highlight lags behind mouse with spring
-    c.svx+=(mxPct-c.sx)*8*dt;c.svx*=.7;c.sx+=c.svx*dt;
-    c.svy+=(myPct-c.sy)*8*dt;c.svy*=.7;c.sy+=c.svy*dt;
-    c.el.style.setProperty('--sx',c.sx+'%');
-    c.el.style.setProperty('--sy',c.sy+'%');
-
-    // Hover lift spring
-    c.hover+=(c.htarget-c.hover)*6*dt;
-    const lift=-c.hover*8;
-    // Jelly transform
-    const sx_=1+j*.04, sy_=1-j*.03, sk=j*.015, yOff=lift-j*6;
-    c.el.style.transform=`translateY(${yOff}px) scaleX(${sx_}) scaleY(${sy_}) skewX(${sk}deg)`;
-    c.el.style.borderColor=j>.08?`rgba(99,102,241,${.12+j*.3})`:'rgba(255,255,255,.08)';
-    c.el.style.boxShadow=j>.08?`inset 0 1px 0 rgba(255,255,255,${.04+j*.08}),0 ${j*40}px ${j*80}px rgba(99,102,241,${.08+j*.2}),0 2px 12px rgba(0,0,0,.2)`:'inset 0 1px 0 rgba(255,255,255,.04),0 2px 12px rgba(0,0,0,.2)';
-    c.el.classList.toggle('active',j>.05);
-  });
-}
-loop(0);
-
-// Reveal
-const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{rootMargin:'0px 0px -60px 0px',threshold:.1});
-document.querySelectorAll('.reveal').forEach(el=>{el.style.transitionDelay=(el.dataset.delay||'0')+'s';obs.observe(el);});
+document.querySelectorAll('.jelly-card').forEach(el=>{el.insertAdjacentHTML('afterbegin','<span class="spec"></span>');const c={el,jelly:0,vel:0,sx:50,sy:50,svx:0,svy:0,hover:0,htarget:0};el.addEventListener('mouseenter',()=>c.htarget=1);el.addEventListener('mouseleave',()=>c.htarget=0);cards.push(c)});
+window.addEventListener('click',e=>{cards.forEach(c=>{const r=c.el.getBoundingClientRect();if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom){c.vel=.8;c.el.style.transition='transform .6s cubic-bezier(.22,.6,.3,1.1)';setTimeout(()=>c.el.style.transition='transform .15s ease-out',600)}})});
+function loop(ts){requestAnimationFrame(loop);const dt=Math.min((ts-(loop._lt||ts))/1000,.1);loop._lt=ts;sx.fillStyle='#010314';sx.fillRect(0,0,sc.width,sc.height);stars.forEach(s=>{s.y-=s.s;if(s.y<0){s.y=sc.height;s.x=Math.random()*sc.width}sx.beginPath();sx.arc(s.x,s.y,s.r,0,Math.PI*2);sx.fillStyle=`rgba(255,255,255,${s.o})`;sx.fill()});ms.vx+=(ms.tx-ms.x)*10*dt;ms.vy+=(ms.ty-ms.y)*10*dt;ms.vx*=.8;ms.vy*=.8;ms.x+=ms.vx*dt*3;ms.y+=ms.vy*dt*3;cards.forEach(c=>{const r=c.el.getBoundingClientRect();const cx=r.left+r.width/2,cy=r.top+r.height/2;const dx=ms.x-cx,dy=ms.y-cy,dist=Math.sqrt(dx*dx+dy*dy);const influence=Math.max(0,1-dist/(Math.max(r.width,r.height)*1.4));c.vel+=(influence-c.jelly)*10*dt;c.vel*=.55;c.jelly+=c.vel*dt;const j=c.jelly;const mxPct=((ms.x-r.left)/r.width*100);const myPct=((ms.y-r.top)/r.height*100);c.el.style.setProperty('--mx',mxPct+'%');c.el.style.setProperty('--my',myPct+'%');c.svx+=(mxPct-c.sx)*8*dt;c.svx*=.7;c.sx+=c.svx*dt;c.svy+=(myPct-c.sy)*8*dt;c.svy*=.7;c.sy+=c.svy*dt;c.el.style.setProperty('--sx',c.sx+'%');c.el.style.setProperty('--sy',c.sy+'%');c.hover+=(c.htarget-c.hover)*6*dt;const lift=-c.hover*8;const sx_=1+j*.04,sy_=1-j*.03,sk=j*.015,yOff=lift-j*6;c.el.style.transform=`translateY(${yOff}px) scaleX(${sx_}) scaleY(${sy_}) skewX(${sk}deg)`;c.el.style.borderColor=j>.08?`rgba(99,102,241,${.12+j*.3})`:'rgba(255,255,255,.08)';c.el.style.boxShadow=j>.08?`inset 0 1px 0 rgba(255,255,255,${.04+j*.08}),0 ${j*40}px ${j*80}px rgba(99,102,241,${.08+j*.2}),0 2px 12px rgba(0,0,0,.2)`:'inset 0 1px 0 rgba(255,255,255,.04),0 2px 12px rgba(0,0,0,.2)';c.el.classList.toggle('active',j>.05)})}loop(0);
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{rootMargin:'0px 0px -60px 0px',threshold:.1});document.querySelectorAll('.reveal').forEach(el=>{el.style.transitionDelay=(el.dataset.delay||'0')+'s';obs.observe(el)});
 window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('scrolled',scrollY>60));
 </script>
 </body>
