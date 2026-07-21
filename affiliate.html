@@ -7,48 +7,58 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#010314;--surface:rgba(255,255,255,0.03);--text:#f5f5f7;--text2:#8b8fa3;--accent:#6366f1;--green:#22c55e;--red:#ef4444}
+:root{--bg:#010314;--text:#f5f5f7;--text2:#8b8fa3;--accent:#6366f1;--green:#22c55e;--red:#ef4444}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
 #stars{position:fixed;inset:0;z-index:0;pointer-events:none}
-.content{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:80px 24px 60px}
-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 32px;background:rgba(1,3,20,.85);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,.06)}
+.content{position:relative;z-index:1}
+nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 32px;background:rgba(1,3,20,.85);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,.06)}
 .nav-logo{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:800;color:#fff;text-decoration:none}.nav-logo img{width:28px;height:28px;border-radius:7px}
-.nav-links{display:flex;gap:28px}.nav-links a{color:rgba(255,255,255,.7);text-decoration:none;font-size:13px;font-weight:500;transition:color .2s}.nav-links a:hover{color:#fff}
+.nav-links{display:flex;gap:28px}.nav-links a{color:rgba(255,255,255,.7);text-decoration:none;font-size:13px;font-weight:500;transition:color .2s}.nav-links a:hover,.nav-links a.active{color:#fff}
+.main{max-width:640px;margin:0 auto;padding:40px 32px 80px}
 
-.earn-card{background:var(--surface);border:1px solid rgba(34,197,94,.15);border-radius:20px;padding:28px;text-align:center;margin-bottom:20px;position:relative;overflow:hidden}
+/* Jelly glass */
+.jelly{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:24px;margin-bottom:14px;backdrop-filter:blur(40px) saturate(1.5);-webkit-backdrop-filter:blur(40px) saturate(1.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 2px 12px rgba(0,0,0,.2);position:relative;overflow:hidden;will-change:transform;transition:border-color .5s,box-shadow .5s}
+.jelly::before{content:'';position:absolute;inset:0;border-radius:inherit;background:radial-gradient(ellipse at var(--mx,50%) var(--my,50%),rgba(99,102,241,.2)0%,rgba(99,102,241,.08)30%,transparent 60%);opacity:0;transition:opacity .5s;pointer-events:none;z-index:0}
+.jelly:hover::before,.jelly.active::before{opacity:1}
+.jelly::after{content:'';position:absolute;top:0;left:12%;right:12%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);opacity:0;transition:opacity .4s;pointer-events:none;z-index:1}
+.jelly:hover::after,.jelly.active::after{opacity:1}
+.jelly .spec{position:absolute;border-radius:50%;pointer-events:none;z-index:2;background:radial-gradient(circle,rgba(255,255,255,.05)0%,transparent 60%);width:80px;height:80px;left:var(--sx,50%);top:var(--sy,50%);transform:translate(-50%,-50%);opacity:0;transition:opacity .3s}
+.jelly:hover .spec,.jelly.active .spec{opacity:1}
+.jelly .inner{position:relative;z-index:3}
+
+/* Earnings card */
+.earn-card{border:1px solid rgba(34,197,94,.15)!important;padding:32px 24px;text-align:center}
 .earn-card::before{content:'';position:absolute;top:0;left:15%;right:15%;height:2px;background:linear-gradient(90deg,transparent,var(--green),var(--accent),transparent)}
-.earn-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:4px}
-.earn-amount{font-size:52px;font-weight:900;letter-spacing:-2px;background:linear-gradient(135deg,var(--green),#4ade80);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.earn-row{display:flex;justify-content:center;gap:40px;margin-top:16px}
-.earn-item{text-align:center}.earn-item .val{font-size:15px;font-weight:700}.earn-item .lbl{font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;margin-top:2px}
+.earn-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:4px;position:relative;z-index:3}
+.earn-amount{font-size:52px;font-weight:900;letter-spacing:-2px;background:linear-gradient(135deg,var(--green),#4ade80);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;position:relative;z-index:3}
+.earn-row{display:flex;justify-content:center;gap:40px;margin-top:16px;position:relative;z-index:3}
+.earn-item{text-align:center}.earn-item .val{font-size:16px;font-weight:700}.earn-item .lbl{font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;margin-top:2px}
 
-.switcher{display:flex;justify-content:center;gap:8px;margin-bottom:20px}
-.sw-btn{padding:8px 18px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;transition:all .2s}
-.sw-btn:hover,.sw-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+/* Switcher */
+.switcher{display:flex;justify-content:center;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.sw-btn{padding:8px 16px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:transparent;color:var(--text2);font-family:'Inter',sans-serif;transition:all .2s}.sw-btn:hover,.sw-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 
-.notif{background:var(--surface);border:1px solid rgba(34,197,94,.15);border-radius:14px;padding:14px;margin-bottom:14px;display:none;animation:slideDown .4s ease}
-.notif.show{display:flex;align-items:center;gap:12px}@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-.notif-icon{width:36px;height:36px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px}
+/* Notif */
+.notif{background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.15);border-radius:14px;padding:14px;margin-bottom:14px;display:none;animation:slideDown .4s ease}.notif.show{display:flex;align-items:center;gap:12px}@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.notif-icon{width:40px;height:40px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:14px 28px;border-radius:999px;font-size:15px;font-weight:600;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:all .3s}
-.btn-primary{background:var(--accent);color:#fff;width:100%}.btn-primary:hover{filter:brightness(1.1)}
-.btn-ghost{background:transparent;color:var(--text2);border:1px solid rgba(255,255,255,.1);font-size:12px;padding:8px 16px;border-radius:12px;width:100%;text-align:center;cursor:pointer;font-family:'Inter',sans-serif}
-.btn-ghost:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
+/* Tx list */
+.tx-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04)}.tx-item:last-child{border-bottom:none}
+.tx-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;flex-shrink:0}
+.tx-info{flex:1}.tx-info .name{font-size:14px;font-weight:600}.tx-info .meta{font-size:10px;color:var(--text2);margin-top:1px}.tx-amount{font-size:15px;font-weight:700;color:var(--green);white-space:nowrap}
 
-.panel{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(40px) saturate(1.5);-webkit-backdrop-filter:blur(40px) saturate(1.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 2px 12px rgba(0,0,0,.2);border-radius:16px;padding:20px;margin-bottom:16px}
-.panel h3{font-size:16px;font-weight:700;margin-bottom:12px}
-.tx-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04)}.tx-item:last-child{border-bottom:none}
-.tx-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700}
-.tx-info{flex:1}.tx-info .name{font-size:13px;font-weight:600}.tx-info .time{font-size:10px;color:var(--text2)}
-.tx-amount{font-size:14px;font-weight:700;color:var(--green)}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:15px 28px;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:all .3s;width:100%}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 0 20px rgba(99,102,241,.2)}.btn-primary:hover{filter:brightness(1.1);box-shadow:0 4px 28px rgba(99,102,241,.4)}
+footer{text-align:center;padding:24px;color:var(--text2);font-size:11px;border-top:1px solid rgba(255,255,255,.04)}footer a{color:var(--accent);text-decoration:none}
+@media(max-width:600px){nav{padding:12px 20px}.nav-links{display:none}.main{padding:24px 16px 60px}.earn-row{gap:24px}}
 </style>
 </head>
 <body>
 <canvas id="stars"></canvas>
-<nav><a href="/" class="nav-logo"><img src="/favicon.png">PayFlash</a><div class="nav-links"><a href="/brand">Brand</a><a href="/affiliate" style="color:#fff">Affiliate</a><a href="/">Home</a></div></nav>
-
 <div class="content">
+<nav><a href="/" class="nav-logo"><img src="/favicon.png">PayFlash</a><div class="nav-links"><a href="/brand">Brand</a><a href="/affiliate" class="active">Affiliate</a><a href="/">Home</a></div></nav>
+<div class="main">
   <div class="switcher">
     <button class="sw-btn active" data-id="@alice_cn" onclick="sw(this)">Alice 🇭🇰</button>
     <button class="sw-btn" data-id="@bob_kr" onclick="sw(this)">Bob 🇰🇷</button>
@@ -56,60 +66,37 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
     <button class="sw-btn" data-id="@dave_br" onclick="sw(this)">Dave 🇧🇷</button>
     <button class="sw-btn" data-id="@eve_de" onclick="sw(this)">Eve 🇩🇪</button>
   </div>
-
-  <div class="earn-card">
-    <div class="earn-label">Total Earned (USDC)</div>
-    <div class="earn-amount" id="total">$0</div>
-    <div class="earn-row">
-      <div class="earn-item"><div class="val" style="color:var(--green)" id="last">--</div><div class="lbl">Last</div></div>
-      <div class="earn-item"><div class="val" id="count">0</div><div class="lbl">Txs</div></div>
-      <div class="earn-item"><div class="val" id="avail">$0</div><div class="lbl">Available</div></div>
-      <div class="earn-item"><div class="val" style="color:var(--accent)">~3m</div><div class="lbl">Avg Speed</div></div>
-    </div>
-  </div>
-
-  <div class="notif" id="live"><div class="notif-icon">💸</div><div><div style="font-size:12px;font-weight:600;color:var(--green)">Commission Received</div><div style="font-size:20px;font-weight:700" id="notifAmt"></div><div style="font-size:10px;color:var(--text2)" id="notifDetail"></div></div></div>
-
-  <button class="btn btn-primary" onclick="sim()">💳 Simulate Payment</button>
-
-  <div class="panel" style="margin-top:20px"><h3>Settlements</h3><div id="history"><div style="text-align:center;padding:20px;color:var(--text2);font-size:13px">No settlements yet</div></div></div>
+  <div class="jelly earn-card" id="earnCard"><div class="spec"></div><div class="inner"><div class="earn-label">Total Earned (USDC)</div><div class="earn-amount" id="total">$0</div><div class="earn-row"><div class="earn-item"><div class="val" style="color:var(--green)" id="last">--</div><div class="lbl">Last</div></div><div class="earn-item"><div class="val" id="count">0</div><div class="lbl">Txs</div></div><div class="earn-item"><div class="val" id="avail">$0</div><div class="lbl">Available</div></div><div class="earn-item"><div class="val" style="color:var(--accent)">~3m</div><div class="lbl">Avg Speed</div></div></div></div></div>
+  <div class="notif" id="live"><div class="notif-icon">💸</div><div><div style="font-size:13px;font-weight:600;color:var(--green)">Commission Received</div><div style="font-size:22px;font-weight:700" id="notifAmt"></div><div style="font-size:11px;color:var(--text2)" id="notifDetail"></div></div></div>
+  <button class="btn btn-primary" onclick="sim()" style="margin-bottom:20px">⚡ Simulate Payment</button>
+  <div class="jelly" id="historyCard"><div class="spec"></div><div class="inner"><h3 style="font-size:14px;font-weight:600;margin-bottom:14px;color:var(--text2);text-transform:uppercase;letter-spacing:1px">Settlements</h3><div id="history"><div style="text-align:center;padding:24px;color:var(--text2);font-size:13px">No settlements yet</div></div></div></div>
+</div>
+<footer><p>PayFlash · Base L2 · USDC · 2026</p><p style="margin-top:2px"><a href="/">Home</a> · <a href="/brand">Brand View →</a></p></footer>
 </div>
 
 <script>
 const SK='lightning_commission_demo',ch=typeof BroadcastChannel!='undefined'?new BroadcastChannel('lightning_commission'):null;
 const AK='lc_current_affiliate',nm={'@alice_cn':'Alice','@bob_kr':'Bob','@carol_jp':'Carol','@dave_br':'Dave','@eve_de':'Eve'};
 function ga(){return localStorage.getItem(AK)||'@alice_cn'}
-function dfl(){return {balance:5000,totalSettled:1280.5,txCount:23,commissionRate:5,transactions:[
-{id:1,affiliate:'@alice_cn',name:'Alice',orderAmount:199,commission:19.9,time:'3 min ago',avatar:'A'},
-{id:2,affiliate:'@bob_kr',name:'Bob',orderAmount:89.9,commission:8.99,time:'12 min ago',avatar:'B'},
-{id:3,affiliate:'@carol_jp',name:'Carol',orderAmount:450,commission:45,time:'1h ago',avatar:'C'},
-{id:4,affiliate:'@dave_br',name:'Dave',orderAmount:67.5,commission:6.75,time:'2h ago',avatar:'D'},
-{id:5,affiliate:'@eve_de',name:'Eve',orderAmount:320,commission:32,time:'3h ago',avatar:'E'},
-{id:6,affiliate:'@alice_cn',name:'Alice',orderAmount:155,commission:15.5,time:'Yesterday',avatar:'A'}]}}
+function dfl(){return {balance:5000,totalSettled:1280.5,txCount:23,commissionRate:5,transactions:[{id:1,affiliate:'@alice_cn',name:'Alice',orderAmount:199,commission:19.9,time:'3 min ago',avatar:'A'},{id:2,affiliate:'@bob_kr',name:'Bob',orderAmount:89.9,commission:8.99,time:'12 min ago',avatar:'B'},{id:3,affiliate:'@carol_jp',name:'Carol',orderAmount:450,commission:45,time:'1h ago',avatar:'C'},{id:4,affiliate:'@dave_br',name:'Dave',orderAmount:67.5,commission:6.75,time:'2h ago',avatar:'D'},{id:5,affiliate:'@eve_de',name:'Eve',orderAmount:320,commission:32,time:'3h ago',avatar:'E'},{id:6,affiliate:'@alice_cn',name:'Alice',orderAmount:155,commission:15.5,time:'Yesterday',avatar:'A'}]}}
 function ld(){const r=localStorage.getItem(SK);return r?JSON.parse(r):dfl()}
 function sd(d){localStorage.setItem(SK,JSON.stringify(d));if(ch)ch.postMessage({type:'dc',txCount:d.txCount})}
 if(!localStorage.getItem(SK))sd(dfl());if(!localStorage.getItem(AK))localStorage.setItem(AK,'@alice_cn');
-
-function sw(btn){document.querySelectorAll('.sw-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');localStorage.setItem(AK,btn.dataset.id);render()}
-function sim(){const d=ld(),me=ga(),dn=nm[me]||me.replace('@','');const oa=+(Math.random()*250+40).toFixed(2),c=+(oa*d.commissionRate/100).toFixed(2);
-if(c>d.balance){alert('Insufficient balance');return}d.balance-=c;d.totalSettled+=c;d.txCount+=1;d.transactions.push({id:d.txCount,affiliate:me,name:dn,orderAmount:oa,commission:c,time:'Just now',avatar:dn[0].toUpperCase()});sd(d);
-showNotif(c,oa);render();
-setTimeout(()=>{let lt=d.transactions[d.transactions.length-1];if(lt.time==='Just now'){lt.time='1 min ago';sd(d);render()}},3000)}
+function sw(b){document.querySelectorAll('.sw-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');localStorage.setItem(AK,b.dataset.id);render()}
+function sim(){const d=ld(),me=ga(),dn=nm[me]||me.replace('@','');const oa=+(Math.random()*250+40).toFixed(2),c=+(oa*d.commissionRate/100).toFixed(2);if(c>d.balance){alert('Insufficient balance');return}d.balance-=c;d.totalSettled+=c;d.txCount+=1;d.transactions.push({id:d.txCount,affiliate:me,name:dn,orderAmount:oa,commission:c,time:'Just now',avatar:dn[0].toUpperCase()});sd(d);showNotif(c,oa);render();setTimeout(()=>{let lt=d.transactions[d.transactions.length-1];if(lt.time==='Just now'){lt.time='1 min ago';sd(d);render()}},3000)}
 function showNotif(a,oa){const el=document.getElementById('live');el.classList.add('show');document.getElementById('notifAmt').textContent='+$'+a.toFixed(2)+' USDC';document.getElementById('notifDetail').textContent='Order $'+oa.toFixed(2)+' · Base L2 · Instant';setTimeout(()=>el.classList.remove('show'),8000)}
-
-function render(){const me=ga(),dn=nm[me]||me;const d=ld(),txs=d.transactions.filter(t=>t.affiliate===me);
-const total=txs.reduce((s,t)=>s+t.commission,0);document.getElementById('total').textContent='$'+total.toFixed(0);document.getElementById('count').textContent=txs.length;document.getElementById('avail').textContent='$'+total.toFixed(0);
-if(txs.length)document.getElementById('last').textContent='$'+txs[txs.length-1].commission.toFixed(0);else document.getElementById('last').textContent='--';
-const tl=document.getElementById('history');
-if(!txs.length){tl.innerHTML='<div style="text-align:center;padding:20px;color:var(--text2);font-size:13px">No settlements yet</div>';return}
-tl.innerHTML=txs.slice().reverse().map(t=>`<div class="tx-item"><div class="tx-avatar" style="background:linear-gradient(135deg,#6366f1,#3b82f6)">${t.avatar}</div><div class="tx-info"><div class="name">${t.name}</div><div class="time">${t.time} · $${t.orderAmount.toFixed(2)}</div></div><div class="tx-amount">+$${t.commission.toFixed(2)}</div></div>`).join('')}
+function render(){const me=ga(),dn=nm[me]||me;const d=ld(),txs=d.transactions.filter(t=>t.affiliate===me);const total=txs.reduce((s,t)=>s+t.commission,0);document.getElementById('total').textContent='$'+total.toFixed(0);document.getElementById('count').textContent=txs.length;document.getElementById('avail').textContent='$'+total.toFixed(0);if(txs.length)document.getElementById('last').textContent='$'+txs[txs.length-1].commission.toFixed(0);else document.getElementById('last').textContent='--';const tl=document.getElementById('history');if(!txs.length){tl.innerHTML='<div style="text-align:center;padding:24px;color:var(--text2);font-size:13px">No settlements yet</div>';return}tl.innerHTML=txs.slice().reverse().map(t=>`<div class="tx-item"><div class="tx-avatar" style="background:linear-gradient(135deg,#6366f1,#3b82f6)">${t.avatar}</div><div class="tx-info"><div class="name">${t.name}</div><div class="meta">${t.time} · $${t.orderAmount.toFixed(2)}</div></div><div class="tx-amount">+$${t.commission.toFixed(2)}</div></div>`).join('')}
 render();
-
 if(ch)ch.onmessage=e=>{if(e.data.type==='dc')render()};window.addEventListener('storage',e=>{if(e.key===SK)render()});
 
 const sc=document.getElementById('stars'),sx=sc.getContext('2d');sc.width=innerWidth;sc.height=innerHeight;
-let stars=[];for(let i=0;i<150;i++)stars.push({x:Math.random()*2000,y:Math.random()*2000,r:.3+Math.random()*1.2,o:.2+Math.random()*.5,s:.1+Math.random()*.3});
-function loop(){requestAnimationFrame(loop);sx.fillStyle='#010314';sx.fillRect(0,0,sc.width,sc.height);stars.forEach(s=>{s.y-=s.s;if(s.y<0){s.y=sc.height;s.x=Math.random()*sc.width}sx.beginPath();sx.arc(s.x,s.y,s.r,0,Math.PI*2);sx.fillStyle=`rgba(255,255,255,${s.o})`;sx.fill()})}loop();
+let stars=[];for(let i=0;i<200;i++)stars.push({x:Math.random()*2000,y:Math.random()*2000,r:.3+Math.random()*1.5,o:.2+Math.random()*.6,s:.1+Math.random()*.3});
+(function loop(){requestAnimationFrame(loop);sx.fillStyle='#010314';sx.fillRect(0,0,sc.width,sc.height);stars.forEach(s=>{s.y-=s.s;if(s.y<0){s.y=sc.height;s.x=Math.random()*sc.width}sx.beginPath();sx.arc(s.x,s.y,s.r,0,Math.PI*2);sx.fillStyle=`rgba(255,255,255,${s.o})`;sx.fill()})})();
+
+const jcards=[],ms={x:innerWidth/2,y:innerHeight/2,tx:innerWidth/2,ty:innerHeight/2,vx:0,vy:0};
+window.addEventListener('mousemove',e=>{ms.tx=e.clientX;ms.ty=e.clientY});
+document.querySelectorAll('.jelly').forEach(el=>{el.insertAdjacentHTML('afterbegin','<span class="spec"></span>');const c={el,jelly:0,vel:0,sx:50,sy:50,svx:0,svy:0,hover:0,htarget:0};el.addEventListener('mouseenter',()=>c.htarget=1);el.addEventListener('mouseleave',()=>c.htarget=0);jcards.push(c)});
+(function loop2(ts){requestAnimationFrame(loop2);const dt=Math.min((ts-(loop2._lt||ts))/1000,.1);loop2._lt=ts;ms.vx+=(ms.tx-ms.x)*10*dt;ms.vy+=(ms.ty-ms.y)*10*dt;ms.vx*=.8;ms.vy*=.8;ms.x+=ms.vx*dt*3;ms.y+=ms.vy*dt*3;jcards.forEach(c=>{const r=c.el.getBoundingClientRect();const cx=r.left+r.width/2,cy=r.top+r.height/2;const dx=ms.x-cx,dy=ms.y-cy,dist=Math.sqrt(dx*dx+dy*dy);const influence=Math.max(0,1-dist/(Math.max(r.width,r.height)*1.4));c.vel+=(influence-c.jelly)*10*dt;c.vel*=.55;c.jelly+=c.vel*dt;const j=c.jelly;const mxPct=((ms.x-r.left)/r.width*100);const myPct=((ms.y-r.top)/r.height*100);c.el.style.setProperty('--mx',mxPct+'%');c.el.style.setProperty('--my',myPct+'%');c.svx+=(mxPct-c.sx)*8*dt;c.svx*=.7;c.sx+=c.svx*dt;c.svy+=(myPct-c.sy)*8*dt;c.svy*=.7;c.sy+=c.svy*dt;c.el.style.setProperty('--sx',c.sx+'%');c.el.style.setProperty('--sy',c.sy+'%');c.hover+=(c.htarget-c.hover)*6*dt;const lift=-c.hover*6;const sx_=1+j*.04,sy_=1-j*.03,sk=j*.015,yOff=lift-j*5;c.el.style.transform=`translateY(${yOff}px) scaleX(${sx_}) scaleY(${sy_}) skewX(${sk}deg)`;c.el.style.borderColor=j>.08?`rgba(99,102,241,${.12+j*.3})`:'rgba(255,255,255,.08)';c.el.style.boxShadow=j>.08?`inset 0 1px 0 rgba(255,255,255,${.04+j*.08}),0 ${j*40}px ${j*80}px rgba(99,102,241,${.08+j*.2}),0 2px 12px rgba(0,0,0,.2)`:'inset 0 1px 0 rgba(255,255,255,.04),0 2px 12px rgba(0,0,0,.2)';c.el.classList.toggle('active',j>.05)})})(0);
 </script>
 </body>
 </html>
