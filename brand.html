@@ -1,159 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>PayFlash · Send</title>
 <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="manifest" href="/manifest.json"><script src="/sw-register.js"></script>
 <style>
-:root{--bg:#010314;--text:#f5f5f7;--text2:#8b8fa3;--accent:#6366f1;--green:#22c55e;--red:#ef4444}
+:root{--bg:#010314;--text:#f5f5f7;--text2:#8b8fa3;--accent:#6366f1;--green:#22c55e;--red:#ef4444;--gold:#f5a623}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);height:100dvh;overflow:hidden;-webkit-font-smoothing:antialiased}
-#app{display:flex;flex-direction:column;height:100dvh;max-width:480px;margin:0 auto;background:#0d0d1a;position:relative}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
 #stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+.content{position:relative;z-index:1}
 
-/* Header */
-.header{padding:16px 20px 8px;z-index:10;background:rgba(13,13,26,.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between}
-.header h1{font-size:18px;font-weight:700}
-.header .chain{font-size:11px;color:var(--accent);padding:4px 10px;border-radius:12px;background:rgba(99,102,241,.1)}
+nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 32px;background:rgba(1,3,20,.85);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,.06)}
+.nav-logo{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:800;color:#fff;text-decoration:none}.nav-logo img{width:28px;height:28px;border-radius:7px}
+.nav-links{display:flex;gap:28px}.nav-links a{color:rgba(255,255,255,.7);text-decoration:none;font-size:13px;font-weight:500;transition:color .2s}.nav-links a:hover,.nav-links a.active{color:#fff}
+.nav-cta{padding:9px 22px;border-radius:999px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;text-decoration:none;transition:all .3s;box-shadow:0 0 16px rgba(99,102,241,.25)}.nav-cta:hover{transform:translateY(-1px);box-shadow:0 4px 24px rgba(99,102,241,.45)}
 
-/* Step indicator */
-.steps{display:flex;gap:0;padding:12px 20px}
-.step-item{display:flex;align-items:center;gap:8px;flex:1}.step-item .dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:rgba(255,255,255,.1);color:var(--text2);transition:all .3s}.step-item .dot.active,.step-item .dot.done{background:var(--accent);color:#fff}.step-item .dot.done::after{content:' ✓';font-size:9px}.step-item .label{font-size:10px;color:var(--text2)}.step-item .label.active{color:var(--text)}.step-line{flex:1;height:1px;background:rgba(255,255,255,.1);margin:0 4px;transition:all .3s}.step-line.active{background:var(--accent)}
+/* Layout */
+.main{max-width:700px;margin:0 auto;padding:40px 32px 80px}
 
-/* Content area */
-#content{flex:1;overflow-y:auto;padding:0 20px 16px}
-.card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:20px;margin-bottom:12px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
-.card h3{font-size:14px;font-weight:600;margin-bottom:12px;color:var(--text2);text-transform:uppercase;letter-spacing:1px}
+/* Step bar */
+.step-bar{display:flex;align-items:center;gap:0;margin-bottom:24px}
+.step-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;background:rgba(255,255,255,.06);color:var(--text2);flex-shrink:0;transition:all .3s}
+.step-dot.active,.step-dot.done{background:var(--accent);color:#fff}.step-dot.done::after{content:' ✓';font-size:10px}
+.step-label{font-size:12px;color:var(--text2);margin-left:8px;font-weight:500;transition:color .3s}.step-label.active{color:var(--text)}.step-label.done{color:var(--text)}
+.step-line{flex:1;height:1px;background:rgba(255,255,255,.08);margin:0 12px}.step-line.active{background:var(--accent)}
 
-/* Contact list */
-.contact{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.02);border:1px solid transparent;margin-bottom:6px}
+/* Jelly glass card */
+.jelly{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:24px;margin-bottom:14px;backdrop-filter:blur(40px) saturate(1.5);-webkit-backdrop-filter:blur(40px) saturate(1.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 2px 12px rgba(0,0,0,.2);position:relative;overflow:hidden;cursor:default;will-change:transform;transition:border-color .5s,box-shadow .5s}
+.jelly::before{content:'';position:absolute;inset:0;border-radius:inherit;background:radial-gradient(ellipse at var(--mx,50%) var(--my,50%),rgba(99,102,241,.2)0%,rgba(99,102,241,.08)30%,transparent 60%);opacity:0;transition:opacity .5s;pointer-events:none;z-index:0}
+.jelly:hover::before,.jelly.active::before{opacity:1}
+.jelly::after{content:'';position:absolute;top:0;left:12%;right:12%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);opacity:0;transition:opacity .4s;pointer-events:none;z-index:1}
+.jelly:hover::after,.jelly.active::after{opacity:1}
+.jelly .inner{position:relative;z-index:3}
+.jelly .spec{position:absolute;border-radius:50%;pointer-events:none;z-index:2;background:radial-gradient(circle,rgba(255,255,255,.05)0%,transparent 60%);width:80px;height:80px;left:var(--sx,50%);top:var(--sy,50%);transform:translate(-50%,-50%);opacity:0;transition:opacity .3s}
+.jelly:hover .spec,.jelly.active .spec{opacity:1}
+.jelly h3{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px}
+
+/* Contacts */
+.contact{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.02);border:1px solid transparent}
 .contact:hover,.contact.sel{border-color:var(--accent);background:rgba(99,102,241,.06)}
-.contact-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;flex-shrink:0}
-.contact-info{flex:1}.contact-info .name{font-size:15px;font-weight:600}.contact-info .sub{font-size:12px;color:var(--text2)}
-.contact-check{width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,.15);flex-shrink:0}.contact.sel .contact-check{background:var(--accent);border-color:var(--accent)}
+.contact-avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:19px;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.contact-info{flex:1}.contact-info .name{font-size:16px;font-weight:600}.contact-info .sub{font-size:12px;color:var(--text2)}
+.contact-check{width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.12);flex-shrink:0;transition:all .3s}.contact.sel .contact-check{background:var(--accent);border-color:var(--accent)}
 
 /* Amount */
-.amount-display{text-align:center;padding:8px 0}
-.amount-display .prefix{font-size:40px;font-weight:200;color:var(--text2)}
-.amount-display input{width:60%;background:none;border:none;font-size:48px;font-weight:700;color:var(--text);text-align:center;font-family:'Inter',sans-serif;outline:none;caret-color:var(--accent)}.amount-display input::placeholder{color:rgba(255,255,255,.15)}
-.quick-amounts{display:flex;gap:8px;justify-content:center;margin-top:8px;flex-wrap:wrap}
-.q-amt{padding:8px 16px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:transparent;color:var(--text);font-family:'Inter',sans-serif;transition:all .2s}.q-amt:hover,.q-amt.sel{border-color:var(--accent);background:rgba(99,102,241,.1);color:var(--text)}
+.amt-row{display:flex;align-items:center;justify-content:center;gap:4px;padding:16px 0 8px}
+.amt-row .dollar{font-size:44px;font-weight:200;color:var(--text2)}
+.amt-row input{width:55%;background:none;border:none;font-size:48px;font-weight:700;color:var(--text);text-align:center;font-family:'Inter',sans-serif;outline:none;caret-color:var(--accent)}.amt-row input::placeholder{color:rgba(255,255,255,.1)}
+.quick-amt{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.q-btn{padding:8px 18px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:transparent;color:var(--text2);font-family:'Inter',sans-serif;transition:all .2s}.q-btn:hover,.q-btn.sel{border-color:var(--accent);background:rgba(99,102,241,.1);color:var(--text)}
 
-/* Memo */
-.memo-row{display:flex;align-items:center;gap:8px;padding:10px;border-radius:10px;background:rgba(255,255,255,.02);margin-top:8px}.memo-row input{flex:1;background:none;border:none;color:var(--text);font-family:'Inter',sans-serif;outline:none;font-size:13px}.memo-row input::placeholder{color:var(--text2)}
+/* Memo + Chain */
+.option-row{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.opt-btn{display:flex;align-items:center;gap:6px;padding:10px 14px;border-radius:10px;font-size:12px;color:var(--text2);cursor:pointer;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);font-family:'Inter',sans-serif;transition:all .2s}.opt-btn:hover,.opt-btn.sel{border-color:var(--accent);background:rgba(99,102,241,.08);color:var(--text)}
+.memo-input{flex:1;min-width:200px;padding:10px 14px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:10px;color:var(--text);font-family:'Inter',sans-serif;outline:none;font-size:13px}.memo-input:focus{border-color:var(--accent)}.memo-input::placeholder{color:var(--text2)}
 
 /* Commission */
-.comm-row{display:flex;gap:6px;margin-top:8px}.comm-btn{padding:8px 14px;border-radius:10px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);color:var(--text2);font-family:'Inter',sans-serif;flex:1;text-align:center;transition:all .2s}.comm-btn:hover,.comm-btn.sel{border-color:var(--accent);background:rgba(99,102,241,.12);color:var(--text)}
+.comm-row{display:flex;gap:6px;margin-top:12px}
+.comm-btn{flex:1;padding:12px 8px;border-radius:12px;font-size:13px;font-weight:500;cursor:pointer;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);color:var(--text2);font-family:'Inter',sans-serif;text-align:center;transition:all .2s}.comm-btn:hover,.comm-btn.sel{border-color:var(--accent);background:rgba(99,102,241,.12);color:var(--text)}.comm-btn .pct{font-size:20px;font-weight:700;display:block}.comm-btn .tag{font-size:10px;opacity:.6}
 
 /* Receipt */
-.receipt{background:rgba(255,255,255,.02);border-radius:12px;padding:16px;margin-bottom:12px}
-.receipt-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:var(--text2)}
-.receipt-row .val{color:var(--text);font-weight:500}
+.receipt{background:rgba(255,255,255,.02);border-radius:12px;padding:16px}.receipt-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;color:var(--text2)}.receipt-row .val{color:var(--text);font-weight:500}
 
 /* Total */
-.total-display{text-align:center;padding:18px;background:rgba(34,197,94,.04);border-radius:14px;border:1px solid rgba(34,197,94,.1);margin-bottom:12px}
-.total-display .amt{font-size:36px;font-weight:800;color:var(--green)}.total-display .sub{font-size:11px;color:var(--text2);margin-top:2px}
+.total-box{text-align:center;padding:20px;background:rgba(34,197,94,.04);border-radius:14px;border:1px solid rgba(34,197,94,.1);margin:12px 0}.total-box .amt{font-size:38px;font-weight:800;color:var(--green)}.total-box .sub{font-size:11px;color:var(--text2);margin-top:3px}
+
+/* Risk */
+.risk{display:flex;align-items:center;gap:8px;padding:12px 16px;border-radius:12px;margin:12px 0;font-size:12px}.risk.safe{background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.12);color:var(--green)}.risk.warn{background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.12);color:var(--gold)}
 
 /* Buttons */
-.btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:14px;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:all .25s}
-.btn-primary{background:var(--accent);color:#fff;flex:1}.btn-primary:hover{filter:brightness(1.1)}.btn-primary:disabled{opacity:.3;pointer-events:none}
-.btn-back{background:transparent;color:var(--text2);border:1px solid rgba(255,255,255,.1);flex:.4}
-.btn-row{display:flex;gap:10px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:15px 28px;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:all .3s}.btn-primary{background:var(--accent);color:#fff;flex:1;box-shadow:0 0 20px rgba(99,102,241,.2)}.btn-primary:hover{filter:brightness(1.1);box-shadow:0 4px 28px rgba(99,102,241,.4)}.btn-primary:disabled{opacity:.25;pointer-events:none}.btn-ghost{background:transparent;color:var(--text2);border:1px solid rgba(255,255,255,.1);flex:.4}.btn-row{display:flex;gap:10px}
 
 /* Success */
-.success{text-align:center;padding:30px 0}
-.success .check{width:72px;height:72px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:32px;animation:popIn .4s cubic-bezier(.22,1,.36,1)}@keyframes popIn{0%{transform:scale(0)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
-.success h2{font-size:24px;font-weight:700;margin-bottom:4px}.success p{color:var(--text2);font-size:14px}
+.success{text-align:center;padding:40px 0}
+.success .circle{width:80px;height:80px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:36px;animation:pop .5s cubic-bezier(.22,1,.36,1)}@keyframes pop{0%{transform:scale(0)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+.success h2{font-size:28px;font-weight:700;margin-bottom:4px}.success p{color:var(--text2);font-size:15px}
 
-/* Bottom TabBar */
-.tabbar{display:flex;padding:8px 20px 12px;background:rgba(13,13,26,.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.05);gap:0;z-index:10}
-.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;cursor:pointer;color:rgba(255,255,255,.35);text-decoration:none;font-family:'Inter',sans-serif;border:none;background:none;transition:color .2s}.tab.active,.tab:hover{color:var(--accent)}.tab svg{width:22px;height:22px}.tab span{font-size:10px;font-weight:500}
-
-/* Risk badge */
-.risk{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;margin-bottom:12px;font-size:12px}
-.risk.safe{background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.15);color:var(--green)}.risk.warn{background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.15);color:var(--gold)}.risk .score{font-weight:700;font-size:14px}
+footer{text-align:center;padding:24px;color:var(--text2);font-size:11px;border-top:1px solid rgba(255,255,255,.04)}footer a{color:var(--accent);text-decoration:none}
+@media(max-width:600px){nav{padding:12px 20px}.nav-links{display:none}.main{padding:24px 16px 60px}.comm-row{flex-direction:column}}
 </style>
 </head>
 <body>
 <canvas id="stars"></canvas>
-<div id="app">
-  <!-- Header -->
-  <div class="header"><h1 id="pageTitle">Send USDC</h1><div class="chain">🔵 Base L2</div></div>
+<div class="content">
+<nav><a href="/" class="nav-logo"><img src="/favicon.png">PayFlash</a><div class="nav-links"><a href="/">Home</a><a href="/brand" class="active">Send</a><a href="/affiliate">Affiliate</a></div><a href="/brand" class="nav-cta">Launch App</a></nav>
 
+<div class="main">
   <!-- Steps -->
-  <div class="steps">
-    <div class="step-item"><div class="dot active" id="d1">1</div><span class="label active" id="l1">Select</span></div>
+  <div class="step-bar" id="stepBar">
+    <div class="step-dot active" id="d1">1</div><span class="step-label active" id="l1">Select Recipient</span>
     <div class="step-line" id="line1"></div>
-    <div class="step-item"><div class="dot" id="d2">2</div><span class="label" id="l2">Amount</span></div>
+    <div class="step-dot" id="d2">2</div><span class="step-label" id="l2">Enter Amount</span>
     <div class="step-line" id="line2"></div>
-    <div class="step-item"><div class="dot" id="d3">3</div><span class="label" id="l3">Confirm</span></div>
+    <div class="step-dot" id="d3">3</div><span class="step-label" id="l3">Confirm & Send</span>
   </div>
 
-  <!-- Content -->
-  <div id="content"></div>
-
-  <!-- TabBar -->
-  <div class="tabbar">
-    <a class="tab active" href="/brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></a>
-    <a class="tab" href="/brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span>Send</span></a>
-    <a class="tab" href="/affiliate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span>Activity</span></a>
-    <button class="tab" onclick="alert('Analytics coming soon')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>Analytics</span></button>
-  </div>
+  <div id="view"></div>
+</div>
+<footer><p>PayFlash · Base L2 · USDC · 2026</p><p style="margin-top:2px"><a href="/">Home</a> · <a href="/affiliate">Affiliate View →</a></p></footer>
 </div>
 
 <script>
-// State
 let step=1,amount=0,rate=5,selA={id:'@alice_cn',name:'Alice Chen',avatar:'A'};
-const contacts=[
-  {id:'@alice_cn',name:'Alice Chen',flag:'🇭🇰',cat:'Beauty',color:'#6366f1',letter:'A'},
-  {id:'@bob_kr',name:'Bob Park',flag:'🇰🇷',cat:'Tech',color:'#8b5cf6',letter:'B'},
-  {id:'@carol_jp',name:'Carol Tanaka',flag:'🇯🇵',cat:'Fashion',color:'#a855f7',letter:'C'},
-  {id:'@dave_br',name:'Dave Silva',flag:'🇧🇷',cat:'Outdoor',color:'#22c55e',letter:'D'},
-  {id:'@eve_de',name:'Eve Mueller',flag:'🇩🇪',cat:'Home',color:'#f59e0b',letter:'E'},
-];
+const contacts=[{id:'@alice_cn',name:'Alice Chen',flag:'🇭🇰',cat:'Beauty',color:'#6366f1',letter:'A'},{id:'@bob_kr',name:'Bob Park',flag:'🇰🇷',cat:'Tech',color:'#8b5cf6',letter:'B'},{id:'@carol_jp',name:'Carol Tanaka',flag:'🇯🇵',cat:'Fashion',color:'#a855f7',letter:'C'},{id:'@dave_br',name:'Dave Silva',flag:'🇧🇷',cat:'Outdoor',color:'#22c55e',letter:'D'},{id:'@eve_de',name:'Eve Mueller',flag:'🇩🇪',cat:'Home',color:'#f59e0b',letter:'E'}];
+const chains=[{id:'base',name:'Base',icon:'🔵',gas:'<$0.01',time:'~2s'},{id:'poly',name:'Polygon',icon:'🟣',gas:'<$0.01',time:'~2s'},{id:'arb',name:'Arbitrum',icon:'🟠',gas:'<$0.01',time:'~1s'}];
+let selectedChain='base';
 
-function setStep(s){step=s;
-  document.querySelectorAll('.dot').forEach(d=>{d.classList.remove('active','done')});
-  document.querySelectorAll('.label').forEach(l=>l.classList.remove('active'));
-  document.querySelectorAll('.step-line').forEach(l=>l.classList.remove('active'));
-  for(let i=1;i<=s;i++){const d=document.getElementById('d'+i);if(i<s)d.classList.add('done');else d.classList.add('active');document.getElementById('l'+i).classList.add('active')}
-  if(s>=2)document.getElementById('line1').classList.add('active');if(s>=3)document.getElementById('line2').classList.add('active');
-  document.getElementById('pageTitle').textContent=s===1?'Send USDC':s===2?'Enter Amount':'Confirm & Send';
-  render();window.scrollTo(0,0)
+function setStep(s){
+  step=s;for(let i=1;i<=3;i++){const d=document.getElementById('d'+i),l=document.getElementById('l'+i);d.classList.remove('active','done');l.classList.remove('active');if(i<s){d.classList.add('done');l.classList.add('active')}if(i===s){d.classList.add('active');l.classList.add('active')}}
+  if(s>=2)document.getElementById('line1').classList.add('active');else document.getElementById('line1').classList.remove('active');
+  if(s>=3)document.getElementById('line2').classList.add('active');else document.getElementById('line2').classList.remove('active');
+  render()
 }
 
 function render(){
-  const c=document.getElementById('content');
-  if(step===1)c.innerHTML=
-    `<div class="card"><h3>Select Recipient</h3>`+contacts.map(p=>`<div class="contact ${selA.id===p.id?'sel':''}" onclick="sel('${p.id}')"><div class="contact-avatar" style="background:linear-gradient(135deg,${p.color},#3b82f6)">${p.letter}</div><div class="contact-info"><div class="name">${p.name}</div><div class="sub">${p.flag} ${p.cat}</div></div><div class="contact-check"></div></div>`).join('')+`</div>`;
-  else if(step===2)c.innerHTML=
-    `<div class="card"><h3>Enter Amount</h3><div class="amount-display"><span class="prefix">$</span><input type="text" id="amtInput" value="${amount||''}" placeholder="0.00" inputmode="decimal" oninput="onAmt(this.value)"></div>
-    <div class="quick-amounts">${[50,100,200,500,1000].map(a=>`<button class="q-amt${amount===a?' sel':''}" onclick="setAmt(${a})">$${a}</button>`).join('')}</div></div>
-    <div class="card"><h3>Details</h3><div class="memo-row"><span style="font-size:14px">📝</span><input type="text" placeholder="Add a note..." id="memoInput"></div>
-    <div class="comm-row">${[5,10,15].map(r=>`<button class="comm-btn${rate===r?' sel':''}" onclick="setRate(${r})">${r}% ${r===5?'Standard':r===10?'Premium':'VIP'}</button>`).join('')}</div></div>
-    <button class="btn btn-primary" onclick="setStep(3)" ${amount<=0?'disabled':''}>Next →</button>`;
+  const v=document.getElementById('view');
+  if(step===1)v.innerHTML=`<div class="jelly"><div class="spec"></div><div class="inner"><h3>Who are you paying?</h3>`+contacts.map(p=>`<div class="contact ${selA.id===p.id?'sel':''}" onclick="sel('${p.id}')"><div class="contact-avatar" style="background:linear-gradient(135deg,${p.color},#3b82f6)">${p.letter}</div><div class="contact-info"><div class="name">${p.name}</div><div class="sub">${p.flag} ${p.cat}</div></div><div class="contact-check"></div></div>`).join('')+`</div></div>`;
+  else if(step===2)v.innerHTML=`<div class="jelly"><div class="spec"></div><div class="inner"><h3>How much?</h3><div class="amt-row"><span class="dollar">$</span><input type="text" id="amtInput" value="${amount||''}" placeholder="0.00" inputmode="decimal" oninput="onAmt(this.value)"></div>
+  <div class="quick-amt">${[50,100,200,500,1000].map(a=>`<button class="q-btn${amount===a?' sel':''}" onclick="setAmt(${a})">$${a}</button>`).join('')}</div></div></div>
+  <div class="jelly"><div class="spec"></div><div class="inner"><h3>Details</h3>
+    <div class="option-row"><input class="memo-input" placeholder="📝 Add a note..." id="memo">
+    ${chains.map(ch=>`<button class="opt-btn${selectedChain===ch.id?' sel':''}" onclick="pickChain('${ch.id}')">${ch.icon} ${ch.name}</button>`).join('')}</div>
+    <div class="comm-row">${[5,10,15].map(r=>`<button class="comm-btn${rate===r?' sel':''}" onclick="setRate(${r})"><span class="pct">${r}%</span><span class="tag">${r===5?'Standard':r===10?'Premium':'VIP'}</span></button>`).join('')}</div>
+    <div style="display:flex;gap:6px;margin-top:8px;font-size:11px;color:var(--text2)">⛽ Gas: ${chains.find(c=>c.id===selectedChain)?.gas||'<$0.01'} · ⏱ ${chains.find(c=>c.id===selectedChain)?.time||'~2s'}</div></div></div>
+  <button class="btn btn-primary" onclick="setStep(3)" ${amount<=0?'disabled':''}>Next →</button>`;
   else if(step===3){const comm=amount*rate/100;
-    c.innerHTML=`${selA.name?`<div class="card"><div class="contact" style="cursor:default;border:none;background:transparent"><div class="contact-avatar" style="background:linear-gradient(135deg,${contacts.find(p=>p.id===selA.id)?.color||'#6366f1'},#3b82f6)">${selA.avatar}</div><div class="contact-info"><div class="name">${selA.name}</div><div class="sub">${contacts.find(p=>p.id===selA.id)?.flag||''} ${contacts.find(p=>p.id===selA.id)?.cat||''}</div></div></div></div>`:''}
-    <div class="receipt"><div class="receipt-row"><span>Amount</span><span class="val">$${amount.toFixed(2)}</span></div><div class="receipt-row"><span>Rate</span><span class="val">${rate}%</span></div><div class="receipt-row"><span>Commission</span><span class="val" style="color:var(--green)">$${comm.toFixed(2)}</span></div><div class="receipt-row"><span>Gas Fee</span><span class="val">~$0.003</span></div></div>
-    <div class="total-display"><div class="amt">$${comm.toFixed(2)}</div><div class="sub">USDC on Base L2 · ~3 min</div></div>
-    <div class="risk safe"><span>🛡️</span><span class="score">Score 3</span><span>Safe — No risk flags detected</span></div>
-    <div class="btn-row"><button class="btn btn-back" onclick="setStep(2)">← Back</button><button class="btn btn-primary" onclick="doSend()">⚡ Confirm & Send</button></div>`}
-  else c.innerHTML=`<div class="success"><div class="check">✓</div><h2>Sent!</h2><p>$${(amount*rate/100).toFixed(2)} USDC → ${selA.name}</p><button class="btn btn-primary" style="margin-top:20px" onclick="amount=0;setStep(1)">Send Another</button></div>`;
+    v.innerHTML=`<div class="jelly"><div class="spec"></div><div class="inner"><h3>Receipt</h3>${selA.name?`<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><div class="contact-avatar" style="width:40px;height:40px;font-size:15px;background:linear-gradient(135deg,${contacts.find(p=>p.id===selA.id)?.color||'#6366f1'},#3b82f6)">${selA.avatar}</div><div><div style="font-weight:600">${selA.name}</div><div style="font-size:11px;color:var(--text2)">${contacts.find(p=>p.id===selA.id)?.flag||''} ${contacts.find(p=>p.id===selA.id)?.cat||''}</div></div></div>`:''}
+    <div class="receipt"><div class="receipt-row"><span>Amount</span><span class="val">$${amount.toFixed(2)}</span></div><div class="receipt-row"><span>Rate</span><span class="val">${rate}%</span></div><div class="receipt-row"><span>Commission</span><span class="val" style="color:var(--green)">$${comm.toFixed(2)}</span></div><div class="receipt-row"><span>Chain</span><span class="val">${chains.find(c=>c.id===selectedChain)?.icon||'🔵'} ${chains.find(c=>c.id===selectedChain)?.name||'Base'}</span></div><div class="receipt-row"><span>Gas Fee</span><span class="val">~$0.003</span></div></div>
+    <div class="total-box"><div class="amt">$${comm.toFixed(2)}</div><div class="sub">USDC · ${chains.find(c=>c.id===selectedChain)?.name||'Base'} L2 · ~3 min</div></div>
+    <div class="risk safe"><span>🛡️</span><b>Score ${Math.floor(Math.random()*8+1)}</b> · Safe — No risk flags</div>
+    <div class="btn-row"><button class="btn btn-ghost" onclick="setStep(2)">← Back</button><button class="btn btn-primary" onclick="doSend()">⚡ Confirm & Send</button></div></div></div>`}
+  else v.innerHTML=`<div class="jelly"><div class="spec"></div><div class="inner"><div class="success"><div class="circle">✓</div><h2>Sent!</h2><p>$${(amount*rate/100).toFixed(2)} USDC → ${selA.name}</p><button class="btn btn-primary" style="margin-top:16px" onclick="amount=0;setStep(1)">Send Another</button></div></div></div>`;
+  initJelly();
 }
 
 function sel(id){selA=contacts.find(p=>p.id===id);setStep(2)}
-function onAmt(v){amount=parseFloat(v)||0;const btns=document.querySelectorAll('.q-amt');btns.forEach(b=>b.classList.remove('sel'))}
-function setAmt(a){amount=a;document.getElementById('amtInput').value=a;document.querySelectorAll('.q-amt').forEach(b=>{if(parseInt(b.textContent.replace('$',''))===a)b.classList.add('sel');else b.classList.remove('sel')})}
-function setRate(r){rate=r;document.querySelectorAll('.comm-btn').forEach(b=>{if(parseInt(b.textContent)===r)b.classList.add('sel');else b.classList.remove('sel')})}
+function onAmt(v){amount=parseFloat(v)||0;document.querySelectorAll('.q-btn').forEach(b=>b.classList.remove('sel'))}
+function setAmt(a){amount=a;const inp=document.getElementById('amtInput');if(inp)inp.value=a;document.querySelectorAll('.q-btn').forEach(b=>{if(parseInt(b.textContent.replace('$',''))===a)b.classList.add('sel');else b.classList.remove('sel')})}
+function setRate(r){rate=r;render()}
+function pickChain(id){selectedChain=id;render()}
 function doSend(){setStep(4)}
 
-// Stars bg
-const sc=document.getElementById('stars'),sx=sc.getContext('2d');sc.width=innerWidth;sc.height=innerHeight;
-let stars=[];for(let i=0;i<100;i++)stars.push({x:Math.random()*2000,y:Math.random()*2000,r:.3+Math.random()*1,o:.2+Math.random()*.4,s:.1+Math.random()*.2});
-(function loop(){requestAnimationFrame(loop);sx.fillStyle='#010314';sx.fillRect(0,0,sc.width,sc.height);stars.forEach(s=>{s.y-=s.s;if(s.y<0){s.y=sc.height;s.x=Math.random()*sc.width}sx.beginPath();sx.arc(s.x,s.y,s.r,0,Math.PI*2);sx.fillStyle=`rgba(255,255,255,${s.o})`;sx.fill()})})();
+// Jelly effects
+function initJelly(){
+  document.querySelectorAll('.jelly').forEach(el=>{if(!el.dataset.inited){el.dataset.inited=1;el.insertAdjacentHTML('afterbegin','<span class="spec"></span>');const c={el,jelly:0,vel:0,sx:50,sy:50,svx:0,svy:0,hover:0,htarget:0};el.addEventListener('mouseenter',()=>c.htarget=1);el.addEventListener('mouseleave',()=>c.htarget=0);cards.push(c)}})
+}
+const cards=[],ms={x:innerWidth/2,y:innerHeight/2,tx:innerWidth/2,ty:innerHeight/2,vx:0,vy:0};
+window.addEventListener('mousemove',e=>{ms.tx=e.clientX;ms.ty=e.clientY});
+(function loop(ts){requestAnimationFrame(loop);const dt=Math.min((ts-(loop._lt||ts))/1000,.1);loop._lt=ts;ms.vx+=(ms.tx-ms.x)*10*dt;ms.vy+=(ms.ty-ms.y)*10*dt;ms.vx*=.8;ms.vy*=.8;ms.x+=ms.vx*dt*3;ms.y+=ms.vy*dt*3;
+cards.forEach(c=>{const r=c.el.getBoundingClientRect();const cx=r.left+r.width/2,cy=r.top+r.height/2;const dx=ms.x-cx,dy=ms.y-cy,dist=Math.sqrt(dx*dx+dy*dy);const influence=Math.max(0,1-dist/(Math.max(r.width,r.height)*1.4));c.vel+=(influence-c.jelly)*10*dt;c.vel*=.55;c.jelly+=c.vel*dt;const j=c.jelly;const mxPct=((ms.x-r.left)/r.width*100);const myPct=((ms.y-r.top)/r.height*100);c.el.style.setProperty('--mx',mxPct+'%');c.el.style.setProperty('--my',myPct+'%');c.svx+=(mxPct-c.sx)*8*dt;c.svx*=.7;c.sx+=c.svx*dt;c.svy+=(myPct-c.sy)*8*dt;c.svy*=.7;c.sy+=c.svy*dt;c.el.style.setProperty('--sx',c.sx+'%');c.el.style.setProperty('--sy',c.sy+'%');c.hover+=(c.htarget-c.hover)*6*dt;const lift=-c.hover*6;const sx_=1+j*.04,sy_=1-j*.03,sk=j*.015,yOff=lift-j*5;c.el.style.transform=`translateY(${yOff}px) scaleX(${sx_}) scaleY(${sy_}) skewX(${sk}deg)`;c.el.style.borderColor=j>.08?`rgba(99,102,241,${.12+j*.3})`:'rgba(255,255,255,.08)';c.el.style.boxShadow=j>.08?`inset 0 1px 0 rgba(255,255,255,${.04+j*.08}),0 ${j*40}px ${j*80}px rgba(99,102,241,${.08+j*.2}),0 2px 12px rgba(0,0,0,.2)`:'inset 0 1px 0 rgba(255,255,255,.04),0 2px 12px rgba(0,0,0,.2)';c.el.classList.toggle('active',j>.05)})})(0);
 
+// Stars
+const sc=document.getElementById('stars'),sx=sc.getContext('2d');sc.width=innerWidth;sc.height=innerHeight;
+let stars=[];for(let i=0;i<200;i++)stars.push({x:Math.random()*2000,y:Math.random()*2000,r:.3+Math.random()*1.5,o:.2+Math.random()*.6,s:.1+Math.random()*.3});
+(function loop2(){requestAnimationFrame(loop2);sx.fillStyle='#010314';sx.fillRect(0,0,sc.width,sc.height);stars.forEach(s=>{s.y-=s.s;if(s.y<0){s.y=sc.height;s.x=Math.random()*sc.width}sx.beginPath();sx.arc(s.x,s.y,s.r,0,Math.PI*2);sx.fillStyle=`rgba(255,255,255,${s.o})`;sx.fill()})})();
 render();
 </script>
 </body>
