@@ -139,9 +139,9 @@ function render(){
   <div class="jelly"><div class="spec"></div><div class="inner"><h3>Details</h3>
     <div class="option-row"><input class="memo-input" placeholder="📝 Add a note..." id="memo">
     ${chains.map(ch=>`<button class="opt-btn${selectedChain===ch.id?' sel':''}" onclick="pickChain('${ch.id}')">${ch.icon} ${ch.name}</button>`).join('')}</div>
-    <div class="toggle-row" onclick="commissionMode=!commissionMode;render()"><span style="font-size:13px">📊 Commission Settlement</span><div class="toggle${commissionMode?' on':''}"></div></div>
+    <div class="toggle-row" onclick="toggleCommission()"><span style="font-size:13px">📊 Commission Settlement</span><div class="toggle${commissionMode?' on':''}"></div></div>
     <div class="expandable${commissionMode?' will-open':''}"><div class="comm-row">${[5,10,15].map(r=>`<button class="comm-btn${rate===r?' sel':''}" onclick="setRate(${r})"><span class="pct">${r}%</span><span class="tag">${r===5?'Standard':r===10?'Premium':'VIP'}</span></button>`).join('')}</div></div>
-    <div class="toggle-row" onclick="scheduled=!scheduled;render()"><span style="font-size:13px">⏰ Schedule for later</span><div class="toggle${scheduled?' on':''}"></div></div>
+    <div class="toggle-row" onclick="toggleSchedule()"><span style="font-size:13px">⏰ Schedule for later</span><div class="toggle${scheduled?' on':''}"></div></div>
     <div class="expandable${scheduled?' will-open':''}" style="margin-top:8px"><input type="datetime-local" class="memo-input" value="${scheduleDate||new Date(Date.now()+86400000).toISOString().slice(0,16)}" onchange="scheduleDate=this.value" style="width:100%"></div>
     <div style="display:flex;gap:6px;margin-top:8px;font-size:11px;color:var(--text2)">⛽ Gas: ${chains.find(c=>c.id===selectedChain)?.gas||'<$0.01'} · ⏱ ${chains.find(c=>c.id===selectedChain)?.time||'~2s'}</div></div></div>
   <button class="btn btn-primary" onclick="${commissionMode?'setStep(3)':'doSend()'}" ${amount<=0?'disabled':''}>${commissionMode?'Next →':'⚡ Send Now'}</button>`;
@@ -172,6 +172,8 @@ function render(){
 function filterContacts(q){document.querySelectorAll('.contact').forEach(el=>{const n=el.querySelector('.name').textContent.toLowerCase();el.style.display=n.includes(q.toLowerCase())?'flex':'none'})}
 function sel(id){selA=contacts.find(p=>p.id===id);setStep(2)}
 function kp(k){const inp=document.getElementById('amtInput');if(!inp)return;let v=inp.value;if(k==='⌫'){v=v.slice(0,-1)}else if(k==='C'){v=''}else{v+=k;if(v.length>9)return}inp.value=v;amount=parseFloat(v)||0;document.querySelectorAll('.q-btn').forEach(b=>b.classList.remove('sel'))}
+function toggleCommission(){commissionMode=!commissionMode;render()}
+function toggleSchedule(){scheduled=!scheduled;render()}
 function setAmt(a){amount=a;const inp=document.getElementById('amtInput');if(inp)inp.value=a;document.querySelectorAll('.q-btn').forEach(b=>{if(parseInt(b.textContent.replace('$',''))===a)b.classList.add('sel');else b.classList.remove('sel')})}
 function setRate(r){rate=r;render()}
 function pickChain(id){selectedChain=id;render()}
